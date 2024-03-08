@@ -1,19 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { styled } from "styled-components";
-
-import logo from "../../assets/imgs/logo.png";
+import Logo from "../shared/Logo";
 
 const Head = styled.header`
   padding: 15px 20px;
   max-width: 1280px;
   margin: auto;
-`;
-
-const Logo = styled.img.attrs((props) => ({
-  src: logo,
-  alt: "logo_image",
-}))`
-  height: 65px;
 `;
 
 const Navbar = styled.nav`
@@ -54,9 +46,7 @@ const Header = () => {
   return (
     <Head>
       <Navbar>
-        <NavLink>
-          <Logo />
-        </NavLink>
+        <Logo />
         <Menu>
           <MenuItem>
             <Link to="/signin">login</Link>
