@@ -19,13 +19,18 @@ const routes = [
       { path: "/demo", element: <Demo /> },
       { path: "/signin", element: <SignIn /> },
       { path: "/signup", element: <SignUp /> },
-      { path: "/dashboard", element: <Dashboard /> },
       { path: "/profile", element: <Profile /> },
-      { path: "/templates", element: <MyTemplates /> },
-      { path: "/basic", element: <BasicTemplates /> },
-      { path: "/send", element: <SendMail /> },
-      { path: "/contacts", element: <Contacts /> },
       { path: "/preview", element: <Preview /> },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    children: [
+      { path: "templates", element: <MyTemplates /> },
+      { path: "basic", element: <BasicTemplates /> },
+      { path: "contacts", element: <Contacts /> },
+      { path: "send", element: <SendMail /> },
     ],
   },
 ];
