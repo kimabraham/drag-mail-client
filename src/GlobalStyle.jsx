@@ -3,16 +3,16 @@ import reset from "styled-reset";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
-
   body {
-  font-family: 'Padauk';
+  font-family: 'Telex';
   font-weight: 400;
 }
 
-h1, h2, h3, h4, h5 {
-  font-family: 'Padauk';
-  font-weight: 700;
-}
+  h1, h2, h3, h4, h5 {
+    font-family: 'Telex';
+    font-weight: 700;
+  }
+
 
 html {font-size: 100%;} /* 16px */
 
