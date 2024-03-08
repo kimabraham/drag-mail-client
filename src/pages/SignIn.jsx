@@ -60,7 +60,7 @@ const Card = styled.div`
     display: flex;
     align-items: center;
     text-align: center;
-    width: 100%; /* 전체 너비 사용 */
+    width: 100%;
     &:before,
     &:after {
       content: "";
@@ -68,10 +68,10 @@ const Card = styled.div`
       border-bottom: 1px solid #d8d8d8;
     }
     &:before {
-      margin-right: 10px; /* 오른쪽 여백 추가 */
+      margin-right: 10px;
     }
     &:after {
-      margin-left: 10px; /* 왼쪽 여백 추가 */
+      margin-left: 10px;
     }
   }
 `;
@@ -93,7 +93,6 @@ const SignInForm = styled.form`
       outline: none;
     }
   }
-
 `;
 
 const Button = styled.button`
@@ -131,7 +130,7 @@ const SignIn = () => {
             <h3>Hello! Welcome Back!</h3>
             <div>
               <span>Don't have an account?</span>
-              <Link to="/signup">Sign up</Link>
+              <Link to="/signup">Sign Up</Link>
             </div>
           </div>
           <Button>
