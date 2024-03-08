@@ -3,7 +3,11 @@ import reset from "styled-reset";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
+  *{
+    box-sizing: border-box;
+  }
   body {
+  box-sizing: border-box;
   font-family: 'Telex';
   font-weight: 400;
 }
