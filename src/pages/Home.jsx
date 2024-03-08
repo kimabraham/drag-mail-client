@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { TbTemplate } from "react-icons/tb";
 import homeImage from "../assets/imgs/home_image.png";
+import Button from "../components/shared/Button";
 
 const Container = styled.div`
     display: flex;
@@ -31,23 +32,6 @@ const Desc = styled.p`
     word-spacing: 2px;
     font-size: 1.1rem;
     word-wrap: break-word;
-  `;
-
-const Button = styled.button`
-    display: inline-flex;
-    gap: 4px;
-    justify-content: center;
-    align-items: center;
-    width: 40%;
-    color: white;
-    background-color: ${(props) => props.theme.accent};
-    margin-left: 40px;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    font-size: larger;
-    letter-spacing: .2px;
-    cursor: pointer;
   `;
 
 const HomeImage = styled.img.attrs((props) => ({

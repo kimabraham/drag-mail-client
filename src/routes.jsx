@@ -17,12 +17,12 @@ const routes = [
     children: [
       { path: "/", element: <Home /> },
       { path: "/demo", element: <Demo /> },
-      { path: "/signin", element: <SignIn /> },
-      { path: "/signup", element: <SignUp /> },
       { path: "/profile", element: <Profile /> },
       { path: "/preview", element: <Preview /> },
     ],
   },
+  { path: "/signin", element: <SignIn /> },
+  { path: "/signup", element: <SignUp /> },
   {
     path: "/dashboard",
     element: <Dashboard />,
