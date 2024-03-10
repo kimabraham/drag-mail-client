@@ -1,8 +1,8 @@
 import { styled } from "styled-components";
-import Logo from "../components/shared/Logo";
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { PiSignIn } from "react-icons/pi";
+import Logo from "../components/shared/Logo";
 
 const Container = styled.div`
   display:flex;
@@ -99,6 +99,10 @@ const SignInForm = styled.form`
 `;
 
 const SignUp = () => {
+  const handleLogin = () => {
+    window.open("/api/auth/google/callback", "_self");
+  };
+
   return (
     <Container>
       <Logo />
@@ -107,10 +111,10 @@ const SignUp = () => {
           <h3>Get Started with a Free Account</h3>
           <div>
             <span>Already have an account?</span>
-            <Link to="/signip">Sign In</Link>
+            <Link to="/signin">Sign In</Link>
           </div>
         </div>
-        <Button>
+        <Button onClick={handleLogin}>
           <FaGoogle />
           Sign in with Google
         </Button>

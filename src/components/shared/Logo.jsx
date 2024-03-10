@@ -3,17 +3,14 @@ import logo from "../../assets/imgs/logo.png";
 import { NavLink } from "react-router-dom";
 import { styled } from "styled-components";
 
-const LogoImage = styled.img.attrs((props) => ({
-  src: logo,
-  alt: "logo_image",
-}))`
-    height: 65px;
-  `;
+const LogoImage = styled.img`
+  height: ${(props) => props.size || "65px"};
+`;
 
-const Logo = () => {
+const Logo = ({ size }) => {
   return (
     <NavLink to="/">
-      <LogoImage />
+      <LogoImage size={size} src={logo} alt="logo image" />
     </NavLink>
   );
 };
