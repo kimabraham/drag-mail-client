@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { styled } from "styled-components";
-import signIn from "../assets/imgs/sign_in.png";
-import Logo from "../components/shared/Logo";
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { PiSignIn } from "react-icons/pi";
+
+import signIn from "../assets/imgs/sign_in.png";
+import Logo from "../components/shared/Logo";
 
 const Container = styled.div`
   display: flex;
@@ -117,6 +119,14 @@ const Button = styled.button`
 `;
 
 const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleLogin = () => {
+    window.open("/api/auth/google/callback", "_self");
+  };
+
+  const handleSubmit = () => {};
+
   return (
     <Container>
       <Box />
@@ -133,14 +143,22 @@ const SignIn = () => {
               <Link to="/signup">Sign Up</Link>
             </div>
           </div>
-          <Button>
+          <Button onClick={handleLogin}>
             <FaGoogle />
             Sign in with Google
           </Button>
           <span>or</span>
-          <SignInForm>
-            <input type="text" />
-            <input type="text" />
+          <SignInForm onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Enter an email address"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <Button>
               <PiSignIn />
               Sign In
