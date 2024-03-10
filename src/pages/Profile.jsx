@@ -1,6 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../utils/atoms";
 import { styled } from "styled-components";
+import useAuthStatus from "../hooks/useAuthStatus";
 
 const Container = styled.div`
   display: flex;
@@ -36,10 +37,10 @@ const Profile = () => {
 
   return (
     <Container>
-      <Avatar src={user.avatarUrl} alt="avatar image" />
+      <Avatar src={user?.avatarUrl} alt="avatar image" />
       <div>
         <span>Account</span>
-        <h6>{user.name}</h6>
+        <h6>{user?.name}</h6>
       </div>
     </Container>
   );

@@ -2,20 +2,24 @@ import { NavLink, Outlet } from "react-router-dom";
 import { styled } from "styled-components";
 import Logo from "../components/shared/Logo";
 import Profile from "./Profile";
+import useAuthStatus from "../hooks/useAuthStatus";
 
 const Container = styled.div`
+  width: 100%;
   display: flex;
+  height: 100vh;
 `;
 
 const SideBar = styled.aside`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 20%;
+  min-width: 300px;
   height: 100vh;
   padding: 40px 30px;
   border-right: 1px solid #dde0e4;
   background-color: ${(props) => props.theme.background};
+  overflow-y: auto;
 `;
 
 const Menu = styled.ul`
@@ -25,6 +29,11 @@ const Menu = styled.ul`
 `;
 
 const Item = styled.li`
+`;
+
+const Content = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
 `;
 
 const StyleLink = styled(NavLink)`
@@ -44,6 +53,8 @@ const StyleLink = styled(NavLink)`
 `;
 
 const Dashboard = () => {
+  useAuthStatus();
+
   return (
     <Container>
       <SideBar>
@@ -64,9 +75,9 @@ const Dashboard = () => {
         </Menu>
         <Profile />
       </SideBar>
-      <div>
+      <Content>
         <Outlet />
-      </div>
+      </Content>
     </Container>
   );
 };

@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../components/shared/Loading";
 import axios from "axios";
 
-// API 호출을 위한 URL 정의
-const url = "http://localhost:3000/api/auth/success";
+const url = "/api/auth/success";
 
 const useAuthStatus = () => {
   const [, setUser] = useRecoilState(userInfo);
