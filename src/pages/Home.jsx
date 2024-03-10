@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { TbTemplate } from "react-icons/tb";
+import { useRecoilValue } from "recoil";
+
 import homeImage from "../assets/imgs/home_image.png";
 import Button from "../components/shared/Button";
+import { userInfo } from "../utils/atoms";
+import useAuthStatus from "../hooks/useAuthStatus.jsx";
 
 const Container = styled.div`
     display: flex;
@@ -42,6 +46,9 @@ const HomeImage = styled.img.attrs((props) => ({
   `;
 
 const Home = () => {
+  useAuthStatus();
+  const user = useRecoilValue(userInfo);
+
   return (
     <Container>
       <Box>
@@ -60,7 +67,7 @@ const Home = () => {
           마케팅 이메일을 다음 단계로 끌어올리세요.
           <br /> 지금 바로 우리의 드래그 앤 드롭 툴을 체험해 보세요!
         </Desc>
-        <Link to="/demo">
+        <Link to={user ? "/dashboard/templates" : "/demo"}>
           <Button>
             Try Demo
             <TbTemplate />
