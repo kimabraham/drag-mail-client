@@ -16,9 +16,17 @@ const useAuthStatus = () => {
       try {
         const response = await axios.get(url, { withCredentials: true });
         const { _id, name, email, avatarUrl } = response.data.user;
-        setUser({ _id, name, email, avatarUrl });
+        const userInfo = {
+          _id,
+          name,
+          email,
+          avatarUrl,
+        };
+        setUser(userInfo);
+        return userInfo;
       } catch (error) {
         console.error(error);
+        return null;
       }
     },
   });
@@ -26,8 +34,6 @@ const useAuthStatus = () => {
   if (isLoading) {
     return <Loading />;
   }
-
-  return null;
 };
 
 export default useAuthStatus;
