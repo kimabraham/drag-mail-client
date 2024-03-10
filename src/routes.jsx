@@ -1,6 +1,7 @@
 import Layout from "./components/Layout";
 import BasicTemplates from "./pages/BasicTemplates";
 import Contacts from "./pages/Contacts";
+import CreateTemplate from "./pages/CreateTemplate";
 import Dashboard from "./pages/Dashboard";
 import Demo from "./pages/Demo";
 import Home from "./pages/Home";
@@ -23,6 +24,7 @@ const routes = [
   },
   { path: "/signin", element: <SignIn /> },
   { path: "/signup", element: <SignUp /> },
+  { path: "/template/:id", element: <CreateTemplate /> },
   {
     path: "/dashboard",
     element: <Dashboard />,
