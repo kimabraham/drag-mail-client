@@ -122,7 +122,7 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleLogin = () => {
-    window.open("/api/auth/google/callback", "_self");
+    window.open("/api/auth/google", "_self");
   };
 
   const handleSubmit = () => {};

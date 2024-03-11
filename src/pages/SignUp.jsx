@@ -100,7 +100,7 @@ const SignInForm = styled.form`
 
 const SignUp = () => {
   const handleLogin = () => {
-    window.open("/api/auth/google/callback", "_self");
+    window.open("/api/auth/google", "_self");
   };
 
   return (
