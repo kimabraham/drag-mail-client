@@ -1,9 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { RxCross2 } from "react-icons/rx";
 import { MODAL_TYPE } from "../../constants/constants";
+import useContact from "../../hooks/useContact";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -107,71 +106,25 @@ const ModalContent = styled.div`
 
 const Modal = ({ onClose, type, contact }) => {
   const isCreate = type === MODAL_TYPE.CREATE;
+
   const [name, setName] = useState(contact?.name || "");
   const [email, setEmail] = useState(contact?.email || "");
-  const queryClient = useQueryClient();
 
-  const createContact = useMutation({
-    mutationFn: async () =>
-      await axios.post(
-        "/api/users/contacts",
-        { name, email },
-        { withCredentials: true }
-      ),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["get-user-contacts"], (prev) => {
-        return [...prev, data.data.contact];
-      });
-      onClose();
-    },
-  });
-
-  const deleteContact = useMutation({
-    mutationFn: (contactId) =>
-      axios.delete(`/api/contacts/${contactId}`, {
-        withCredentials: true,
-      }),
-    onSuccess: (data, variables) => {
-      const contactId = variables;
-      queryClient.setQueryData(["get-user-contacts"], (prev) => {
-        return prev.filter((contact) => contact._id !== contactId);
-      });
-      onClose();
-    },
-  });
-
-  const updateContact = useMutation({
-    mutationFn: (contactId) =>
-      axios.put(
-        `/api/contacts/${contactId}`,
-        { name, email },
-        { withCredentials: true }
-      ),
-    onSuccess: (result) => {
-      console.log(result);
-      const updatedContact = result.data.contact;
-
-      queryClient.setQueryData(["get-user-contacts"], (prev) => {
-        return prev.map((contact) =>
-          contact._id === updatedContact._id ? updatedContact : contact
-        );
-      });
-
-      onClose();
-    },
-  });
+  const { createContact, deleteContact, updateContact } = useContact();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isCreate) {
-      createContact.mutate();
+      createContact.mutate({ name, email });
     } else {
-      updateContact.mutate(contact._id);
+      updateContact.mutate({ contactId: contact._id, name, email });
     }
+    onClose();
   };
 
   const handleDelete = () => {
     deleteContact.mutate(contact._id);
+    onClose();
   };
 
   return (

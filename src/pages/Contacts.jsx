@@ -1,11 +1,11 @@
+import { useState } from "react";
 import { styled } from "styled-components";
 import { FaPlus } from "react-icons/fa";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+
 import Loading from "../components/shared/Loading";
 import Modal from "../components/shared/Modal";
-import { useState } from "react";
 import { MODAL_TYPE } from "../constants/constants";
+import useContact from "../hooks/useContact";
 
 const Container = styled.div`
   width: 80%;
@@ -84,15 +84,7 @@ const Contacts = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["get-user-contacts"],
-    queryFn: async () => {
-      const res = await axios.get("/api/users/contacts", {
-        withCredentials: true,
-      });
-      return res.data.contacts;
-    },
-  });
+  const { contacts, isLoading } = useContact();
 
   if (isLoading) {
     return <Loading />;
@@ -129,7 +121,7 @@ const Contacts = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.map((contact, index) => (
+          {contacts?.map((contact, index) => (
             <tr key={contact._id}>
               <td>{index + 1}</td>
               <td>
