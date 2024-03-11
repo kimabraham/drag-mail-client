@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 import { FcTemplate } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import propTypes from "prop-types";
 
 const Template = styled.div`
   width: 180px;
@@ -64,6 +65,15 @@ const TemplateCard = ({ template, deleteProject }) => {
       <button onClick={handleDelete}>delete</button>
     </Template>
   );
+};
+
+TemplateCard.propTypes = {
+  template: propTypes.shape({
+    _id: propTypes.string.isRequired,
+    title: propTypes.string.isRequired,
+    createdAt: propTypes.string.isRequired,
+  }).isRequired,
+  deleteProject: propTypes.func.isRequired,
 };
 
 export default TemplateCard;
