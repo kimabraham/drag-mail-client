@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { RxCross2 } from "react-icons/rx";
+
 import { MODAL_TYPE } from "../../constants/constants";
 import useContact from "../../hooks/useContact";
 
@@ -169,6 +171,16 @@ const Modal = ({ onClose, type, contact }) => {
       </ModalContent>
     </ModalOverlay>
   );
+};
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  type: PropTypes.oneOf([MODAL_TYPE.CREATE, MODAL_TYPE.UPDATE]).isRequired,
+  contact: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+  }),
 };
 
 export default Modal;
