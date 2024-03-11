@@ -1,4 +1,3 @@
-import React from "react";
 import Logo from "../components/shared/Logo";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";

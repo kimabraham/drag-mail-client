@@ -4,6 +4,7 @@ import { styled } from "styled-components";
 
 import NewTemplateCard from "../components/Template/NewTemplateCard";
 import TemplateCard from "../components/Template/TemplateCard";
+import Loading from "../components/shared/Loading";
 
 const Container = styled.div`
   width: 80%;
@@ -37,6 +38,10 @@ const MyTemplates = () => {
       });
     },
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Container>

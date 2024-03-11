@@ -139,7 +139,7 @@ const SignIn = () => {
           <div>
             <h3>Hello! Welcome Back!</h3>
             <div>
-              <span>Don't have an account?</span>
+              <span>Don&apos;t have an account?</span>
               <Link to="/signup">Sign Up</Link>
             </div>
           </div>
@@ -152,11 +152,13 @@ const SignIn = () => {
             <input
               type="email"
               placeholder="Enter an email address"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <Button>

@@ -30,9 +30,7 @@ const useAuthStatus = () => {
     },
   });
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  return { isLoading };
 };
 
 export default useAuthStatus;

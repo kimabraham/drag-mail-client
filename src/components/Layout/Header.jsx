@@ -5,6 +5,7 @@ import { useRecoilState } from "recoil";
 import Logo from "../shared/Logo";
 import { userInfo } from "../../utils/atoms";
 import axios from "axios";
+import useAuthStatus from "../../hooks/useAuthStatus";
 
 const Head = styled.header`
   padding: 15px 20px;
@@ -54,8 +55,8 @@ const Link = styled(NavLink).attrs((props) => ({
 `;
 
 const Header = () => {
+  const { isLoading } = useAuthStatus();
   const [user, setUser] = useRecoilState(userInfo);
-
   const handleLogout = async () => {
     await axios.get("/api/auth/logout", { withCredentials: true });
     setUser(null);
@@ -65,28 +66,30 @@ const Header = () => {
     <Head>
       <Navbar>
         <Logo />
-        <Menu>
-          {user ? (
-            <>
-              <MenuItem onClick={handleLogout}>logout</MenuItem>
-              <MenuItem>
-                <Link to="/dashboard/templates">dashboard</Link>
-              </MenuItem>
-            </>
-          ) : (
-            <>
-              <MenuItem>
-                <Link to="/signin">login</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/signup">sign up</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/demo">demo editor</Link>
-              </MenuItem>
-            </>
-          )}
-        </Menu>
+        {!isLoading && (
+          <Menu>
+            {user ? (
+              <>
+                <MenuItem onClick={handleLogout}>logout</MenuItem>
+                <MenuItem>
+                  <Link to="/dashboard/templates">dashboard</Link>
+                </MenuItem>
+              </>
+            ) : (
+              <>
+                <MenuItem>
+                  <Link to="/signin">login</Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/signup">sign up</Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/demo">demo editor</Link>
+                </MenuItem>
+              </>
+            )}
+          </Menu>
+        )}
       </Navbar>
     </Head>
   );

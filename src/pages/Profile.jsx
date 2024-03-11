@@ -1,7 +1,6 @@
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../utils/atoms";
 import { styled } from "styled-components";
-import useAuthStatus from "../hooks/useAuthStatus";
 
 const Container = styled.div`
   display: flex;

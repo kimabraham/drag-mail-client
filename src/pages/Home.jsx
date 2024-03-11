@@ -38,9 +38,7 @@ const Desc = styled.p`
     word-wrap: break-word;
   `;
 
-const HomeImage = styled.img.attrs((props) => ({
-  src: homeImage,
-}))`
+const HomeImage = styled.img`
     margin-top: 60px;
     width:100%;
   `;
@@ -75,7 +73,7 @@ const Home = () => {
         </Link>
       </Box>
       <Box>
-        <HomeImage />
+        <HomeImage src={homeImage} alt="home image" />
       </Box>
     </Container>
   );
