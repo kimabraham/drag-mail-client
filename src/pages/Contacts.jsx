@@ -45,6 +45,20 @@ const Table = styled.table`
   width: 100%;
   margin-top: 20px;
   font-size: large;
+  & > thead > tr {
+    & th:first-child {
+      width: 10%;
+    }
+    & th:nth-child(2) {
+      width: 25%;
+    }
+    & th:nth-child(3) {
+      width: 40%;
+    }
+    & th:last-child {
+      width: 25%;
+    }
+  }
   & th {
     text-transform: uppercase;
     font-weight: bold;
