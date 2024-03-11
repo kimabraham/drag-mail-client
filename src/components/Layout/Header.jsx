@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { styled } from "styled-components";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import Logo from "../shared/Logo";
 import { userInfo } from "../../utils/atoms";
-import axios from "axios";
 import useAuthStatus from "../../hooks/useAuthStatus";
+import useLogout from "../../hooks/useLogout";
 
 const Head = styled.header`
   padding: 15px 20px;
@@ -56,11 +56,8 @@ const Link = styled(NavLink).attrs((props) => ({
 
 const Header = () => {
   const { isLoading } = useAuthStatus();
-  const [user, setUser] = useRecoilState(userInfo);
-  const handleLogout = async () => {
-    await axios.get("/api/auth/logout", { withCredentials: true });
-    setUser(null);
-  };
+  const user = useRecoilValue(userInfo);
+  const handleLogout = useLogout();
 
   return (
     <Head>
