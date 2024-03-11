@@ -7,10 +7,10 @@ import Demo from "./pages/Demo";
 import Home from "./pages/Home";
 import MyTemplates from "./pages/MyTemplates";
 import Preview from "./pages/Preview";
-import Profile from "./pages/Profile";
 import SendMail from "./pages/SendMail";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import UserProfile from "./pages/UserProfile";
 
 const routes = [
   {
@@ -18,7 +18,6 @@ const routes = [
     children: [
       { path: "/", element: <Home /> },
       { path: "/demo", element: <Demo /> },
-      { path: "/profile", element: <Profile /> },
       { path: "/preview", element: <Preview /> },
     ],
   },
@@ -33,6 +32,7 @@ const routes = [
       { path: "basic", element: <BasicTemplates /> },
       { path: "contacts", element: <Contacts /> },
       { path: "send", element: <SendMail /> },
+      { path: "profile", element: <UserProfile /> },
     ],
   },
 ];
