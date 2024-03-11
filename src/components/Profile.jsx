@@ -1,9 +1,11 @@
+import PropTypes from "prop-types";
+import { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { styled } from "styled-components";
-import { userInfo } from "../utils/atoms";
-import { useState } from "react";
-import useLogout from "../hooks/useLogout";
 import { Link } from "react-router-dom";
+
+import { userInfo } from "../utils/atoms";
+import useLogout from "../hooks/useLogout";
 
 const Container = styled.div`
   display: flex;
@@ -80,7 +82,7 @@ const Popup = styled.ul`
   }
 `;
 
-const Profile = ({ position: { top, bottom, left, right } }) => {
+const Profile = ({ position: { top, left } }) => {
   const user = useRecoilValue(userInfo);
   const [showPopup, setShowPopup] = useState(false);
   const handleLogout = useLogout();
@@ -97,7 +99,7 @@ const Profile = ({ position: { top, bottom, left, right } }) => {
         <h6>{user?.name}</h6>
       </div>
       {showPopup && (
-        <Popup top={top} bottom={bottom} left={left} right={right}>
+        <Popup top={top} left={left}>
           <li>
             <Link to="/dashboard/profile">profile</Link>
           </li>
@@ -107,6 +109,13 @@ const Profile = ({ position: { top, bottom, left, right } }) => {
       )}
     </Container>
   );
+};
+
+Profile.propTypes = {
+  position: PropTypes.shape({
+    top: PropTypes.number,
+    left: PropTypes.number,
+  }),
 };
 
 export default Profile;
