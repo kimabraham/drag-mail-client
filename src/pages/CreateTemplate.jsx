@@ -1,10 +1,10 @@
 import Logo from "../components/shared/Logo";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
+import Profile from "../components/Profile";
 
 const Container = styled.div`
     margin: auto;
-
 `;
 
 const Header = styled.header`
@@ -14,7 +14,7 @@ const Header = styled.header`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 30px;
+    padding: 0px 50px;
 `;
 
 const Body = styled.div`
@@ -78,7 +78,7 @@ const CreateTemplate = () => {
     <Container>
       <Header>
         <Logo size="50px" />
-        <h5>Abraham Kim</h5>
+        <Profile position={{ top: 60, left: 10 }} />
       </Header>
       <Body>
         <Screen></Screen>

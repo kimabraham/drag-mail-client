@@ -37,8 +37,8 @@ const Avatar = styled.img`
 
 const Popup = styled.ul`
   position: absolute;
-  top: -180px;
-  left: 10px;
+  top: ${(props) => props.top}px;
+  left: ${(props) => props.left}px;
   width: 200px;
   background-color: white;
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -80,7 +80,7 @@ const Popup = styled.ul`
   }
 `;
 
-const Profile = () => {
+const Profile = ({ position: { top, bottom, left, right } }) => {
   const user = useRecoilValue(userInfo);
   const [showPopup, setShowPopup] = useState(false);
   const handleLogout = useLogout();
@@ -97,7 +97,7 @@ const Profile = () => {
         <h6>{user?.name}</h6>
       </div>
       {showPopup && (
-        <Popup>
+        <Popup top={top} bottom={bottom} left={left} right={right}>
           <li>
             <Link to="/dashboard/profile">profile</Link>
           </li>

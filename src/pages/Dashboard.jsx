@@ -73,7 +73,7 @@ const Dashboard = () => {
             <StyleLink to="/dashboard/send">Send Mail</StyleLink>
           </Item>
         </Menu>
-        <Profile />
+        <Profile position={{ top: -180, left: 10 }} />
       </SideBar>
       <Content>
         <Outlet />
