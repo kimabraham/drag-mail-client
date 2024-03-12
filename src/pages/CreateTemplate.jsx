@@ -3,6 +3,8 @@ import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
 import Profile from "../components/Profile";
 import React, { useState } from "react";
+import { BsLayoutWtf } from "react-icons/bs";
+import ContainerCard from "../components/Email/ContainerCard";
 
 const Container = styled.div`
     margin: auto;
@@ -54,18 +56,9 @@ const Content = styled.div`
       background-color: white;
       border: 1px solid;
       & > div {
-        height: 100px;
-        padding: 10px 10px 5px 10px;
         display: flex;
-        gap: 10px;
-        & > div {
-          border: 1px dashed #1e90ff;
-          border-radius: 5px;
-          width: 100%;
-          height:100%;
-        }
       }
-      & > div:last-child {
+      & > div:last-child > div {
         padding-bottom: 10px;
       }
 `;
@@ -74,13 +67,13 @@ const Structures = styled.div`
     display: flex;
     flex-direction: column;
     & > :first-child {
-        color: #57606f;
-        background-color: #ced6e0;
-        display: flex;
-        align-items: center;
-        gap:10px;
-        padding: 5px 15px;
-        border-bottom: 1px solid;
+      color: #57606f;
+      background-color: #ced6e0;
+      display: flex;
+      align-items: center;
+      gap:10px;
+      padding: 5px 15px;
+      border-bottom: 1px solid;
     }
 `;
 
@@ -155,19 +148,19 @@ const CreateTemplate = () => {
     const id = e.dataTransfer.getData("text/plain");
     const newComponent = (
       <div key={components.length}>
-        <div></div>
-        {id === "two" && <div></div>}
+        <ContainerCard />
+        {id === "two" && <ContainerCard />}
         {id === "three" && (
           <>
-            <div></div>
-            <div></div>
+            <ContainerCard />
+            <ContainerCard />
           </>
         )}
         {id === "four" && (
           <>
-            <div></div>
-            <div></div>
-            <div></div>
+            <ContainerCard />
+            <ContainerCard />
+            <ContainerCard />
           </>
         )}
       </div>
