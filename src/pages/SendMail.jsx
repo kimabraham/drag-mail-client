@@ -5,6 +5,7 @@ import { styled } from "styled-components";
 
 import { userInfo } from "../utils/atoms";
 import useContact from "../hooks/useContact";
+import useProjects from "../hooks/useProjects";
 
 const Container = styled.div`
   width: 80%;
@@ -42,9 +43,9 @@ const Container = styled.div`
 const Receivers = styled.div`
   display: flex;
   gap: 20px;
-  align-items: center;
   & > ul {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     & > li {
       background-color: #dfe4ea;
@@ -106,6 +107,8 @@ const Form = styled.form`
 const SendMail = () => {
   const [receivers, setReceivers] = useState([]);
   const { contacts } = useContact();
+  const { projects } = useProjects();
+
   const user = useRecoilValue(userInfo);
 
   const handleSubmit = (e) => {
@@ -117,6 +120,10 @@ const SendMail = () => {
     if (newEmail && !receivers.includes(newEmail)) {
       setReceivers([...receivers, newEmail]);
     }
+  };
+
+  const handleDeleteReceiver = (email) => {
+    setReceivers(receivers.filter((receiver) => receiver !== email));
   };
 
   return (
@@ -131,7 +138,10 @@ const SendMail = () => {
           {receivers.map((receiver) => (
             <li key={receiver}>
               <span>{receiver}</span>
-              <MdCancel size={20} />
+              <MdCancel
+                size={20}
+                onClick={() => handleDeleteReceiver(receiver)}
+              />
             </li>
           ))}
         </ul>
@@ -151,7 +161,7 @@ const SendMail = () => {
             onChange={handleSelect}
             defaultValue=""
           >
-            <option value="">Select a friend</option>{" "}
+            <option value="">Select a friend</option>
             {contacts?.map((contact) => (
               <option
                 onClick={handleSelect}
@@ -165,16 +175,17 @@ const SendMail = () => {
         </div>
         <div>
           <label htmlFor="subject">Subject</label>
-          <input type="text" id="subject" />
+          <input type="text" id="subject" placeholder="Input email subject" />
         </div>
         <div>
           <label htmlFor="templateList">templates</label>
-          <select name="" id="templateList">
-            <option value="1">ghfhffhfhfhfh</option>
-            <option value="1">ghfhffhfhfhfh</option>
-            <option value="1">ghfhffhfhfhfh</option>
-            <option value="1">ghfhffhfhfhfh</option>
-            <option value="1">ghfhffhfhfhfh</option>
+          <select name="projects" id="templateList">
+            <option value="">Select a template</option>
+            {projects?.map((project) => (
+              <option key={project._id} value={project._id}>
+                {project.title}
+              </option>
+            ))}
           </select>
         </div>
       </Form>
