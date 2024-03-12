@@ -4,10 +4,12 @@ import { FaCaretDown } from "react-icons/fa";
 import Profile from "../components/Profile";
 import React, { useEffect, useRef, useState } from "react";
 import ContainerCard from "../components/Email/ContainerCard";
+import TemplateTitle from "../components/Email/TemplateTitle";
+import useAuthStatus from "../hooks/useAuthStatus";
+import useGetProject from "../hooks/useGetProject";
 
 const Container = styled.div`
     margin: auto;
-
 `;
 
 const Header = styled.header`
@@ -57,9 +59,6 @@ const Content = styled.div`
       & > div {
         display: flex;
       }
-      & > div:last-child > div {
-        padding-bottom: 10px;
-      }
 `;
 
 const Structures = styled.div`
@@ -96,7 +95,7 @@ const StructureList = styled.ul`
   height: 100%;
   background-color: #ecf0f1;
   padding: 20px 30px;
-  gap: 20px;
+  gap: 15px;
 `;
 
 const StructureItem = styled.li`
@@ -124,18 +123,28 @@ const Row = styled.div``;
 const Card = styled.div``;
 
 const CreateTemplate = () => {
+  useAuthStatus();
+  useGetProject();
+
   const [components, setComponents] = useState([]);
   const screenRef = useRef(null);
 
-  const handleDragStart = (e, id) => {
+  useEffect(() => {
+    if (screenRef.current) {
+      screenRef.current.scrollTop = screenRef.current.scrollHeight;
+    }
+  }, [components]);
+
+  const handleDragStart = (e) => {
     const target = e.target;
+    const id = e.target.childNodes.length;
     e.dataTransfer.setData("text/plain", id);
 
     const dragImage = target.cloneNode(true);
     dragImage.style.width = "200px";
     dragImage.style.height = "80px";
     dragImage.style.border = "2px solid #3742fa";
-    dragImage.style.borderRadius = "15px"; // 원하는 스타일 적용
+    dragImage.style.borderRadius = "15px";
     document.body.appendChild(dragImage);
 
     e.dataTransfer.setDragImage(dragImage, target.offsetWidth / 4, 0);
@@ -143,41 +152,25 @@ const CreateTemplate = () => {
     setTimeout(() => document.body.removeChild(dragImage), 0);
   };
 
+  const createContainerCards = (id) => {
+    return Array.from({ length: id }, (_, index) => (
+      <ContainerCard key={index} />
+    ));
+  };
+
   const handleDrop = (e) => {
     e.preventDefault();
     const id = e.dataTransfer.getData("text/plain");
-    const newComponent = (
-      <div key={components.length}>
-        <ContainerCard />
-        {id === "two" && <ContainerCard />}
-        {id === "three" && (
-          <>
-            <ContainerCard />
-            <ContainerCard />
-          </>
-        )}
-        {id === "four" && (
-          <>
-            <ContainerCard />
-            <ContainerCard />
-            <ContainerCard />
-          </>
-        )}
-      </div>
-    );
-
-    setComponents([...components, newComponent]);
+    const newComponents = createContainerCards(id);
+    setComponents((prev) => [
+      ...prev,
+      <div key={prev.length}>{newComponents}</div>,
+    ]);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-
-  useEffect(() => {
-    if (screenRef.current) {
-      screenRef.current.scrollTop = screenRef.current.scrollHeight;
-    }
-  }, [components]);
 
   return (
     <Container>
@@ -187,6 +180,7 @@ const CreateTemplate = () => {
       </Header>
       <Body>
         <Screen ref={screenRef}>
+          <TemplateTitle />
           <Content onDrop={handleDrop} onDragOver={handleDragOver}>
             {components.map((Component, index) => (
               <React.Fragment key={index}>{Component}</React.Fragment>
@@ -202,20 +196,20 @@ const CreateTemplate = () => {
             <StructureList>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, "one")}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, "two")}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, "three")}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>
@@ -223,7 +217,7 @@ const CreateTemplate = () => {
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, "four")}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>

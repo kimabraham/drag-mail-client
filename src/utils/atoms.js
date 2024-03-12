@@ -4,3 +4,8 @@ export const userInfo = atom({
   key: "userInfo",
   default: null,
 });
+
+export const projectInfo = atom({
+  key: "projectInfo",
+  default: null,
+});
