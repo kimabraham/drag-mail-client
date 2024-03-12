@@ -8,8 +8,9 @@ const Container = styled.div`
 `;
 
 const Box = styled.div`
-    padding: 10px 10px 0 10px;
+    width: 100%;
     height: 100%;
+    padding: 10px;
     & > div {
         height: 100%;
         border: 1px dashed #70a1ff;
