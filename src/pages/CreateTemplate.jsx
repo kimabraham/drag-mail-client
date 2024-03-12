@@ -2,8 +2,7 @@ import Logo from "../components/shared/Logo";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
 import Profile from "../components/Profile";
-import React, { useState } from "react";
-import { BsLayoutWtf } from "react-icons/bs";
+import React, { useEffect, useRef, useState } from "react";
 import ContainerCard from "../components/Email/ContainerCard";
 
 const Container = styled.div`
@@ -126,6 +125,7 @@ const Card = styled.div``;
 
 const CreateTemplate = () => {
   const [components, setComponents] = useState([]);
+  const screenRef = useRef(null);
 
   const handleDragStart = (e, id) => {
     const target = e.target;
@@ -173,6 +173,12 @@ const CreateTemplate = () => {
     e.preventDefault();
   };
 
+  useEffect(() => {
+    if (screenRef.current) {
+      screenRef.current.scrollTop = screenRef.current.scrollHeight;
+    }
+  }, [components]);
+
   return (
     <Container>
       <Header>
@@ -180,7 +186,7 @@ const CreateTemplate = () => {
         <Profile position={{ top: 60, left: 10 }} />
       </Header>
       <Body>
-        <Screen>
+        <Screen ref={screenRef}>
           <Content onDrop={handleDrop} onDragOver={handleDragOver}>
             {components.map((Component, index) => (
               <React.Fragment key={index}>{Component}</React.Fragment>
