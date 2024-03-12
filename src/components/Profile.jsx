@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import { userInfo } from "../utils/atoms";
 import useLogout from "../hooks/useLogout";
+import useAuthStatus from "../hooks/useAuthStatus";
 
 const Container = styled.div`
   display: flex;
@@ -84,6 +85,7 @@ const Popup = styled.ul`
 
 const Profile = ({ position: { top, left } }) => {
   const user = useRecoilValue(userInfo);
+  const { isLoading } = useAuthStatus();
   const [showPopup, setShowPopup] = useState(false);
   const handleLogout = useLogout();
 
@@ -92,22 +94,26 @@ const Profile = ({ position: { top, left } }) => {
   };
 
   return (
-    <Container onClick={handlePopup}>
-      <Avatar src={user?.avatarUrl} alt="avatar image" />
-      <div>
-        <span>Account</span>
-        <h6>{user?.name}</h6>
-      </div>
-      {showPopup && (
-        <Popup top={top} left={left}>
-          <li>
-            <Link to="/dashboard/profile">profile</Link>
-          </li>
-          <li>theme</li>
-          <li onClick={handleLogout}>Logout</li>
-        </Popup>
+    <>
+      {!isLoading && (
+        <Container onClick={handlePopup}>
+          <Avatar src={user?.avatarUrl} alt="avatar image" />
+          <div>
+            <span>Account</span>
+            <h6>{user?.name}</h6>
+          </div>
+          {showPopup && (
+            <Popup top={top} left={left}>
+              <li>
+                <Link to="/dashboard/profile">profile</Link>
+              </li>
+              <li>theme</li>
+              <li onClick={handleLogout}>Logout</li>
+            </Popup>
+          )}
+        </Container>
       )}
-    </Container>
+    </>
   );
 };
 
