@@ -1,7 +1,6 @@
-import axios from "axios";
 import { styled } from "styled-components";
 import { FaPlus } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import useProjects from "../../hooks/useProjects";
 
 const Template = styled.div`
   width: 180px;
@@ -28,20 +27,10 @@ const Template = styled.div`
 `;
 
 const NewTemplateCard = () => {
-  const navigate = useNavigate();
+  const { createProject } = useProjects();
 
   const handleCreate = async () => {
-    const res = await axios.post(
-      "/api/projects",
-      {},
-      { withCredentials: true }
-    );
-    const {
-      data: {
-        project: { _id },
-      },
-    } = res;
-    navigate(`/template/${_id}`);
+    createProject.mutate();
   };
 
   return (
