@@ -4,6 +4,7 @@ import { styled } from "styled-components";
 
 import NewTemplateCard from "../components/Template/NewTemplateCard";
 import TemplateCard from "../components/Template/TemplateCard";
+import useProjects from "../hooks/useProjects";
 
 const Container = styled.div`
   width: 80%;
@@ -15,37 +16,16 @@ const Container = styled.div`
 `;
 
 const MyTemplates = () => {
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["get-user-projects"],
-    queryFn: async () => {
-      const res = await axios.get(`/api/users/projects`, {
-        withCredentials: true,
-      });
-      return res.data.projects;
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (projectId) =>
-      axios.delete(`/api/projects/${projectId}`, { withCredentials: true }),
-    onSuccess: (data, variables) => {
-      const projectId = variables;
-      queryClient.setQueryData(["get-user-projects"], (oldProjects) => {
-        return oldProjects.filter((project) => project._id !== projectId);
-      });
-    },
-  });
+  const { projects, deleteProject } = useProjects();
 
   return (
     <Container>
       <NewTemplateCard />
-      {data?.map((template) => (
+      {projects?.map((template) => (
         <TemplateCard
           key={template._id}
           template={template}
-          deleteProject={() => deleteMutation.mutate(template._id)}
+          deleteProject={() => deleteProject.mutate(template._id)}
         />
       ))}
     </Container>
