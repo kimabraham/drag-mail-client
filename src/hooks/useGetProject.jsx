@@ -4,17 +4,19 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { projectInfo } from "../utils/atoms";
 import { useSetRecoilState } from "recoil";
-import Loading from "../components/shared/Loading";
 
 const useGetProject = () => {
   const { id } = useParams();
   const setProjectInfo = useSetRecoilState(projectInfo);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["get-project"],
+    queryKey: ["get-project", id],
     queryFn: async () => {
       const res = await axios.get(`/api/projects/${id}`);
       return res.data.project;
+    },
+    onQueryStarted: () => {
+      setProjectInfo(null);
     },
   });
 
@@ -24,11 +26,7 @@ const useGetProject = () => {
     }
   }, [data, setProjectInfo]);
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  return;
+  return { data, isLoading };
 };
 
 export default useGetProject;

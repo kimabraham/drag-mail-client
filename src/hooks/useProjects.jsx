@@ -29,6 +29,26 @@ const useProjects = () => {
     },
   });
 
+  const updateProject = useMutation({
+    mutationFn: ({ projectId, project }) =>
+      axios.put(
+        `/api/projects/${projectId}`,
+        { project },
+        { withCredentials: true }
+      ),
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
+  const patchProject = useMutation({
+    mutationFn: ({ projectId, project }) =>
+      axios.patch(`/api/projects/${projectId}`, {}, { withCredentials: true }),
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
   const deleteProject = useMutation({
     mutationFn: (projectId) =>
       axios.delete(`/api/projects/${projectId}`, { withCredentials: true }),
@@ -40,7 +60,14 @@ const useProjects = () => {
     },
   });
 
-  return { projects, isLoading, createProject, deleteProject };
+  return {
+    projects,
+    isLoading,
+    createProject,
+    updateProject,
+    patchProject,
+    deleteProject,
+  };
 };
 
 export default useProjects;
