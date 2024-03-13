@@ -6,6 +6,8 @@ import { styled } from "styled-components";
 import { userInfo } from "../utils/atoms";
 import useContact from "../hooks/useContact";
 import useProjects from "../hooks/useProjects";
+import { useLocation } from "react-router-dom";
+import Loading from "../components/shared/Loading";
 
 const Container = styled.div`
   width: 80%;
@@ -105,12 +107,14 @@ const Form = styled.form`
 `;
 
 const SendMail = () => {
-  const [receivers, setReceivers] = useState([]);
+  const user = useRecoilValue(userInfo);
   const { contacts } = useContact();
   const { projects } = useProjects();
-
-  const user = useRecoilValue(userInfo);
-
+  const { state } = useLocation();
+  const [receivers, setReceivers] = useState(
+    state?.isToMe ? [user?.email] : []
+  );
+  const [template, setTemplate] = useState(state?.project);
   const handleSubmit = (e) => {
     e.preventDefault();
   };
@@ -125,6 +129,10 @@ const SendMail = () => {
   const handleDeleteReceiver = (email) => {
     setReceivers(receivers.filter((receiver) => receiver !== email));
   };
+
+  if (!user) {
+    return <Loading />;
+  }
 
   return (
     <Container>
@@ -179,7 +187,12 @@ const SendMail = () => {
         </div>
         <div>
           <label htmlFor="templateList">templates</label>
-          <select name="projects" id="templateList">
+          <select
+            name="projects"
+            id="templateList"
+            value={template}
+            onChange={(e) => setTemplate(e.target.value)}
+          >
             <option value="">Select a template</option>
             {projects?.map((project) => (
               <option key={project._id} value={project._id}>

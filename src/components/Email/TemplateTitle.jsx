@@ -6,6 +6,8 @@ import { MdOutlinePreview } from "react-icons/md";
 import { LuSendHorizonal } from "react-icons/lu";
 import { PiExportBold } from "react-icons/pi";
 import { projectInfo } from "../../utils/atoms";
+import { useNavigate, useParams } from "react-router-dom";
+import useProjects from "../../hooks/useProjects";
 
 const Container = styled.div`
     width: 100%;
@@ -66,14 +68,25 @@ const Button = styled.button`
 
 const TemplateTitle = () => {
   const [project, setProject] = useRecoilState(projectInfo);
+  const { id: projectId } = useParams();
+  const { updateProject } = useProjects();
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    updateProject.mutate({ projectId, project });
   };
 
   const handleTitleChange = (e) => {
     setProject({ ...project, title: e.target.value });
     console.log(project);
+  };
+
+  const handleSend = () => {
+    navigate("/dashboard/send", {
+      state: { project: project._id, isToMe: true },
+    });
   };
 
   return (
@@ -98,7 +111,7 @@ const TemplateTitle = () => {
           <MdOutlinePreview size={25} />
           preview
         </Button>
-        <Button>
+        <Button onClick={handleSend}>
           <LuSendHorizonal size={25} />
           send
         </Button>
