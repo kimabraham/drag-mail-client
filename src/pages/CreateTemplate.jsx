@@ -9,10 +9,15 @@ import { RxButton } from "react-icons/rx";
 import { LuAlignVerticalSpaceAround } from "react-icons/lu";
 import { TfiLayoutMenuSeparated } from "react-icons/tfi";
 
-import ContainerCard from "../components/Email/ContainerCard";
 import TemplateTitle from "../components/Email/TemplateTitle";
 import useAuthStatus from "../hooks/useAuthStatus";
 import useGetProject from "../hooks/useGetProject";
+import Card from "../components/Email/Card";
+import useDraggable from "../hooks/useDraggable";
+import NodeRenderer from "../utils/NodeRender";
+import { projectInfo } from "../utils/atoms";
+import { useRecoilState } from "recoil";
+import Loading from "../components/shared/Loading";
 
 const Container = styled.div`
     margin: auto;
@@ -36,6 +41,7 @@ const Body = styled.div`
 
 const Side = styled.div`
     width: 30%;
+    min-width: 340px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -52,6 +58,7 @@ const Side = styled.div`
 
 const Screen = styled.div`
     width: 70%;
+    min-width: 940px;
     background-color: #f1f2f6;
     overflow-y: auto;
 `;
@@ -142,103 +149,37 @@ const Row = styled.div`
   gap: 20px;
 `;
 
-const Card = styled.div`
-  width: 100%;
-  border: 1px solid #747d8c;
-  border-radius: 10px;
-  cursor: pointer;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #70a1ff;
-  gap:10px;
-  & > span {
-    color: #747d8c;
-    font-size: 15px;
-    font-weight: lighter;
-    letter-spacing: .5px;
-  }
-  font-size: larger;
-  &:hover {
-    border: 1px solid #3742fa;
-    box-shadow: 0 0 0 2px #3742fa;
-  }
-`;
-
 const CreateTemplate = () => {
   useAuthStatus();
-  useGetProject();
+  const { data, isLoading } = useGetProject();
 
-  const [components, setComponents] = useState([]);
   const screenRef = useRef(null);
+  const [project, setProject] = useRecoilState(projectInfo);
 
   useEffect(() => {
     if (screenRef.current) {
       screenRef.current.scrollTop = screenRef.current.scrollHeight;
     }
-  }, [components]);
+  }, [project?.component]);
 
-  console.log(components);
+  const dragStyle = { width: 200, height: 80 };
 
-  const handleContainerDragStart = (e) => {
-    const target = e.target;
-    const id = e.target.childNodes.length;
-    e.dataTransfer.setData("text/plain", id);
-
-    const dragImage = target.cloneNode(true);
-    dragImage.style.width = "200px";
-    dragImage.style.height = "80px";
-    dragImage.style.border = "2px solid #3742fa";
-    dragImage.style.borderRadius = "15px";
-    document.body.appendChild(dragImage);
-
-    e.dataTransfer.setDragImage(dragImage, target.offsetWidth / 4, 0);
-
-    setTimeout(() => document.body.removeChild(dragImage), 0);
-  };
-
-  const handleBlockDragStart = (e) => {
-    const target = e.target;
-    const id = e.target.childNodes.length;
-
-    e.dataTransfer.setData("text/plain", id);
-
-    const dragImage = target.cloneNode(true);
-
-    dragImage.style.width = "100px";
-    dragImage.style.height = "100px";
-    dragImage.style.border = "2px solid #3742fa";
-    dragImage.style.borderRadius = "15px";
-    document.body.appendChild(dragImage);
-
-    e.dataTransfer.setDragImage(dragImage, target.offsetWidth / 2, 0);
-    setTimeout(() => document.body.removeChild(dragImage), 0);
-  };
-
-  const createContainerCards = (id) => {
-    return Array.from({ length: id }, (_, index) => (
-      <ContainerCard key={index} />
-    ));
-  };
+  const { handleDragStart } = useDraggable(dragStyle);
 
   const handleDrop = (e) => {
     e.preventDefault();
+    const nodeString = e.dataTransfer.getData("text/plain");
+    const nodeObject = JSON.parse(nodeString);
 
-    const id = e.dataTransfer.getData("text/plain");
-    const newComponents = createContainerCards(id);
-    setComponents((prev) => [
-      ...prev,
-      <div key={prev.length}>{newComponents}</div>,
-    ]);
+    setProject((prevProject) => ({
+      ...prevProject,
+      component: [...prevProject.component, nodeObject],
+    }));
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-
-  const handleBlockDragEnd = (e) => {};
 
   return (
     <Container>
@@ -250,9 +191,7 @@ const CreateTemplate = () => {
         <Screen ref={screenRef}>
           <TemplateTitle />
           <Content onDrop={handleDrop} onDragOver={handleDragOver}>
-            {components.map((Component, index) => (
-              <React.Fragment key={index}>{Component}</React.Fragment>
-            ))}
+            <NodeRenderer nodes={data?.component || []} />
           </Content>
         </Screen>
         <Side>
@@ -264,20 +203,20 @@ const CreateTemplate = () => {
             <StructureList>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleContainerDragStart(e)}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleContainerDragStart(e)}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleContainerDragStart(e)}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>
@@ -285,7 +224,7 @@ const CreateTemplate = () => {
               </StructureItem>
               <StructureItem
                 draggable="true"
-                onDragStart={(e) => handleContainerDragStart(e)}
+                onDragStart={(e) => handleDragStart(e)}
               >
                 <div></div>
                 <div></div>
@@ -301,65 +240,22 @@ const CreateTemplate = () => {
             </div>
             <div>
               <Row>
+                <Card icon={<PiTextT size={30} />} label="Text" />
+                <Card icon={<PiImage size={30} />} label="Image" />
+                <Card icon={<RxButton size={30} />} label="Button" />
                 <Card
-                  draggable="true"
-                  onDragStart={handleBlockDragStart}
-                  onDragEnd={handleBlockDragEnd}
-                >
-                  <PiTextT size={30} />
-                  <span>Text</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <PiImage size={30} />
-                  <span>Image</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <RxButton size={30} />
-                  <span>Button</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <LuAlignVerticalSpaceAround size={30} />
-                  <span>Space</span>
-                </Card>
+                  icon={<LuAlignVerticalSpaceAround size={30} />}
+                  label="Space"
+                />
               </Row>
               <Row>
+                <Card icon={<PiVideoCamera size={30} />} label="Video" />
+                <Card icon={<FiInstagram size={30} />} label="Social" />
                 <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <PiVideoCamera size={30} />
-                  <span>Video</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <FiInstagram size={30} />
-                  <span>Social</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <TfiLayoutMenuSeparated size={30} />
-                  <span>Menu</span>
-                </Card>
-                <Card
-                  draggable="true"
-                  onDragStart={(e) => handleBlockDragStart(e)}
-                >
-                  <PiTimerBold size={30} />
-                  <span>Timer</span>
-                </Card>
+                  icon={<TfiLayoutMenuSeparated size={30} />}
+                  label="Menu"
+                />
+                <Card icon={<PiTimerBold size={30} />} label="Timer" />
               </Row>
             </div>
           </Blocks>
