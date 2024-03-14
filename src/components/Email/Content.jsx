@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import PropTypes from "prop-types";
 import useDraggable from "../../hooks/useDraggable";
 
 const Table = styled.table`
@@ -20,6 +21,10 @@ const Content = ({ children }) => {
       <tbody>{children}</tbody>
     </Table>
   );
+};
+
+Content.propTypes = {
+  children: PropTypes.node,
 };
 
 export default Content;

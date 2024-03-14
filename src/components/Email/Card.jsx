@@ -1,5 +1,5 @@
-import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 import useDraggable from "../../hooks/useDraggable";
 
@@ -39,6 +39,11 @@ const Card = ({ icon, label }) => {
       <span>{label}</span>
     </StyledCard>
   );
+};
+
+Card.propTypes = {
+  icon: PropTypes.element.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 export default Card;

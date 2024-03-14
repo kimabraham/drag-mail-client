@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import ContentTable from "../components/Email/ContentTable";
 
 const renderNode = (node) => {
@@ -38,6 +39,31 @@ const NodeRenderer = ({ nodes }) => {
     : renderNode(nodes);
 
   return <>{content}</>;
+};
+
+NodeRenderer.propTypes = {
+  nodes: PropTypes.oneOfType([
+    PropTypes.shape({
+      nodeId: PropTypes.string.isRequired,
+      tag: PropTypes.string.isRequired,
+      className: PropTypes.string,
+      props: PropTypes.object,
+      style: PropTypes.object,
+      children: PropTypes.array,
+      inner: PropTypes.string,
+    }),
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        nodeId: PropTypes.string.isRequired,
+        tag: PropTypes.string.isRequired,
+        className: PropTypes.string,
+        props: PropTypes.object,
+        style: PropTypes.object,
+        children: PropTypes.array,
+        inner: PropTypes.string,
+      })
+    ),
+  ]).isRequired,
 };
 
 export default NodeRenderer;
