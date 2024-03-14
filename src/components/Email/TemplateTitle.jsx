@@ -1,13 +1,14 @@
 import { styled } from "styled-components";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { IoIosSave } from "react-icons/io";
 import { IoCodeSlashSharp } from "react-icons/io5";
 import { MdOutlinePreview } from "react-icons/md";
 import { LuSendHorizonal } from "react-icons/lu";
 import { PiExportBold } from "react-icons/pi";
+
 import { projectInfo } from "../../utils/atoms";
-import { useNavigate, useParams } from "react-router-dom";
-import useProjects from "../../hooks/useProjects";
+import useProject from "../../hooks/useProject";
 
 const Container = styled.div`
     width: 100%;
@@ -69,7 +70,7 @@ const Button = styled.button`
 const TemplateTitle = () => {
   const [project, setProject] = useRecoilState(projectInfo);
   const { id: projectId } = useParams();
-  const { updateProject } = useProjects();
+  const { updateProject } = useProject();
 
   const navigate = useNavigate();
 
@@ -80,7 +81,6 @@ const TemplateTitle = () => {
 
   const handleTitleChange = (e) => {
     setProject({ ...project, title: e.target.value });
-    console.log(project);
   };
 
   const handleSend = () => {
@@ -96,7 +96,7 @@ const TemplateTitle = () => {
         <input
           type="text"
           id="templateName"
-          value={project?.title || ""}
+          value={project.title}
           onChange={handleTitleChange}
         />
         <Button type="submit">
