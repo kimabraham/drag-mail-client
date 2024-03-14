@@ -2,6 +2,7 @@ import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { PiSignIn } from "react-icons/pi";
+
 import Logo from "../components/shared/Logo";
 
 const Container = styled.div`

@@ -3,8 +3,8 @@ import { styled } from "styled-components";
 import { TbTemplate } from "react-icons/tb";
 import { useRecoilValue } from "recoil";
 
-import homeImage from "../assets/imgs/home_image.png";
 import Button from "../components/shared/Button";
+import homeImage from "../assets/imgs/home_image.png";
 import { userInfo } from "../utils/atoms";
 import useAuthStatus from "../hooks/useAuthStatus.jsx";
 

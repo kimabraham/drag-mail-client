@@ -1,7 +1,8 @@
 import { useRecoilState } from "recoil";
-import { userInfo } from "../utils/atoms";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+
+import { userInfo } from "../utils/atoms";
 
 const url = "/api/auth/success";
 

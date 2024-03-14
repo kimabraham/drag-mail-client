@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { MdCancel } from "react-icons/md";
 import { styled } from "styled-components";
+import { useLocation } from "react-router-dom";
 
+import Loading from "../components/shared/Loading";
 import { userInfo } from "../utils/atoms";
 import useContact from "../hooks/useContact";
 import useProjects from "../hooks/useProjects";
-import { useLocation } from "react-router-dom";
-import Loading from "../components/shared/Loading";
 
 const Container = styled.div`
   width: 80%;

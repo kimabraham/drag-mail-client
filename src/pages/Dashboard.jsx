@@ -1,8 +1,9 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { styled } from "styled-components";
+
 import Logo from "../components/shared/Logo";
-import useAuthStatus from "../hooks/useAuthStatus";
 import Profile from "../components/Profile";
+import useAuthStatus from "../hooks/useAuthStatus";
 
 const Container = styled.div`
   width: 100%;
