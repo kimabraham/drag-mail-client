@@ -1,32 +1,43 @@
-import React from "react";
-import { BsLayoutWtf } from "react-icons/bs";
-
-const iconMapping = {
-  BsLayoutWtf: BsLayoutWtf,
-};
+import ContentTable from "../components/Email/ContentTable";
 
 const renderNode = (node) => {
-  const Component = iconMapping[node.tag] || node.tag;
+  const { nodeId, tag, className, props, style, children, inner } = node;
 
-  const props = {
-    key: node.id,
-    id: node.id,
-    className: node.className,
-    size: node.style.size,
-    style: node.style,
-  };
+  if (tag === "content-table") {
+    return <ContentTable key={nodeId} />;
+  }
 
-  const children = node.inner
-    ? node.inner
-    : node.children && node.children.length > 0
-    ? node.children.map((child) => renderNode(child))
-    : null;
+  const TagName = tag;
 
-  return React.createElement(Component, props, children);
+  const contentProps = inner
+    ? { dangerouslySetInnerHTML: { __html: inner } }
+    : {};
+
+  const childElements =
+    children && children.length > 0
+      ? children.map((child) => renderNode(child))
+      : null;
+
+  return (
+    <TagName
+      key={nodeId}
+      id={nodeId}
+      className={className}
+      style={style}
+      {...props}
+      {...contentProps}
+    >
+      {childElements}
+    </TagName>
+  );
 };
 
 const NodeRenderer = ({ nodes }) => {
-  return <>{nodes.map((node) => renderNode(node))}</>;
+  const content = Array.isArray(nodes)
+    ? nodes.map((node) => renderNode(node))
+    : renderNode(nodes);
+
+  return <>{content}</>;
 };
 
 export default NodeRenderer;
