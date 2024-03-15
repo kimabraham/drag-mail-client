@@ -4,6 +4,7 @@ import { FiInstagram } from "react-icons/fi";
 import { RxButton } from "react-icons/rx";
 import { LuAlignVerticalSpaceAround } from "react-icons/lu";
 import { TfiLayoutMenuSeparated } from "react-icons/tfi";
+import PropTypes from "prop-types";
 
 import Card from "./Card";
 

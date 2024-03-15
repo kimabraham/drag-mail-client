@@ -66,6 +66,7 @@ export const adjustChildren = (count) => {
                             style: {
                               width: "100%",
                               height: "100%",
+                              tableLayout: "fixed",
                             },
                             children: [
                               {
@@ -108,4 +109,64 @@ export const adjustChildren = (count) => {
   };
 
   return defaultRow;
+};
+
+export const adjustBlock = () => {
+  const blockTag = {
+    nodeId: uuidv4(),
+    tag: "table",
+    className: "content-text-table",
+    style: {
+      width: "100%",
+      height: "100%",
+    },
+    children: [
+      {
+        nodeId: uuidv4(),
+        tag: "tbody",
+        className: "content-text-tbody",
+        style: {
+          width: "100%",
+          height: "100%",
+        },
+        children: [
+          {
+            nodeId: uuidv4(),
+            tag: "tr",
+            className: "content-text-row",
+            style: {
+              width: "100%",
+              height: "100%",
+            },
+            children: [
+              {
+                nodeId: uuidv4(),
+                tag: "td",
+                className: "content-text-col",
+                style: {
+                  width: "100%",
+                  height: "100%",
+                },
+                children: [
+                  {
+                    nodeId: uuidv4(),
+                    tag: "p",
+                    className: "content-text-text",
+                    style: {
+                      width: "100%",
+                      height: "100%",
+                    },
+                    inner: "Text",
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  return blockTag;
 };

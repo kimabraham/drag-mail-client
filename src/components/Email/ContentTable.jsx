@@ -1,9 +1,6 @@
 import { LuLayoutPanelLeft } from "react-icons/lu";
-import useDraggable from "../../hooks/useDraggable";
 
 const ContentTable = () => {
-  const { handleDrop, handleDragOver } = useDraggable();
-
   return (
     <table
       className="content-default-table"
@@ -13,8 +10,6 @@ const ContentTable = () => {
         borderCollapse: "collapse",
         border: "1px dashed #70a1ff",
       }}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
     >
       <tbody className="content-default-tbody">
         <tr className="content-default-row" style={{ height: "100%" }}>

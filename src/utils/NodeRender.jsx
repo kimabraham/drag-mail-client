@@ -12,15 +12,13 @@ const Row = styled.table`
   cursor: pointer;
 `;
 
-const NodeRenderer = ({ nodes, selectedRowId, onSelectRow }) => {
+const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
   const renderNode = (node) => {
     const { nodeId, tag, className, props, style, children, inner } = node;
 
     if (className === "content-default-table") {
       return <ContentTable key={nodeId} {...props} />;
     }
-
-    console.log(className, nodeId, selectedRowId);
 
     const TagName =
       className === "container-table"
@@ -29,9 +27,12 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow }) => {
           : Row
         : tag;
 
-    const handleClick = () => {
-      if (className.includes("container-table")) {
-        onSelectRow(nodeId);
+    const handleClick = (e) => {
+      if (className.includes("content-col")) {
+        const containerId = e.target.closest(".container-table").id;
+        onSelectRow(containerId);
+      } else {
+        onSelectBlock(e);
       }
     };
 
@@ -39,19 +40,32 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow }) => {
       ? { dangerouslySetInnerHTML: { __html: inner } }
       : {};
 
-    return (
-      <TagName
-        key={nodeId}
-        id={nodeId}
-        className={className}
-        style={style}
-        onClick={handleClick}
-        {...props}
-        {...contentProps}
-      >
-        {children && children.map((child) => renderNode(child))}
-      </TagName>
-    );
+    if (inner) {
+      return (
+        <TagName
+          key={nodeId}
+          id={nodeId}
+          className={className}
+          style={style}
+          onClick={handleClick}
+          {...props}
+          dangerouslySetInnerHTML={{ __html: inner }}
+        />
+      );
+    } else {
+      return (
+        <TagName
+          key={nodeId}
+          id={nodeId}
+          className={className}
+          style={style}
+          onClick={handleClick}
+          {...props}
+        >
+          {children && children.map((child) => renderNode(child))}
+        </TagName>
+      );
+    }
   };
 
   return <>{nodes.map((node) => renderNode(node))}</>;

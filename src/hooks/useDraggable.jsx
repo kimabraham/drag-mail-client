@@ -1,43 +1,36 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { adjustChildren } from "../utils/nodeUtils";
-import { projectInfo } from "../utils/atoms";
+import { projectDrag, projectInfo } from "../utils/atoms";
 import useProject from "./useProject";
+import {
+  CONTAINER_CARD_HEIGHT,
+  CONTAINER_CARD_WIDTH,
+} from "../constants/constants";
 
 const useDraggable = (dragStyle) => {
   const [project, setProject] = useRecoilState(projectInfo);
+  const [isDrag, setProjectDrag] = useRecoilState(projectDrag);
   const { patchProject } = useProject();
 
   const handleDragStart = useCallback(
     (e) => {
-      const cardClassName = e.target.className.toLowerCase();
-      const isContent = cardClassName.includes("card");
-      const isTextCard = cardClassName.includes("text");
-      if (isContent) {
-        if (isTextCard) {
-          console.log("text");
-        } else {
-          console.log("image");
-        }
-      }
-
-      const { width, height } = dragStyle;
+      setProjectDrag(true);
       const id = e.target.childNodes.length;
-      console.log(id);
       const nodeString = JSON.stringify(adjustChildren(id));
       e.dataTransfer.setData("text/plain", nodeString);
 
       const dragImage = e.target.cloneNode(true);
 
-      dragImage.style.width = `${width}px`;
-      dragImage.style.height = `${height}px`;
+      dragImage.style.width = `${CONTAINER_CARD_WIDTH}px`;
+      dragImage.style.height = `${CONTAINER_CARD_HEIGHT}px`;
       dragImage.style.border = "2px solid #3742fa";
       dragImage.style.borderRadius = "15px";
 
       document.body.appendChild(dragImage);
 
-      e.dataTransfer.setDragImage(dragImage, width / 2, 0);
+      e.dataTransfer.setDragImage(dragImage, CONTAINER_CARD_WIDTH / 2, 0);
 
       setTimeout(() => document.body.removeChild(dragImage), 0);
     },
@@ -52,56 +45,97 @@ const useDraggable = (dragStyle) => {
   }, []);
 
   const handleDrop = (e) => {
-    e.preventDefault();
-    let newIndex;
-
-    const nodeString = e.dataTransfer.getData("text/plain");
-    const nodeObject = JSON.parse(nodeString);
-
-    if (!project.component.length) {
-      newIndex = 0;
-      setProject((prev) => ({ ...prev, component: [nodeObject] }));
-    } else {
-      const containerRow = e.target.closest(".container-row");
-      const rect = containerRow.getBoundingClientRect();
-      const relativeY = e.clientY - rect.top;
-      const findIndex = project.component.findIndex(
-        (row) => row.nodeId === containerRow.id
-      );
-
-      if (relativeY < 50) {
-        newIndex = findIndex;
-      } else {
-        newIndex = findIndex + 1;
-      }
-
+    if (!isDrag) {
+      e.preventDefault();
+      const nodeString = e.dataTransfer.getData("text/plain");
+      const nodeObject = JSON.parse(nodeString);
+      const containerRowId = e.target.closest(".container-row").id;
+      const contentColId = e.target.closest(".content-col").id;
       setProject((prev) => {
-        const newComponents = [...prev.component];
+        const newProject = JSON.parse(JSON.stringify(prev));
 
-        newComponents.splice(newIndex, 0, nodeObject);
-
-        setTimeout(() => {
-          const addedElement = document.querySelector(`#${nodeObject.id}`);
-          if (addedElement) {
-            addedElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
+        newProject.component.forEach((row) => {
+          if (row.nodeId === containerRowId) {
+            row.children.forEach((col) => {
+              col.children.forEach((table) => {
+                table.children.forEach((tbody) => {
+                  tbody.children.forEach((tr) => {
+                    tr.children.forEach((td) => {
+                      td.children.forEach((table) => {
+                        table.children.forEach((tbody) => {
+                          tbody.children.forEach((tr) => {
+                            tr.children.forEach((td) => {
+                              console.log(td);
+                              console.log(nodeObject);
+                              if (td.nodeId === contentColId) {
+                                td.children = [nodeObject];
+                              }
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
             });
           }
-        }, 0);
+        });
 
-        return {
-          ...prev,
-          component: newComponents,
-        };
+        return newProject; // 수정된 프로젝트 반환
+      });
+    } else {
+      let newIndex;
+
+      const nodeString = e.dataTransfer.getData("text/plain");
+      const nodeObject = JSON.parse(nodeString);
+
+      if (!project.component.length) {
+        newIndex = 0;
+        setProject((prev) => ({ ...prev, component: [nodeObject] }));
+      } else {
+        const containerRow = e.target.closest(".container-row");
+        const rect = containerRow.getBoundingClientRect();
+        const relativeY = e.clientY - rect.top;
+        console.log(project.component);
+        const findIndex = project.component.findIndex(
+          (row) => row.nodeId === containerRow.id
+        );
+
+        if (relativeY < 50) {
+          newIndex = findIndex;
+        } else {
+          newIndex = findIndex + 1;
+        }
+
+        setProject((prev) => {
+          const newComponents = [...prev.component];
+
+          newComponents.splice(newIndex, 0, nodeObject);
+
+          setTimeout(() => {
+            const addedElement = document.querySelector(`#${nodeObject.id}`);
+            if (addedElement) {
+              addedElement.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+          }, 0);
+
+          return {
+            ...prev,
+            component: newComponents,
+          };
+        });
+      }
+
+      patchProject.mutate({ projectId: project._id, nodeObject, newIndex });
+
+      document.querySelectorAll(".container-row").forEach((el) => {
+        el.style.boxShadow = "";
       });
     }
-
-    patchProject.mutate({ projectId: project._id, nodeObject, newIndex });
-
-    document.querySelectorAll(".container-row").forEach((el) => {
-      el.style.boxShadow = "";
-    });
   };
 
   const handleDragOver = (e) => {

@@ -34,9 +34,7 @@ const Item = styled.li`
 `;
 
 const StructureList = ({ rowId, onSetId }) => {
-  const dragStyle = { width: 200, height: 80 };
-
-  const { handleDragStart } = useDraggable(dragStyle);
+  const { handleDragStart } = useDraggable();
 
   const createStructureItem = (count) => (
     <Item key={count} draggable="true" onDragStart={handleDragStart}>

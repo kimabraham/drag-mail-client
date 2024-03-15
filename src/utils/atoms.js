@@ -9,3 +9,8 @@ export const projectInfo = atom({
   key: "projectInfo",
   default: null,
 });
+
+export const projectDrag = atom({
+  key: "projectDrag",
+  default: true,
+});

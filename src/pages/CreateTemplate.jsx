@@ -86,9 +86,15 @@ const CreateTemplate = () => {
   const project = useRecoilValue(projectInfo);
 
   const [selectedRowId, setSelectedRowId] = useState(null);
-
+  const [selectedContentId, setSelectedContentId] = useState(null);
+  console.log("block", selectedContentId);
   const handleSelectRow = (id) => {
     setSelectedRowId(id);
+  };
+
+  const handleSelectBlock = (e) => {
+    e.stopPropagation();
+    console.log(e.target);
   };
 
   return (
@@ -109,6 +115,7 @@ const CreateTemplate = () => {
                   nodes={project.component || []}
                   selectedRowId={selectedRowId}
                   onSelectRow={handleSelectRow}
+                  onSelectBlock={handleSelectBlock}
                 />
               </Content>
             </>

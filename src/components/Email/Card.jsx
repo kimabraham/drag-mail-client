@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-
-import useDraggable from "../../hooks/useDraggable";
+import { BLOCK_CARD_HEIGHT, BLOCK_CARD_WIDTH } from "../../constants/constants";
+import { useSetRecoilState } from "recoil";
+import { projectDrag } from "../../utils/atoms";
+import { adjustBlock } from "../../utils/nodeUtils";
 
 const StyledCard = styled.div`
   width: 100%;
@@ -29,9 +31,33 @@ const StyledCard = styled.div`
 `;
 
 const Card = ({ icon, label }) => {
-  const dragStyle = { width: 100, height: 100 };
+  const setProjectDrag = useSetRecoilState(projectDrag);
 
-  const { handleDragStart } = useDraggable(dragStyle);
+  const handleDragStart = (e) => {
+    setProjectDrag(false);
+
+    // const nodeString = JSON.stringify(adjustChildren(id));
+    const nodeString = JSON.stringify(adjustBlock());
+    e.dataTransfer.setData("text/plain", nodeString);
+
+    const dragImage = e.target.cloneNode(true);
+
+    dragImage.style.width = `${BLOCK_CARD_WIDTH}px`;
+    dragImage.style.height = `${BLOCK_CARD_HEIGHT}px`;
+    dragImage.style.border = "2px solid #3742fa";
+    dragImage.style.borderRadius = "15px";
+
+    document.body.appendChild(dragImage);
+
+    const cardClassList = e.target.classList;
+    const cardType = cardClassList[cardClassList.length - 1]
+      .split("-")[0]
+      .toLowerCase();
+
+    e.dataTransfer.setDragImage(dragImage, BLOCK_CARD_WIDTH / 2, 0);
+
+    setTimeout(() => document.body.removeChild(dragImage), 0);
+  };
 
   return (
     <StyledCard
