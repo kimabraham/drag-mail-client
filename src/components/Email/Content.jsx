@@ -11,6 +11,12 @@ const Table = styled.table`
   & > tbody {
     height: 100%;
   }
+  & .container-row {
+    &:hover{
+      cursor: pointer;
+      box-shadow: 0 0 0 2px #7f8c8d;
+    }
+  }
 `;
 
 const Content = ({ children }) => {

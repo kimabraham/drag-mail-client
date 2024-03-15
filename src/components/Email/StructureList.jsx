@@ -1,5 +1,7 @@
+import PropTypes from "prop-types";
 import { styled } from "styled-components";
 import useDraggable from "../../hooks/useDraggable";
+import DetailContainer from "./Container/DetailContainer";
 
 const List = styled.ul`
   display: flex;
@@ -31,7 +33,7 @@ const Item = styled.li`
   }
 `;
 
-const StructureList = () => {
+const StructureList = ({ rowId, onSetId }) => {
   const dragStyle = { width: 200, height: 80 };
 
   const { handleDragStart } = useDraggable(dragStyle);
@@ -46,11 +48,18 @@ const StructureList = () => {
 
   return (
     <List>
-      {Array(4)
-        .fill()
-        .map((_, index) => createStructureItem(index + 1))}
+      {rowId ? (
+        <DetailContainer id={rowId} setId={onSetId} />
+      ) : (
+        Array(4)
+          .fill()
+          .map((_, index) => createStructureItem(index + 1))
+      )}
     </List>
   );
 };
 
+StructureList.propTypes = {
+  rowId: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]),
+};
 export default StructureList;

@@ -1,20 +1,25 @@
 import { LuLayoutPanelLeft } from "react-icons/lu";
+import useDraggable from "../../hooks/useDraggable";
 
 const ContentTable = () => {
+  const { handleDrop, handleDragOver } = useDraggable();
+
   return (
     <table
-      className="content-table"
+      className="content-default-table"
       style={{
         width: "100%",
         height: "100%",
         borderCollapse: "collapse",
         border: "1px dashed #70a1ff",
       }}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
     >
-      <tbody className="content-tbody">
-        <tr className="content-row" style={{ height: "100%" }}>
+      <tbody className="content-default-tbody">
+        <tr className="content-default-row" style={{ height: "100%" }}>
           <td
-            className="content-col"
+            className="content-default-col"
             style={{
               textAlign: "center",
               verticalAlign: "middle",
@@ -24,9 +29,9 @@ const ContentTable = () => {
             <LuLayoutPanelLeft size={30} style={{ color: "#70a1ff" }} />
           </td>
         </tr>
-        <tr className="content-row" style={{ height: "100%" }}>
+        <tr className="content-default-row" style={{ height: "100%" }}>
           <td
-            className="content-col"
+            className="content-default-col"
             style={{
               textAlign: "center",
               verticalAlign: "middle",
@@ -34,7 +39,7 @@ const ContentTable = () => {
             }}
           >
             <span
-              className="content-text"
+              className="content-default-text"
               style={{ color: "#70a1ff", fontSize: "14px", height: "100%" }}
             >
               Your content here

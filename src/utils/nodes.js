@@ -4,7 +4,7 @@ export const defaultColNode = () => {
   return {
     nodeId: uuidv4(),
     tag: "td",
-    className: "container-inner-col",
+    className: "content-col",
     style: {
       height: "100%",
       padding: "10px",
@@ -12,8 +12,8 @@ export const defaultColNode = () => {
     children: [
       {
         nodeId: uuidv4(),
-        tag: "content-table",
-        className: "content-table",
+        tag: "table",
+        className: "content-default-table",
         style: {
           width: "100%",
           height: "100%",

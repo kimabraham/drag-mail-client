@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
 import { useRecoilValue } from "recoil";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Profile from "../components/Profile";
 import Logo from "../components/shared/Logo";
@@ -71,6 +72,9 @@ const Structures = styled.div`
       padding: 5px 15px;
       border-bottom: 1px solid;
     }
+    & .back-icon {
+      cursor: pointer;
+    }
 `;
 
 const Blocks = styled(Structures)``;
@@ -80,6 +84,12 @@ const CreateTemplate = () => {
   const { isLoading } = useProject();
   const screenRef = useRef(null);
   const project = useRecoilValue(projectInfo);
+
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
+  const handleSelectRow = (id) => {
+    setSelectedRowId(id);
+  };
 
   return (
     <Container>
@@ -95,7 +105,11 @@ const CreateTemplate = () => {
             <>
               <TemplateTitle />
               <Content>
-                <NodeRenderer nodes={project.component || []} />
+                <NodeRenderer
+                  nodes={project.component || []}
+                  selectedRowId={selectedRowId}
+                  onSelectRow={handleSelectRow}
+                />
               </Content>
             </>
           )}
@@ -103,10 +117,19 @@ const CreateTemplate = () => {
         <Side>
           <Structures>
             <div>
-              <FaCaretDown size={30} />
+              {selectedRowId ? (
+                <IoMdArrowRoundBack
+                  className="back-icon"
+                  size={30}
+                  onClick={() => setSelectedRowId(null)}
+                />
+              ) : (
+                <FaCaretDown size={30} />
+              )}
+
               <h5>Structures</h5>
             </div>
-            <StructureList />
+            <StructureList rowId={selectedRowId} onSetId={setSelectedRowId} />
           </Structures>
           <Blocks>
             <div>
