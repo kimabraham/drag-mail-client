@@ -4,6 +4,7 @@ import { userInfo } from "../utils/atoms";
 import { useState } from "react";
 import useLogout from "../hooks/useLogout";
 import useAuthStatus from "../hooks/useAuthStatus";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -73,7 +74,7 @@ const Popup = styled.ul`
       color: white;
     }
   }
-  & > li:nth-child(2), & > li:last-child {
+  & > li:last-child {
     padding: 15px 20px;
     letter-spacing: .5px;
     font-size: large;
@@ -104,7 +105,9 @@ const Profile = ({ position: { top, bottom, left, right } }) => {
               <li>
                 <Link to="/dashboard/profile">profile</Link>
               </li>
-              <li>theme</li>
+              <li>
+                <Link to="/dashboard/templates">templates</Link>
+              </li>
               <li onClick={handleLogout}>Logout</li>
             </Popup>
           )}
