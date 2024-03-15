@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { userInfo } from "../utils/atoms";
 import useLogout from "../hooks/useLogout";
 import useAuthStatus from "../hooks/useAuthStatus";
-import { Link } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
