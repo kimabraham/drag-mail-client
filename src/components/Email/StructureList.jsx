@@ -61,5 +61,7 @@ const StructureList = ({ rowId, onSetId }) => {
 
 StructureList.propTypes = {
   rowId: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]),
+  onSetId: PropTypes.func.isRequired,
 };
+
 export default StructureList;

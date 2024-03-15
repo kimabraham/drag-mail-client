@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { projectInfo } from "../../../utils/atoms";
@@ -216,6 +217,11 @@ const DetailContainer = ({ id, setId }) => {
       </div>
     </Container>
   );
+};
+
+DetailContainer.propTypes = {
+  id: PropTypes.string.isRequired,
+  setId: PropTypes.func.isRequired,
 };
 
 export default DetailContainer;
