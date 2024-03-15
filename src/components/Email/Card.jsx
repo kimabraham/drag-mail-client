@@ -34,7 +34,11 @@ const Card = ({ icon, label }) => {
   const { handleDragStart } = useDraggable(dragStyle);
 
   return (
-    <StyledCard draggable="true" onDragStart={handleDragStart}>
+    <StyledCard
+      className={`${label}-card`}
+      draggable="true"
+      onDragStart={handleDragStart}
+    >
       {icon}
       <span>{label}</span>
     </StyledCard>

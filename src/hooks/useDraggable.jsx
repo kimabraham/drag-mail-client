@@ -11,8 +11,20 @@ const useDraggable = (dragStyle) => {
 
   const handleDragStart = useCallback(
     (e) => {
+      const cardClassName = e.target.className.toLowerCase();
+      const isContent = cardClassName.includes("card");
+      const isTextCard = cardClassName.includes("text");
+      if (isContent) {
+        if (isTextCard) {
+          console.log("text");
+        } else {
+          console.log("image");
+        }
+      }
+
       const { width, height } = dragStyle;
       const id = e.target.childNodes.length;
+      console.log(id);
       const nodeString = JSON.stringify(adjustChildren(id));
       e.dataTransfer.setData("text/plain", nodeString);
 
