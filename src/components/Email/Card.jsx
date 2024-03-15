@@ -36,8 +36,12 @@ const Card = ({ icon, label }) => {
   const handleDragStart = (e) => {
     setProjectDrag(false);
 
-    // const nodeString = JSON.stringify(adjustChildren(id));
-    const nodeString = JSON.stringify(adjustBlock());
+    const cardClassList = e.target.classList;
+    const cardType = cardClassList[cardClassList.length - 1]
+      .split("-")[0]
+      .toLowerCase();
+
+    const nodeString = JSON.stringify(adjustBlock(cardType));
     e.dataTransfer.setData("text/plain", nodeString);
 
     const dragImage = e.target.cloneNode(true);
@@ -48,11 +52,6 @@ const Card = ({ icon, label }) => {
     dragImage.style.borderRadius = "15px";
 
     document.body.appendChild(dragImage);
-
-    const cardClassList = e.target.classList;
-    const cardType = cardClassList[cardClassList.length - 1]
-      .split("-")[0]
-      .toLowerCase();
 
     e.dataTransfer.setDragImage(dragImage, BLOCK_CARD_WIDTH / 2, 0);
 

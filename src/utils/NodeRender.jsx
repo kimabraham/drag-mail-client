@@ -36,10 +36,6 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
       }
     };
 
-    const contentProps = inner
-      ? { dangerouslySetInnerHTML: { __html: inner } }
-      : {};
-
     if (inner) {
       return (
         <TagName
@@ -85,6 +81,7 @@ NodeRenderer.propTypes = {
   ).isRequired,
   selectedRowId: PropTypes.string,
   onSelectRow: PropTypes.func.isRequired,
+  onSelectBlock: PropTypes.func.isRequired,
 };
 
 export default NodeRenderer;

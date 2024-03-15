@@ -1,8 +1,6 @@
 import { styled } from "styled-components";
 import PropTypes from "prop-types";
 import useDraggable from "../../hooks/useDraggable";
-import { useRecoilValue } from "recoil";
-import { projectDrag } from "../../utils/atoms";
 
 const Table = styled.table`
   width: 600px;
@@ -30,7 +28,6 @@ const Table = styled.table`
 
 const Content = ({ children }) => {
   const { handleDrop, handleDragOver } = useDraggable();
-  const isDrag = useRecoilValue(projectDrag);
 
   return (
     <Table onDrop={handleDrop} onDragOver={handleDragOver}>

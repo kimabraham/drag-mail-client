@@ -28,7 +28,7 @@ const useProject = () => {
         { project },
         { withCredentials: true }
       ),
-    onSuccess: (data) => {},
+    onSuccess: () => {},
   });
 
   const patchProject = useMutation({
@@ -38,7 +38,7 @@ const useProject = () => {
         { projectId, nodeObject, newIndex },
         { withCredentials: true }
       ),
-    onSuccess: (data) => {
+    onSuccess: () => {
       // queryClient.setQueryData(["get-project", id], (prev) => {
       //   return [...prev, result.data.contact];
       // });

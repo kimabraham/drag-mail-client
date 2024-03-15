@@ -87,7 +87,7 @@ const CreateTemplate = () => {
 
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [selectedContentId, setSelectedContentId] = useState(null);
-  console.log("block", selectedContentId);
+
   const handleSelectRow = (id) => {
     setSelectedRowId(id);
   };
@@ -143,7 +143,10 @@ const CreateTemplate = () => {
               <FaCaretDown size={30} />
               <h5>Blocks</h5>
             </div>
-            <BlockList />
+            <BlockList
+              blockId={selectedContentId}
+              onSetBlock={setSelectedContentId}
+            />
           </Blocks>
         </Side>
       </Body>

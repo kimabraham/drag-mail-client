@@ -111,7 +111,7 @@ export const adjustChildren = (count) => {
   return defaultRow;
 };
 
-export const adjustBlock = () => {
+export const adjustBlock = (type) => {
   const blockTag = {
     nodeId: uuidv4(),
     tag: "table",
@@ -148,17 +148,29 @@ export const adjustBlock = () => {
                   height: "100%",
                 },
                 children: [
-                  {
-                    nodeId: uuidv4(),
-                    tag: "p",
-                    className: "content-text-text",
-                    style: {
-                      width: "100%",
-                      height: "100%",
-                    },
-                    inner: "Text",
-                    children: [],
-                  },
+                  type === "text"
+                    ? {
+                        nodeId: uuidv4(),
+                        tag: "p",
+                        className: "content-text-text",
+                        style: {
+                          width: "100%",
+                          height: "100%",
+                        },
+                        inner: "Text",
+                        children: [],
+                      }
+                    : {
+                        nodeId: uuidv4(),
+                        tag: "p",
+                        className: "content-text-text",
+                        style: {
+                          width: "100%",
+                          height: "100%",
+                        },
+                        inner: "Text",
+                        children: [],
+                      },
                 ],
               },
             ],

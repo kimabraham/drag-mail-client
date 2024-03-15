@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 
 import { adjustChildren } from "../utils/nodeUtils";
 import { projectDrag, projectInfo } from "../utils/atoms";
@@ -9,7 +9,7 @@ import {
   CONTAINER_CARD_WIDTH,
 } from "../constants/constants";
 
-const useDraggable = (dragStyle) => {
+const useDraggable = () => {
   const [project, setProject] = useRecoilState(projectInfo);
   const [isDrag, setProjectDrag] = useRecoilState(projectDrag);
   const { patchProject } = useProject();
@@ -34,7 +34,7 @@ const useDraggable = (dragStyle) => {
 
       setTimeout(() => document.body.removeChild(dragImage), 0);
     },
-    [dragStyle]
+    [setProjectDrag]
   );
 
   const handleDragEnd = useCallback((e) => {
