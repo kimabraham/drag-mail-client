@@ -94,7 +94,6 @@ const CreateTemplate = () => {
 
   const handleSelectBlock = (e) => {
     e.stopPropagation();
-    console.log(e.target);
   };
 
   return (

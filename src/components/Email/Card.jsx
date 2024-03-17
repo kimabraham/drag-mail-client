@@ -35,12 +35,12 @@ const Card = ({ icon, label }) => {
 
   const handleDragStart = (e) => {
     setProjectDrag(false);
-
     const cardClassList = e.target.classList;
     const cardType = cardClassList[cardClassList.length - 1]
       .split("-")[0]
       .toLowerCase();
 
+    console.log(cardType);
     const nodeString = JSON.stringify(adjustBlock(cardType));
     e.dataTransfer.setData("text/plain", nodeString);
 

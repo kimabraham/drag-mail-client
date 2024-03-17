@@ -9,6 +9,7 @@ import { PiExportBold } from "react-icons/pi";
 
 import { projectInfo } from "../../utils/atoms";
 import useProject from "../../hooks/useProject";
+import { useState } from "react";
 
 const Container = styled.div`
     width: 100%;
@@ -49,6 +50,7 @@ const Container = styled.div`
 const Button = styled.button`
     text-transform: uppercase;
     padding: 0 20px;
+    position: relative;
     font-size: 18px;
     height: 30px;
     cursor: pointer;
@@ -67,8 +69,27 @@ const Button = styled.button`
     }
 `;
 
+const Alert = styled.div`
+  width: 200px;
+  height: 50px;
+  position: absolute;
+  top: 35px;
+  right: 0;
+  z-index: 20;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  font-size: 14px;
+`;
+
 const TemplateTitle = () => {
   const [project, setProject] = useRecoilState(projectInfo);
+  const [isCopied, setIsCopied] = useState(false);
+
   const { id: projectId } = useParams();
   const { updateProject } = useProject();
 
@@ -86,6 +107,23 @@ const TemplateTitle = () => {
   const handleSend = () => {
     navigate("/dashboard/send", {
       state: { project: project._id, isToMe: true },
+    });
+  };
+
+  const handleExport = () => {
+    const table = document.querySelector(".email-template-table");
+    const containerRows = document.querySelectorAll(".container-row");
+    table.style.width = "600px";
+
+    containerRows.forEach((row) => {
+      row.style.boxShadow = "none";
+    });
+
+    const tableHtmlWithTableTag = table.outerHTML;
+
+    navigator.clipboard.writeText(tableHtmlWithTableTag).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
     });
   };
 
@@ -115,9 +153,10 @@ const TemplateTitle = () => {
           <LuSendHorizonal size={25} />
           send
         </Button>
-        <Button>
+        <Button onClick={handleExport}>
           <PiExportBold size={25} />
           export
+          {isCopied && <Alert>Copied to clipboard!</Alert>}
         </Button>
       </div>
     </Container>

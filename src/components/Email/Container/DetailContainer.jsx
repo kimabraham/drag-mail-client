@@ -4,6 +4,9 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { projectInfo } from "../../../utils/atoms";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
+import useProject from "../../../hooks/useProject";
+import { useParams } from "react-router-dom";
+import { PATCH_PROJECT_TYPES } from "../../../constants/constants";
 
 const Container = styled.div`
   padding: 20px 0;
@@ -51,7 +54,9 @@ const Container = styled.div`
 
 const DetailContainer = ({ id, setId }) => {
   const project = useRecoilValue(projectInfo);
+  const { id: projectId } = useParams();
   const setProject = useSetRecoilState(projectInfo);
+  const { patchProject } = useProject();
 
   const [property, setProperty] = useState({
     bgColor: "",
@@ -138,8 +143,6 @@ const DetailContainer = ({ id, setId }) => {
 
       return { ...prev, component: updatedComponents };
     });
-
-    console.log(project.component);
   };
 
   const handleRadiusChange = (e) => {
@@ -164,13 +167,27 @@ const DetailContainer = ({ id, setId }) => {
   };
 
   const handleDelete = () => {
+    const rowIndex = project.component.findIndex(
+      (row) => row.children[0].children[0].nodeId === id
+    );
+    const nodeObject = project.component[rowIndex];
+
     setProject((prev) => ({
       ...prev,
       component: prev.component.filter(
         (row) => row.children[0].children[0].nodeId !== id
       ),
     }));
+
     setId(null);
+
+    patchProject.mutate({
+      projectId,
+      nodeObject,
+      rowIndex,
+      colIndex: null,
+      type: PATCH_PROJECT_TYPES.REMOVE_ROW,
+    });
   };
 
   return (

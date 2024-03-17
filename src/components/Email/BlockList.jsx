@@ -30,13 +30,11 @@ const BlockList = () => {
         <Card icon={<PiTextT size={30} />} label="Text" />
         <Card icon={<PiImage size={30} />} label="Image" />
         <Card icon={<RxButton size={30} />} label="Button" />
-        <Card icon={<LuAlignVerticalSpaceAround size={30} />} label="Space" />
       </Row>
       <Row>
+        <Card icon={<LuAlignVerticalSpaceAround size={30} />} label="Space" />
         <Card icon={<PiVideoCamera size={30} />} label="Video" />
         <Card icon={<FiInstagram size={30} />} label="Social" />
-        <Card icon={<TfiLayoutMenuSeparated size={30} />} label="Menu" />
-        <Card icon={<PiTimerBold size={30} />} label="Timer" />
       </Row>
     </Container>
   );

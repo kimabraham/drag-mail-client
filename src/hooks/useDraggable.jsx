@@ -7,6 +7,7 @@ import useProject from "./useProject";
 import {
   CONTAINER_CARD_HEIGHT,
   CONTAINER_CARD_WIDTH,
+  PATCH_PROJECT_TYPES,
 } from "../constants/constants";
 
 const useDraggable = () => {
@@ -47,10 +48,17 @@ const useDraggable = () => {
   const handleDrop = (e) => {
     if (!isDrag) {
       e.preventDefault();
+
+      let colIndex;
       const nodeString = e.dataTransfer.getData("text/plain");
       const nodeObject = JSON.parse(nodeString);
       const containerRowId = e.target.closest(".container-row").id;
       const contentColId = e.target.closest(".content-col").id;
+
+      const rowIndex = project.component.findIndex(
+        (row) => row.nodeId === containerRowId
+      );
+
       setProject((prev) => {
         const newProject = JSON.parse(JSON.stringify(prev));
 
@@ -64,9 +72,11 @@ const useDraggable = () => {
                       td.children.forEach((table) => {
                         table.children.forEach((tbody) => {
                           tbody.children.forEach((tr) => {
+                            colIndex = tr.children.findIndex(
+                              (col) => col.nodeId === contentColId
+                            );
+
                             tr.children.forEach((td) => {
-                              console.log(td);
-                              console.log(nodeObject);
                               if (td.nodeId === contentColId) {
                                 td.children = [nodeObject];
                               }
@@ -82,36 +92,44 @@ const useDraggable = () => {
           }
         });
 
-        return newProject; // 수정된 프로젝트 반환
+        return newProject;
+      });
+
+      patchProject.mutate({
+        projectId: project._id,
+        nodeObject,
+        rowIndex,
+        colIndex,
+        type: PATCH_PROJECT_TYPES.ADD_BLOCK,
       });
     } else {
-      let newIndex;
+      let rowIndex;
 
       const nodeString = e.dataTransfer.getData("text/plain");
       const nodeObject = JSON.parse(nodeString);
+      const containerRow = e.target.closest(".container-row");
 
       if (!project.component.length) {
-        newIndex = 0;
+        rowIndex = 0;
         setProject((prev) => ({ ...prev, component: [nodeObject] }));
       } else {
-        const containerRow = e.target.closest(".container-row");
         const rect = containerRow.getBoundingClientRect();
-        const relativeY = e.clientY - rect.top;
-        console.log(project.component);
+        const mid = rect.top + rect.height / 2;
+
         const findIndex = project.component.findIndex(
           (row) => row.nodeId === containerRow.id
         );
 
-        if (relativeY < 50) {
-          newIndex = findIndex;
+        if (e.clientY < mid) {
+          rowIndex = findIndex;
         } else {
-          newIndex = findIndex + 1;
+          rowIndex = findIndex + 1;
         }
 
         setProject((prev) => {
           const newComponents = [...prev.component];
 
-          newComponents.splice(newIndex, 0, nodeObject);
+          newComponents.splice(rowIndex, 0, nodeObject);
 
           setTimeout(() => {
             const addedElement = document.querySelector(`#${nodeObject.id}`);
@@ -130,7 +148,13 @@ const useDraggable = () => {
         });
       }
 
-      patchProject.mutate({ projectId: project._id, nodeObject, newIndex });
+      patchProject.mutate({
+        projectId: project._id,
+        nodeObject,
+        rowIndex,
+        colIndex: null,
+        type: PATCH_PROJECT_TYPES.ADD_ROW,
+      });
 
       document.querySelectorAll(".container-row").forEach((el) => {
         el.style.boxShadow = "";

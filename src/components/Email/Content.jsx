@@ -5,8 +5,8 @@ import useDraggable from "../../hooks/useDraggable";
 const Table = styled.table`
   width: 600px;
   margin: 100px auto;
-  min-height: 100px;
   background-color: white;
+  min-height: 100px;
   border: 1px solid;
   & > tbody {
     height: 100%;
@@ -18,7 +18,7 @@ const Table = styled.table`
       box-shadow: 0 0 0 2px #7f8c8d;
     }
   }
-  & .content-text-table{
+  & .content-text-table, .content-image-table, .content-button-table, .content-space-table, .content-social-table, .content-video-table{
     z-index: 10;
     &:hover{
       border: 1px solid red;
@@ -30,7 +30,11 @@ const Content = ({ children }) => {
   const { handleDrop, handleDragOver } = useDraggable();
 
   return (
-    <Table onDrop={handleDrop} onDragOver={handleDragOver}>
+    <Table
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      className="email-template-table"
+    >
       <tbody>{children}</tbody>
     </Table>
   );

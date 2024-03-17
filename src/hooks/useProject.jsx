@@ -32,13 +32,14 @@ const useProject = () => {
   });
 
   const patchProject = useMutation({
-    mutationFn: ({ projectId, nodeObject, newIndex }) =>
+    mutationFn: ({ projectId, nodeObject, rowIndex, colIndex, type }) =>
       axios.patch(
         `/api/projects/${projectId}`,
-        { projectId, nodeObject, newIndex },
+        { projectId, nodeObject, rowIndex, colIndex, type },
         { withCredentials: true }
       ),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data);
       // queryClient.setQueryData(["get-project", id], (prev) => {
       //   return [...prev, result.data.contact];
       // });
