@@ -6,9 +6,8 @@ import { PiExportBold } from "react-icons/pi";
 import { useEffect, useState } from "react";
 import useProject from "../hooks/useProject";
 import Loading from "../components/shared/Loading";
-import Content from "../components/Email/Content";
 import NodeRenderer from "../utils/NodeRender";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { projectInfo } from "../utils/atoms";
 import { Link, useNavigate } from "react-router-dom";
 

@@ -1,9 +1,8 @@
 import { styled } from "styled-components";
-import { PiTextT, PiImage, PiVideoCamera, PiTimerBold } from "react-icons/pi";
+import { PiTextT, PiImage, PiVideoCamera } from "react-icons/pi";
 import { FiInstagram } from "react-icons/fi";
 import { RxButton } from "react-icons/rx";
 import { LuAlignVerticalSpaceAround } from "react-icons/lu";
-import { TfiLayoutMenuSeparated } from "react-icons/tfi";
 
 import Card from "./Card";
 

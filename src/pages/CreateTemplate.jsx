@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Profile from "../components/Profile";
@@ -16,7 +16,6 @@ import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
 import { projectInfo } from "../utils/atoms";
 import Loading from "../components/shared/Loading";
-import { useParams } from "react-router-dom";
 
 const Container = styled.div`
     margin: auto;

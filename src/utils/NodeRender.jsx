@@ -1,5 +1,6 @@
-import ContentTable from "../components/Email/ContentTable";
 import { styled } from "styled-components";
+import PropTypes from "prop-types";
+import ContentTable from "../components/Email/ContentTable";
 
 const SelectedRow = styled.table`
   background-color: #ecf0f1;
@@ -93,6 +94,23 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
   };
 
   return <>{nodes.map((node) => renderNode(node))}</>;
+};
+
+NodeRenderer.propTypes = {
+  nodes: PropTypes.arrayOf(
+    PropTypes.shape({
+      nodeId: PropTypes.string.isRequired,
+      tag: PropTypes.string.isRequired,
+      className: PropTypes.string,
+      props: PropTypes.object,
+      style: PropTypes.object,
+      children: PropTypes.array,
+      inner: PropTypes.string,
+    })
+  ).isRequired,
+  selectedRowId: PropTypes.string,
+  onSelectRow: PropTypes.func.isRequired,
+  onSelectBlock: PropTypes.func.isRequired,
 };
 
 export default NodeRenderer;
