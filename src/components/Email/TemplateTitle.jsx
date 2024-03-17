@@ -109,6 +109,9 @@ const TemplateTitle = () => {
       state: { project: project._id, isToMe: true },
     });
   };
+  const handlePreview = () => {
+    navigate(`/preview/${project._id}`);
+  };
 
   const handleExport = () => {
     const table = document.querySelector(".email-template-table");
@@ -145,7 +148,7 @@ const TemplateTitle = () => {
         <Button>
           <IoCodeSlashSharp size={25} />
         </Button>
-        <Button>
+        <Button onClick={handlePreview}>
           <MdOutlinePreview size={25} />
           preview
         </Button>

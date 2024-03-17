@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import ContentTable from "../components/Email/ContentTable";
 import { styled } from "styled-components";
 

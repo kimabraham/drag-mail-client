@@ -25,7 +25,6 @@ export const adjustChildren = (count) => {
             className: "container-table",
             style: {
               width: "100%",
-              minHeight: "100px",
               height: "100%",
               borderCollapse: "collapse",
               padding: "inherit",

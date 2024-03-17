@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Profile from "../components/Profile";
@@ -16,6 +16,7 @@ import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
 import { projectInfo } from "../utils/atoms";
 import Loading from "../components/shared/Loading";
+import { useParams } from "react-router-dom";
 
 const Container = styled.div`
     margin: auto;
@@ -81,10 +82,16 @@ const Blocks = styled(Structures)``;
 
 const CreateTemplate = () => {
   useAuthStatus();
-  const { isLoading } = useProject();
-  const screenRef = useRef(null);
-  const project = useRecoilValue(projectInfo);
+  const { project: data, isLoading } = useProject();
+  const [project, setProject] = useRecoilState(projectInfo);
 
+  useEffect(() => {
+    if (data) {
+      setProject(data);
+    }
+  }, [data, setProject]);
+
+  const screenRef = useRef(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [selectedContentId, setSelectedContentId] = useState(null);
 
@@ -96,6 +103,12 @@ const CreateTemplate = () => {
     e.stopPropagation();
   };
 
+  if (isLoading || !project) {
+    return <Loading />;
+  }
+
+  const nodes = project?.component ?? [];
+
   return (
     <Container>
       <header>
@@ -104,21 +117,15 @@ const CreateTemplate = () => {
       </header>
       <Body>
         <Screen ref={screenRef}>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <>
-              <TemplateTitle />
-              <Content>
-                <NodeRenderer
-                  nodes={project.component || []}
-                  selectedRowId={selectedRowId}
-                  onSelectRow={handleSelectRow}
-                  onSelectBlock={handleSelectBlock}
-                />
-              </Content>
-            </>
-          )}
+          <TemplateTitle />
+          <Content>
+            <NodeRenderer
+              nodes={nodes}
+              selectedRowId={selectedRowId}
+              onSelectRow={handleSelectRow}
+              onSelectBlock={handleSelectBlock}
+            />
+          </Content>
         </Screen>
         <Side>
           <Structures>

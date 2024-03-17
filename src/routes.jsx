@@ -18,12 +18,12 @@ const routes = [
     children: [
       { path: "/", element: <Home /> },
       { path: "/demo", element: <Demo /> },
-      { path: "/preview", element: <Preview /> },
     ],
   },
   { path: "/signin", element: <SignIn /> },
   { path: "/signup", element: <SignUp /> },
   { path: "/template/:id", element: <CreateTemplate /> },
+  { path: "/preview/:id", element: <Preview /> },
   {
     path: "/dashboard",
     element: <Dashboard />,

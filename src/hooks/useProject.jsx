@@ -13,12 +13,13 @@ const useProject = () => {
     queryKey: ["get-project", id],
     queryFn: async () => {
       const res = await axios.get(`/api/projects/${id}`);
-      setProjectInfo(res.data.project);
       return res.data.project;
     },
     onQueryStarted: () => {
       setProjectInfo(null);
     },
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 
   const updateProject = useMutation({
