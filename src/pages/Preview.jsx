@@ -10,7 +10,7 @@ import Content from "../components/Email/Content";
 import NodeRenderer from "../utils/NodeRender";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo } from "../utils/atoms";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     margin: auto;
@@ -22,7 +22,24 @@ const Container = styled.div`
       justify-content: space-between;
       align-items: center;
       padding: 0px 50px;
+      & div:first-child{
+        display: flex;
+        align-items: center;
+        & > a{
+          text-transform: uppercase;
+          text-decoration: none;
+          color: black;
+          font-size: large;
+          letter-spacing: .5px;
+          margin-right: 20px;
+          &:hover{
+            color: #70a1ff;
+            font-weight: bold;
+          }
+        }
+      }
       & > div {
+        align-items: center;
         width: 100%;
       }
       & h5 {
@@ -136,6 +153,7 @@ const Preview = () => {
       <header>
         <div>
           <Logo size="50px" />
+          <Link onClick={() => navigate(-1)}>back</Link>
         </div>
         <div>
           <h5>{project.title}</h5>
