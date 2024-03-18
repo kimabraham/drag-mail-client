@@ -9,10 +9,12 @@ import { useParams } from "react-router-dom";
 import { PATCH_PROJECT_TYPES } from "../../../constants/constants";
 
 const Container = styled.div`
-  padding: 20px 0;
+  height: 100%;
+  padding: 10px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  justify-content: center;
+  gap: 10px;
   & svg {
     color: #3498db;
     cursor: pointer;
@@ -26,13 +28,14 @@ const Container = styled.div`
     margin-bottom: 20px;
   }
   & > div {
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px;
     & label {
       width: 50%;
-      font-size: 18px;
+      font-size: 16px;
       text-transform: uppercase;
       letter-spacing: .5px;
       &::after {

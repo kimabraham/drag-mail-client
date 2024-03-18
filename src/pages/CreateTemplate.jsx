@@ -138,7 +138,6 @@ const CreateTemplate = () => {
               ) : (
                 <FaCaretDown size={30} />
               )}
-
               <h5>Structures</h5>
             </div>
             <StructureList rowId={selectedRowId} onSetId={setSelectedRowId} />

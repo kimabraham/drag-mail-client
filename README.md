@@ -1,8 +1,61 @@
-# React + Vite
+# **PeakMail**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## **프로젝트 소개**
 
-Currently, two official plugins are available:
+PeakMail은 사용자가 HTML 태그를 마우스 드래그 앤 드롭으로 쉽게 이메일 템플릿을 만들 수 있는 웹 기반 편집기입니다. MERN(MongoDB, Express.js, React, Node.js) 스택을 사용하여 개발되었습니다. 사용자 친화적인 인터페이스와 직관적인 디자인으로 누구나 손쉽게 멋진 이메일 템플릿을 제작할 수 있습니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## **주요 기능**
+
+- **드래그 앤 드롭 인터페이스:** HTML 태그를 쉽게 선택하고 편집할 수 있는 사용자 친화적인 인터페이스 제공
+- **실시간 미리보기:** 템플릿 수정 사항을 실시간으로 확인할 수 있는 미리보기 기능
+- **저장 및 내보내기:** 작업한 이메일 템플릿을 저장하고 HTML 파일로 내보낼 수 있는 기능
+- **템플릿 공유:** 사용자 간에 템플릿을 공유할 수 있는 기능
+
+## **시작하기**
+
+이 섹션은 PeakMail을 로컬 개발 환경에서 설치하고 실행하는 방법에 대해 설명합니다.
+
+### **사전 요구 사항**
+
+- Node.js
+- MongoDB
+- npm 또는 yarn
+
+### **설치 방법**
+
+1. 리포지토리를 클론합니다.
+
+```bash
+git clone https://github.com/yourusername/PeakMail.git
+cd PeakMail
+```
+
+1. 필요한 npm 패키지를 설치합니다.
+
+```bash
+npm install
+```
+
+1. 개발 서버를 실행합니다.
+
+```bash
+npm start
+```
+
+브라우저에서 **`http://localhost:5173`**으로 접속하면 PeakMail을 사용할 수 있습니다.
+
+## **사용 방법**
+
+사용자가 PeakMail을 사용하여 이메일 템플릿을 생성하는 방법에 대한 단계별 가이드를 제공합니다. 스크린샷이나 비디오 링크를 포함시키는 것이 좋습니다.
+
+## 챌린지
+
+1. HTML Node → DB
+
+## **기여하기**
+
+PeakMail은 오픈 소스 프로젝트로, 커뮤니티의 기여를 환영합니다. 기여 방법에 대한 자세한 내용은 **`CONTRIBUTING.md`**를 참조하세요.
+
+## **라이선스**
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.

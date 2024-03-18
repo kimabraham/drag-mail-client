@@ -39,8 +39,7 @@ const useProject = () => {
         { projectId, nodeObject, rowIndex, colIndex, type },
         { withCredentials: true }
       ),
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
       // queryClient.setQueryData(["get-project", id], (prev) => {
       //   return [...prev, result.data.contact];
       // });

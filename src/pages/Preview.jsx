@@ -115,6 +115,10 @@ const Preview = () => {
   useEffect(() => {
     if (data) {
       setProject(data);
+      const containerTables = document.querySelectorAll(".container-table");
+      containerTables.forEach((table) => {
+        table.style.minHeight = "0px";
+      });
     }
   }, [data, setProject]);
 
@@ -126,8 +130,13 @@ const Preview = () => {
 
   const handleExport = () => {
     const table = document.querySelector(".email-template-table");
+    const containerTables = document.querySelectorAll(".container-table");
     const containerRows = document.querySelectorAll(".container-row");
     table.style.width = "600px";
+
+    containerTables.forEach((table) => {
+      table.style.minHeight = "0px";
+    });
 
     containerRows.forEach((row) => {
       row.style.boxShadow = "none";

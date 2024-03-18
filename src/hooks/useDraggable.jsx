@@ -54,6 +54,9 @@ const useDraggable = () => {
       const nodeObject = JSON.parse(nodeString);
       const containerRowId = e.target.closest(".container-row").id;
       const contentColId = e.target.closest(".content-col").id;
+      const containerTable = e.target.closest(".container-table");
+
+      containerTable.style.minHeight = "0px";
 
       const rowIndex = project.component.findIndex(
         (row) => row.nodeId === containerRowId

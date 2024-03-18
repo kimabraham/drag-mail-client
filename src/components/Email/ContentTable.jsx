@@ -9,6 +9,7 @@ const ContentTable = () => {
         height: "100%",
         borderCollapse: "collapse",
         border: "1px dashed #70a1ff",
+        minHeight: "80px",
       }}
     >
       <tbody className="content-default-tbody">

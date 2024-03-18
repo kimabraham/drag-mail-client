@@ -1,12 +1,14 @@
 import { styled } from "styled-components";
 import PropTypes from "prop-types";
 import useDraggable from "../../hooks/useDraggable";
+import { useRecoilValue } from "recoil";
+import { projectInfo } from "../../utils/atoms";
 
 const Table = styled.table`
   width: 600px;
   margin: 100px auto;
   background-color: white;
-  min-height: 100px;
+  min-height: ${(props) => props.height || "100px"};
   border: 1px solid;
   & > tbody {
     height: 100%;
@@ -27,13 +29,16 @@ const Table = styled.table`
 `;
 
 const Content = ({ children }) => {
+  const project = useRecoilValue(projectInfo);
   const { handleDrop, handleDragOver } = useDraggable();
+  const height = project.component.length ? "0" : "100px";
 
   return (
     <Table
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       className="email-template-table"
+      height={height}
     >
       <tbody>{children}</tbody>
     </Table>

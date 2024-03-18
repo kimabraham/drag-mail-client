@@ -40,7 +40,6 @@ const Card = ({ icon, label }) => {
       .split("-")[0]
       .toLowerCase();
 
-    console.log(cardType);
     const nodeString = JSON.stringify(adjustBlock(cardType));
     e.dataTransfer.setData("text/plain", nodeString);
 

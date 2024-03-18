@@ -45,15 +45,17 @@ const StructureList = ({ rowId, onSetId }) => {
   );
 
   return (
-    <List>
+    <>
       {rowId ? (
         <DetailContainer id={rowId} setId={onSetId} />
       ) : (
-        Array(4)
-          .fill()
-          .map((_, index) => createStructureItem(index + 1))
+        <List>
+          {Array(4)
+            .fill()
+            .map((_, index) => createStructureItem(index + 1))}
+        </List>
       )}
-    </List>
+    </>
   );
 };
 
