@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { FaCaretDown } from "react-icons/fa";
-import { useRecoilState } from "recoil";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Profile from "../components/Profile";
@@ -11,11 +10,12 @@ import StructureList from "../components/Email/StructureList";
 import BlockList from "../components/Email/BlockList";
 
 import Content from "../components/Email/Content";
-import useProject from "../hooks/useProject";
 import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
-import { projectInfo } from "../utils/atoms";
-import Loading from "../components/shared/Loading";
+import StructureTitle from "../components/Email/StructureTitle";
+import BlockTitle from "../components/Email/BlockTitle";
+import { useSetRecoilState } from "recoil";
+import { selectBlockId, selectRowId } from "../utils/atoms";
 
 const Container = styled.div`
     margin: auto;
@@ -81,32 +81,17 @@ const Blocks = styled(Structures)``;
 
 const CreateTemplate = () => {
   useAuthStatus();
-  const { project: data, isLoading } = useProject();
-  const [project, setProject] = useRecoilState(projectInfo);
+  const setSelectedRowId = useSetRecoilState(selectRowId);
+  const setSelectedBlockId = useSetRecoilState(selectBlockId);
+
+  console.log("create template rendering");
 
   useEffect(() => {
-    if (data) {
-      setProject(data);
-    }
-  }, [data, setProject]);
-
-  const screenRef = useRef(null);
-  const [selectedRowId, setSelectedRowId] = useState(null);
-  const [selectedContentId, setSelectedContentId] = useState(null);
-
-  const handleSelectRow = (id) => {
-    setSelectedRowId(id);
-  };
-
-  const handleSelectBlock = (e) => {
-    e.stopPropagation();
-  };
-
-  if (isLoading || !project) {
-    return <Loading />;
-  }
-
-  const nodes = project?.component ?? [];
+    return () => {
+      setSelectedRowId(null);
+      setSelectedBlockId(null);
+    };
+  }, []);
 
   return (
     <Container>
@@ -115,42 +100,20 @@ const CreateTemplate = () => {
         <Profile position={{ top: 60, left: 10 }} />
       </header>
       <Body>
-        <Screen ref={screenRef}>
+        <Screen>
           <TemplateTitle />
           <Content>
-            <NodeRenderer
-              nodes={nodes}
-              selectedRowId={selectedRowId}
-              onSelectRow={handleSelectRow}
-              onSelectBlock={handleSelectBlock}
-            />
+            <NodeRenderer />
           </Content>
         </Screen>
         <Side>
           <Structures>
-            <div>
-              {selectedRowId ? (
-                <IoMdArrowRoundBack
-                  className="back-icon"
-                  size={30}
-                  onClick={() => setSelectedRowId(null)}
-                />
-              ) : (
-                <FaCaretDown size={30} />
-              )}
-              <h5>Structures</h5>
-            </div>
-            <StructureList rowId={selectedRowId} onSetId={setSelectedRowId} />
+            <StructureTitle />
+            <StructureList />
           </Structures>
           <Blocks>
-            <div>
-              <FaCaretDown size={30} />
-              <h5>Blocks</h5>
-            </div>
-            <BlockList
-              blockId={selectedContentId}
-              onSetBlock={setSelectedContentId}
-            />
+            <BlockTitle />
+            <BlockList />
           </Blocks>
         </Side>
       </Body>

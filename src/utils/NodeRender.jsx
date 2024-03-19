@@ -1,18 +1,18 @@
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { styled } from "styled-components";
-import PropTypes from "prop-types";
-import ContentTable from "../components/Email/ContentTable";
 
-const SelectedRow = styled.table`
-  background-color: #ecf0f1;
-  box-shadow: 0 0 1px 2px #95a5a6;
-  min-height: 0px;
-`;
+import ContentTable from "../components/Email/ContentTable";
+import { projectInfo, selectBlockId, selectRowId } from "./atoms";
 
 const Row = styled.table`
   min-height: 0px;
 `;
 
-const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
+const NodeRenderer = () => {
+  const project = useRecoilValue(projectInfo);
+  const setSelectedRowId = useSetRecoilState(selectRowId);
+  const setSelectedBlockId = useSetRecoilState(selectBlockId);
+
   const renderNode = (node) => {
     const { nodeId, tag, className, props, style, children, inner } = node;
 
@@ -20,24 +20,34 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
       return <ContentTable key={nodeId} {...props} />;
     }
 
-    const TagName =
-      className === "container-table"
-        ? selectedRowId === nodeId
-          ? SelectedRow
-          : Row
-        : tag;
+    const TagName = className === "container-table" ? Row : tag;
 
     const handleClick = (e) => {
+      e.stopPropagation();
       if (
         className.includes("container-inner-row") ||
         className.includes("container-inner-col") ||
         className.includes("content-row") ||
         className.includes("content-col")
       ) {
+        const containerRow = e.target.closest(".container-row").id;
+        const containerCol = e.target.closest(".container-col").id;
         const containerId = e.target.closest(".container-table").id;
-        onSelectRow(containerId);
+        setSelectedRowId({
+          row: containerRow,
+          col: containerCol,
+          target: containerId,
+        });
       } else {
-        onSelectBlock(e);
+        const containerRowId = e.target.closest(".container-row").id;
+        const contentColId = e.target.closest(".content-col").id;
+        const blockId = e.target.closest("td").id;
+        setSelectedBlockId({
+          row: containerRowId,
+          col: contentColId,
+          td: blockId,
+          target: e.target.id,
+        });
       }
     };
 
@@ -93,24 +103,7 @@ const NodeRenderer = ({ nodes, selectedRowId, onSelectRow, onSelectBlock }) => {
     }
   };
 
-  return <>{nodes.map((node) => renderNode(node))}</>;
-};
-
-NodeRenderer.propTypes = {
-  nodes: PropTypes.arrayOf(
-    PropTypes.shape({
-      nodeId: PropTypes.string.isRequired,
-      tag: PropTypes.string.isRequired,
-      className: PropTypes.string,
-      props: PropTypes.object,
-      style: PropTypes.object,
-      children: PropTypes.array,
-      inner: PropTypes.string,
-    })
-  ).isRequired,
-  selectedRowId: PropTypes.string,
-  onSelectRow: PropTypes.func.isRequired,
-  onSelectBlock: PropTypes.func.isRequired,
+  return <>{(project?.component ?? []).map((node) => renderNode(node))}</>;
 };
 
 export default NodeRenderer;

@@ -2,6 +2,8 @@ import PropTypes from "prop-types";
 import { styled } from "styled-components";
 import useDraggable from "../../hooks/useDraggable";
 import DetailContainer from "./Container/DetailContainer";
+import { selectRowId } from "../../utils/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const List = styled.ul`
   display: flex;
@@ -33,8 +35,9 @@ const Item = styled.li`
   }
 `;
 
-const StructureList = ({ rowId, onSetId }) => {
+const StructureList = () => {
   const { handleDragStart } = useDraggable();
+  const rowId = useRecoilValue(selectRowId);
 
   const createStructureItem = (count) => (
     <Item key={count} draggable="true" onDragStart={handleDragStart}>
@@ -47,7 +50,7 @@ const StructureList = ({ rowId, onSetId }) => {
   return (
     <>
       {rowId ? (
-        <DetailContainer id={rowId} setId={onSetId} />
+        <DetailContainer />
       ) : (
         <List>
           {Array(4)
@@ -57,11 +60,6 @@ const StructureList = ({ rowId, onSetId }) => {
       )}
     </>
   );
-};
-
-StructureList.propTypes = {
-  rowId: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]),
-  onSetId: PropTypes.func.isRequired,
 };
 
 export default StructureList;

@@ -119,6 +119,7 @@ export const tagDataByType = (type) => {
         style: {
           width: "100%",
           height: "100%",
+          wordBreak: "break-word",
         },
         inner: "Text",
         children: [],
@@ -133,7 +134,7 @@ export const tagDataByType = (type) => {
           height: "100%",
         },
         props: {
-          src: "https://health.chosun.com/site/data/img_dir/2023/07/17/2023071701753_0.jpg",
+          src: "https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-img-file-document-icon-png-image_892886.jpg",
           alt: "cat_img",
         },
         children: [],
@@ -307,4 +308,71 @@ export const adjustBlock = (type) => {
   };
 
   return blockTag;
+};
+
+export const insertIntoNodeObject = (
+  target,
+  className,
+  colIndex,
+  nodeObject
+) => {
+  if (!target || !target.children) {
+    return false;
+  }
+
+  for (const child of target.children) {
+    if (child.className === className) {
+      if (child.children && child.children.length > colIndex) {
+        child.children[colIndex].children.splice(0, 1, nodeObject);
+        return true;
+      }
+      return false;
+    }
+
+    const inserted = insertIntoNodeObject(
+      child,
+      className,
+      colIndex,
+      nodeObject
+    );
+
+    if (inserted) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const findNodeById = (node, targetNodeId) => {
+  if (node.nodeId === targetNodeId) {
+    return node;
+  }
+
+  if (node.children) {
+    for (let child of node.children) {
+      const found = findNodeById(child, targetNodeId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
+export const updateComponentStyle = (components, nodeId, updateFn) => {
+  return components.map((comp) => {
+    if (comp.nodeId === nodeId) {
+      return updateFn(comp);
+    } else if (comp.children) {
+      const updatedChildren = updateComponentStyle(
+        comp.children,
+        nodeId,
+        updateFn
+      );
+      return { ...comp, children: updatedChildren };
+    }
+    return comp;
+  });
 };

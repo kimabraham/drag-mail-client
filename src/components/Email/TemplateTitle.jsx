@@ -109,6 +109,7 @@ const TemplateTitle = () => {
       state: { project: project._id, isToMe: true },
     });
   };
+
   const handlePreview = () => {
     navigate(`/preview/${project._id}`);
   };
@@ -137,7 +138,7 @@ const TemplateTitle = () => {
         <input
           type="text"
           id="templateName"
-          value={project.title}
+          value={project?.title || ""}
           onChange={handleTitleChange}
         />
         <Button type="submit">

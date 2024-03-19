@@ -31,7 +31,7 @@ const Table = styled.table`
 const Content = ({ children }) => {
   const project = useRecoilValue(projectInfo);
   const { handleDrop, handleDragOver } = useDraggable();
-  const height = project.component.length ? "0" : "100px";
+  const height = project?.component?.length ? "0" : "100px";
 
   return (
     <Table

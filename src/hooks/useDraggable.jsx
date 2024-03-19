@@ -78,7 +78,6 @@ const useDraggable = () => {
                             colIndex = tr.children.findIndex(
                               (col) => col.nodeId === contentColId
                             );
-
                             tr.children.forEach((td) => {
                               if (td.nodeId === contentColId) {
                                 td.children = [nodeObject];
@@ -133,16 +132,6 @@ const useDraggable = () => {
           const newComponents = [...prev.component];
 
           newComponents.splice(rowIndex, 0, nodeObject);
-
-          setTimeout(() => {
-            const addedElement = document.querySelector(`#${nodeObject.id}`);
-            if (addedElement) {
-              addedElement.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            }
-          }, 0);
 
           return {
             ...prev,

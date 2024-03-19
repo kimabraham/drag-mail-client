@@ -1,12 +1,14 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { projectInfo } from "../../../utils/atoms";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { projectInfo, selectRowId } from "../../../utils/atoms";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
 import useProject from "../../../hooks/useProject";
 import { useParams } from "react-router-dom";
 import { PATCH_PROJECT_TYPES } from "../../../constants/constants";
+import useNode from "../../../hooks/useNode";
+import { findNodeById } from "../../../utils/nodeUtils";
 
 const Container = styled.div`
   height: 100%;
@@ -55,18 +57,36 @@ const Container = styled.div`
   }
 `;
 
-const DetailContainer = ({ id, setId }) => {
-  const project = useRecoilValue(projectInfo);
+const DetailContainer = () => {
+  const { updateNode } = useNode();
   const { id: projectId } = useParams();
-  const setProject = useSetRecoilState(projectInfo);
+  const [project, setProject] = useRecoilState(projectInfo);
+  const [id, setId] = useRecoilState(selectRowId);
   const { patchProject } = useProject();
 
   const [property, setProperty] = useState({
-    bgColor: "",
+    bgColor: "#ffffff",
     bgImg: "",
     padding: "",
     radius: "",
   });
+
+  useEffect(() => {
+    const row = project.component.find((row) => row.nodeId === id.row);
+    const col = findNodeById(row, id.col);
+    const target = findNodeById(col, id.target);
+
+    if (row) {
+      setProperty({
+        bgColor: target.style.backgroundColor || "#ffffff",
+        bgImg: target.style.backgroundImage
+          ? target.style.backgroundImage.match(/url\("([^"]+)"\)/)[1]
+          : "",
+        padding: parseInt(target.style.padding) || "",
+        radius: parseInt(target.style.borderRadius) || "",
+      });
+    }
+  }, [id]);
 
   const updateComponentStyle = (components, nodeId, updateFn) => {
     return components.map((comp) => {
@@ -85,101 +105,123 @@ const DetailContainer = ({ id, setId }) => {
   };
 
   const handleBgColorChange = (e) => {
+    let data;
     const newBgColor = e.target.value;
-    setProperty({ ...property, bgColor: newBgColor });
-
+    setProperty({ ...property, bgImg: "", bgColor: newBgColor });
     setProject((prev) => {
       const updatedComponents = updateComponentStyle(
         prev.component,
-        id,
-        (comp) => ({
-          ...comp,
-          style: {
-            ...comp.style,
-            background: newBgColor,
-          },
-        })
+        id.target,
+        (comp) => {
+          data = {
+            ...comp,
+            style: {
+              ...comp.style,
+              backgroundColor: newBgColor,
+              backgroundImage: "",
+            },
+          };
+          return data;
+        }
       );
 
       return { ...prev, component: updatedComponents };
     });
+    updateNode.mutate(data);
   };
 
   const handleBgImgChange = (e) => {
+    let data;
     const newBgImg = e.target.value;
-    setProperty({ ...property, bgImg: newBgImg });
+    setProperty({ ...property, bgColor: "#ffffff", bgImg: newBgImg });
 
     setProject((prev) => {
       const updatedComponents = updateComponentStyle(
         prev.component,
-        id,
-        (comp) => ({
-          ...comp,
-          style: {
-            ...comp.style,
-            background: `url("${newBgImg}")`,
-          },
-        })
+        id.target,
+        (comp) => {
+          data = {
+            ...comp,
+            style: {
+              ...comp.style,
+              backgroundColor: "#ffffff",
+              backgroundImage: `url("${newBgImg}")`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            },
+          };
+          return data;
+        }
       );
 
       return { ...prev, component: updatedComponents };
     });
+    updateNode.mutate(data);
   };
 
   const handlePaddingChange = (e) => {
+    let data;
     const newPadding = e.target.value;
-    console.log(newPadding);
     setProperty({ ...property, padding: newPadding });
 
     setProject((prev) => {
       const updatedComponents = updateComponentStyle(
         prev.component,
-        id,
-        (comp) => ({
-          ...comp,
-          style: {
-            ...comp.style,
-            padding: `${newPadding}px`,
-          },
-        })
+        id.target,
+        (comp) => {
+          data = {
+            ...comp,
+            style: {
+              ...comp.style,
+              padding: `${newPadding || 0}px`,
+            },
+          };
+          return data;
+        }
       );
 
       return { ...prev, component: updatedComponents };
     });
+
+    updateNode.mutate(data);
   };
 
   const handleRadiusChange = (e) => {
+    let data;
     const newRadius = e.target.value;
     setProperty({ ...property, radius: newRadius });
 
     setProject((prev) => {
       const updatedComponents = updateComponentStyle(
         prev.component,
-        id,
-        (comp) => ({
-          ...comp,
-          style: {
-            ...comp.style,
-            borderRadius: `${newRadius}px`,
-          },
-        })
+        id.target,
+        (comp) => {
+          data = {
+            ...comp,
+            style: {
+              ...comp.style,
+              borderRadius: `${newRadius || 0}px`,
+            },
+          };
+          return data;
+        }
       );
 
       return { ...prev, component: updatedComponents };
     });
+
+    updateNode.mutate(data);
   };
 
   const handleDelete = () => {
     const rowIndex = project.component.findIndex(
-      (row) => row.children[0].children[0].nodeId === id
+      (row) => row.nodeId === id.row
     );
     const nodeObject = project.component[rowIndex];
 
     setProject((prev) => ({
       ...prev,
-      component: prev.component.filter(
-        (row) => row.children[0].children[0].nodeId !== id
-      ),
+      component: prev.component.filter((row) => row.nodeId !== id.row),
     }));
 
     setId(null);
@@ -237,11 +279,6 @@ const DetailContainer = ({ id, setId }) => {
       </div>
     </Container>
   );
-};
-
-DetailContainer.propTypes = {
-  id: PropTypes.string.isRequired,
-  setId: PropTypes.func.isRequired,
 };
 
 export default DetailContainer;
