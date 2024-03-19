@@ -9,9 +9,6 @@ const useNode = () => {
   const updateNode = useMutation({
     mutationFn: (data) =>
       axios.put(`/api/nodes/${data.id}`, { data }, { withCredentials: true }),
-    onMutate: async (newData) => {
-      const previousData = queryClient.getQueryData(["get-project", id]);
-    },
     onSuccess: () => {
       queryClient.invalidateQueries(["get-project", id]);
     },

@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { projectInfo, selectRowId } from "../../../utils/atoms";
@@ -86,7 +85,7 @@ const DetailContainer = () => {
         radius: parseInt(target.style.borderRadius) || "",
       });
     }
-  }, [id]);
+  }, [id, project.component]);
 
   const updateComponentStyle = (components, nodeId, updateFn) => {
     return components.map((comp) => {

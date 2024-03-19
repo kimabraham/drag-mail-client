@@ -50,25 +50,27 @@ const useProject = () => {
         { withCredentials: true }
       ),
     onSuccess: (variables) => {
-      // const { type, rowIndex, colIndex, nodeObject } = variables;
+      const { type, rowIndex, colIndex, nodeObject } = variables;
       queryClient.invalidateQueries(["get-project", id]);
       queryClient.setQueryData(["get-project", id], (prev) => {
         switch (type) {
-          case PATCH_PROJECT_TYPES.ADD_ROW:
+          case PATCH_PROJECT_TYPES.ADD_ROW: {
             const updatedComponents = [...prev.component];
             updatedComponents.splice(rowIndex, 0, nodeObject);
             return {
               ...prev,
               component: updatedComponents,
             };
-          case PATCH_PROJECT_TYPES.REMOVE_ROW:
+          }
+          case PATCH_PROJECT_TYPES.REMOVE_ROW: {
             return {
               ...prev,
               component: prev.component.filter(
                 (row) => row.id !== nodeObject.id
               ),
             };
-          case PATCH_PROJECT_TYPES.ADD_BLOCK:
+          }
+          case PATCH_PROJECT_TYPES.ADD_BLOCK: {
             const updatedComponent = JSON.parse(JSON.stringify(prev.component));
             const targetRow = updatedComponent[rowIndex];
             insertIntoNodeObject(
@@ -81,6 +83,7 @@ const useProject = () => {
               ...prev,
               component: updatedComponent,
             };
+          }
           default:
             break;
         }

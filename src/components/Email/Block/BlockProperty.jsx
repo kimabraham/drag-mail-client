@@ -1,4 +1,4 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { BLOCK_TYPES } from "../../../constants/constants";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
@@ -10,8 +10,8 @@ const BlockProperty = () => {
   const [type, setType] = useState("");
   const [target, setTarget] = useState(null);
   const id = useRecoilValue(selectBlockId);
-  const [selectedId, setSelectedId] = useState(id);
   const project = useRecoilValue(projectInfo);
+  const setSelectBlockId = useSetRecoilState(selectBlockId);
 
   useEffect(() => {
     const row = project.component.find((row) => row.nodeId === id.row);
@@ -22,15 +22,15 @@ const BlockProperty = () => {
       setType(determinedType);
 
       if (foundTarget.className === "content-image-col") {
-        setSelectedId({
+        setSelectBlockId({
           ...id,
           target: foundTarget.children[0].nodeId,
         });
       } else {
-        setSelectedId(id);
+        setSelectBlockId(id);
       }
     }
-  }, [id, project.component]);
+  }, [id, project.component, setSelectBlockId]);
 
   if (!target) {
     return null;
@@ -38,9 +38,9 @@ const BlockProperty = () => {
 
   switch (type) {
     case BLOCK_TYPES.IMAGE:
-      return <DetailImg id={selectedId} />;
+      return <DetailImg />;
     case BLOCK_TYPES.TEXT:
-      return <DetailText id={id} />;
+      return <DetailText />;
     default:
       return <div>Unsupported block type.</div>;
   }

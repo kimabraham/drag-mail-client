@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
-import { useRecoilState } from "recoil";
-import { projectInfo } from "../../../utils/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
 
-const DetailText = ({ id }) => {
+const DetailText = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
+  const id = useRecoilValue(selectBlockId);
   const [property, setProperty] = useState({
     content: "",
     size: "",
@@ -53,7 +54,7 @@ const DetailText = ({ id }) => {
 
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleChangeSize = useCallback(
@@ -82,7 +83,7 @@ const DetailText = ({ id }) => {
 
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleChangeColor = useCallback(
@@ -111,7 +112,7 @@ const DetailText = ({ id }) => {
 
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleAlign = useCallback(
@@ -138,7 +139,7 @@ const DetailText = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handlePadding = useCallback(
@@ -165,7 +166,7 @@ const DetailText = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   return (

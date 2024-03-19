@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { styled } from "styled-components";
-import { FaCaretDown } from "react-icons/fa";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Profile from "../components/Profile";
 import Logo from "../components/shared/Logo";
@@ -91,7 +89,7 @@ const CreateTemplate = () => {
       setSelectedRowId(null);
       setSelectedBlockId(null);
     };
-  }, []);
+  }, [setSelectedRowId, setSelectedBlockId]);
 
   return (
     <Container>

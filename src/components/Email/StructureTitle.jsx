@@ -1,4 +1,3 @@
-import React from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useRecoilState } from "recoil";
 import { selectRowId } from "../../utils/atoms";

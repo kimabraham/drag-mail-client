@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import useNode from "../../../hooks/useNode";
 import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
-import { useRecoilState } from "recoil";
-import { projectInfo } from "../../../utils/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { projectInfo, selectBlockId } from "../../../utils/atoms";
 
-const DetailImg = ({ id }) => {
+const DetailImg = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
+  const id = useRecoilValue(selectBlockId);
   const [property, setProperty] = useState({
     imgUrl: "",
     width: "",
@@ -55,7 +56,7 @@ const DetailImg = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleWidth = useCallback(
@@ -82,7 +83,7 @@ const DetailImg = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleAlign = useCallback(
@@ -109,7 +110,7 @@ const DetailImg = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handlePadding = useCallback(
@@ -136,7 +137,7 @@ const DetailImg = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   const handleBorder = useCallback(
@@ -163,7 +164,7 @@ const DetailImg = ({ id }) => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject]
+    [id, property, setProject, updateNode]
   );
 
   return (

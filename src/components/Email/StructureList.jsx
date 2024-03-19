@@ -1,9 +1,8 @@
-import PropTypes from "prop-types";
 import { styled } from "styled-components";
 import useDraggable from "../../hooks/useDraggable";
 import DetailContainer from "./Container/DetailContainer";
 import { selectRowId } from "../../utils/atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 const List = styled.ul`
   display: flex;

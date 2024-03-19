@@ -102,7 +102,7 @@ const DetailBlock = () => {
     });
     setId(null);
     removeBlock.mutate(data);
-  }, []);
+  }, [id.col, removeBlock, setId, setProject]);
 
   return (
     <Container>
