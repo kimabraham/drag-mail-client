@@ -5,6 +5,7 @@ import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import DetailImg from "../Container/DetailImg";
 import DetailText from "../Container/DetailText";
 import { useEffect, useState } from "react";
+import DetailButton from "../Container/DetailButton";
 
 const BlockProperty = () => {
   const [type, setType] = useState("");
@@ -21,7 +22,10 @@ const BlockProperty = () => {
       const determinedType = foundTarget.className.split("-")[1];
       setType(determinedType);
 
-      if (foundTarget.className === "content-image-col") {
+      if (
+        foundTarget.className === "content-image-col" ||
+        foundTarget.className === "content-button-col"
+      ) {
         setSelectBlockId({
           ...id,
           target: foundTarget.children[0].nodeId,
@@ -35,12 +39,14 @@ const BlockProperty = () => {
   if (!target) {
     return null;
   }
-
+  console.log(type);
   switch (type) {
     case BLOCK_TYPES.IMAGE:
       return <DetailImg />;
     case BLOCK_TYPES.TEXT:
       return <DetailText />;
+    case BLOCK_TYPES.BUTTON:
+      return <DetailButton />;
     default:
       return <div>Unsupported block type.</div>;
   }

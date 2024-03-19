@@ -10,7 +10,7 @@ const List = styled.ul`
   height: 100%;
   background-color: #ecf0f1;
   padding: 20px 30px;
-  gap: 15px;
+  gap:10px;
 `;
 
 const Item = styled.li`
@@ -18,9 +18,9 @@ const Item = styled.li`
   gap: 10px;
   box-sizing: border-box;
   height: 100%;
-  padding: 15px;
+  padding: 10px;
   border: 1px solid #747d8c;
-  border-radius: 15px;
+  border-radius: 10px;
   background-color: white;
   cursor: pointer;
   transition: box-shadow 0.3s ease;

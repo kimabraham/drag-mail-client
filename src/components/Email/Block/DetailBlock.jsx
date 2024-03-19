@@ -32,6 +32,10 @@ const Container = styled.div`
       justify-content: space-between;
       padding: 10px;
   }
+
+  & > div:last-child {
+    justify-content: space-evenly;
+  }
 `;
 
 const Property = styled.div`

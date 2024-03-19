@@ -43,9 +43,6 @@ const Side = styled.div`
     border-left: 1px solid;
     overflow-y: auto;
     right: 0;
-    & > div{
-        height: 50%;
-    }
     & > :first-child{
         border-bottom: 1px solid;
     }
@@ -60,6 +57,7 @@ const Screen = styled.div`
 
 const Structures = styled.div`
     display: flex;
+    height: 40%;
     flex-direction: column;
     & > :first-child {
       color: #57606f;
@@ -75,7 +73,9 @@ const Structures = styled.div`
     }
 `;
 
-const Blocks = styled(Structures)``;
+const Blocks = styled(Structures)`
+  height: 60%;
+`;
 
 const CreateTemplate = () => {
   useAuthStatus();

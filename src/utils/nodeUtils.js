@@ -154,6 +154,7 @@ export const tagDataByType = (type) => {
           cursor: "pointer",
           background: "#1e90ff",
           borderRadius: "100px",
+          textDecoration: "none",
         },
         inner: "Button",
         children: [],

@@ -12,7 +12,7 @@ export const PATCH_PROJECT_TYPES = {
 export const BLOCK_TYPES = {
   TEXT: "text",
   IMAGE: "image",
-  BUTTON: "BUTTON",
+  BUTTON: "button",
   SPACE: "SPACE",
   VIDEO: "VIDEO",
   SOCIAL: "SOCIAL",
