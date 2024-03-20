@@ -10,7 +10,7 @@ const useNode = () => {
     mutationFn: (data) =>
       axios.put(`/api/nodes/${data.id}`, { data }, { withCredentials: true }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["get-project", id]);
+      // queryClient.invalidateQueries(["get-project", id]);
     },
   });
 

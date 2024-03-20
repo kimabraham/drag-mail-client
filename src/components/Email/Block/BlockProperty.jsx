@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { BLOCK_TYPES } from "../../../constants/constants";
-import { findNodeById } from "../../../utils/nodeUtils";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+
 import DetailImg from "../Container/DetailImg";
 import DetailText from "../Container/DetailText";
-import { useEffect, useState } from "react";
 import DetailButton from "../Container/DetailButton";
+import DetailSpace from "../Container/DetailSpace";
+import { BLOCK_TYPES } from "../../../constants/constants";
+import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { findNodeById } from "../../../utils/nodeUtils";
 
 const BlockProperty = () => {
   const [type, setType] = useState("");
@@ -24,6 +26,7 @@ const BlockProperty = () => {
 
       if (
         foundTarget.className === "content-image-col" ||
+        foundTarget.className === "content-space-col" ||
         foundTarget.className === "content-button-col"
       ) {
         setSelectBlockId({
@@ -39,7 +42,7 @@ const BlockProperty = () => {
   if (!target) {
     return null;
   }
-  console.log(type);
+
   switch (type) {
     case BLOCK_TYPES.IMAGE:
       return <DetailImg />;
@@ -47,6 +50,8 @@ const BlockProperty = () => {
       return <DetailText />;
     case BLOCK_TYPES.BUTTON:
       return <DetailButton />;
+    case BLOCK_TYPES.SPACE:
+      return <DetailSpace />;
     default:
       return <div>Unsupported block type.</div>;
   }

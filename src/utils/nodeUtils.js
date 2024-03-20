@@ -163,7 +163,7 @@ export const tagDataByType = (type) => {
       return {
         nodeId: uuidv4(),
         tag: "hr",
-        className: "content-hr-hr",
+        className: "content-space-hr",
         style: {
           textAlign: "center",
           width: "100%",
