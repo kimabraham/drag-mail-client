@@ -82,7 +82,7 @@ const DetailVideo = () => {
 
       updateNode.mutate(data2);
     },
-    [id, property, setProject, updateNode]
+    [id, project.component, property, setProject, updateNode]
   );
 
   const handleWidth = useCallback(
@@ -113,7 +113,7 @@ const DetailVideo = () => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject, updateNode]
+    [id, project.component, property, setProject, updateNode]
   );
 
   const handleHeight = useCallback(
@@ -143,7 +143,7 @@ const DetailVideo = () => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject, updateNode]
+    [id, project.component, property, setProject, updateNode]
   );
 
   const handleAlign = useCallback(
@@ -180,7 +180,7 @@ const DetailVideo = () => {
       });
       updateNode.mutate(data);
     },
-    [id, property, setProject, updateNode]
+    [id, project.component, property, setProject, updateNode]
   );
 
   const handlePadding = useCallback(

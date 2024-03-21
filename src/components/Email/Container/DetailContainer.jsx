@@ -70,11 +70,10 @@ const DetailContainer = () => {
     radius: "",
   });
 
-  const row = project.component?.find((row) => row.nodeId === id.row);
-  const col = findNodeById(row, id.col);
-  const target = findNodeById(col, id.target);
-
   useEffect(() => {
+    const row = project.component?.find((row) => row.nodeId === id.row);
+    const col = findNodeById(row, id.col);
+    const target = findNodeById(col, id.target);
     if (row) {
       setProperty({
         bgColor: target.style.backgroundColor || "#ffffff",

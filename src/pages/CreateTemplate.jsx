@@ -12,7 +12,7 @@ import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
 import StructureTitle from "../components/Email/StructureTitle";
 import BlockTitle from "../components/Email/BlockTitle";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { projectInfo, selectBlockId, selectRowId } from "../utils/atoms";
 import useProject from "../hooks/useProject";
 import Loading from "../components/shared/Loading";
@@ -84,13 +84,13 @@ const CreateTemplate = () => {
   const setProject = useSetRecoilState(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
-  const { project, isLoading, isFetching } = useProject();
+  const { project, isLoading } = useProject();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (project) {
       setProject(project);
     }
-  }, [project]);
+  }, [project, setProject]);
 
   useEffect(() => {
     return () => {
@@ -98,7 +98,7 @@ const CreateTemplate = () => {
       setSelectedBlockId(null);
       setProject(null);
     };
-  }, [setSelectedRowId, setSelectedBlockId]);
+  }, [setSelectedRowId, setSelectedBlockId, setProject]);
 
   if (isLoading) {
     return <Loading />;

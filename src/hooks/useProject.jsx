@@ -4,14 +4,10 @@ import { useParams } from "react-router-dom";
 
 import { PATCH_PROJECT_TYPES } from "../constants/constants";
 import { insertIntoNodeObject } from "../utils/nodeUtils";
-import { useEffect } from "react";
-import { useSetRecoilState } from "recoil";
-import { projectInfo } from "../utils/atoms";
 
 const useProject = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
-  const setProject = useSetRecoilState(projectInfo);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["get-project", id],

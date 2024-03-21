@@ -3,7 +3,6 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
 import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
-import { debounce } from "lodash";
 
 const DetailButton = () => {
   const { updateNode } = useNode();
