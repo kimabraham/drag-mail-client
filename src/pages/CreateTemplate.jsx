@@ -12,8 +12,10 @@ import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
 import StructureTitle from "../components/Email/StructureTitle";
 import BlockTitle from "../components/Email/BlockTitle";
-import { useSetRecoilState } from "recoil";
-import { selectBlockId, selectRowId } from "../utils/atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { projectInfo, selectBlockId, selectRowId } from "../utils/atoms";
+import useProject from "../hooks/useProject";
+import Loading from "../components/shared/Loading";
 
 const Container = styled.div`
     margin: auto;
@@ -79,17 +81,28 @@ const Blocks = styled(Structures)`
 
 const CreateTemplate = () => {
   useAuthStatus();
+  const setProject = useSetRecoilState(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
+  const { project, isLoading, isFetching } = useProject();
 
-  console.log("create template rendering");
+  useEffect(() => {
+    if (!isLoading) {
+      setProject(project);
+    }
+  }, [project]);
 
   useEffect(() => {
     return () => {
       setSelectedRowId(null);
       setSelectedBlockId(null);
+      setProject(null);
     };
   }, [setSelectedRowId, setSelectedBlockId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Container>

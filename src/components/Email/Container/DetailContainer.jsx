@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { projectInfo, selectRowId } from "../../../utils/atoms";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
@@ -15,7 +15,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
   & svg {
     color: #3498db;
     cursor: pointer;
@@ -26,14 +26,14 @@ const Container = styled.div`
   & > h5 {
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
   & > div {
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
+    padding: 5px;
     & label {
       width: 50%;
       font-size: 16px;
@@ -59,10 +59,10 @@ const Container = styled.div`
 const DetailContainer = () => {
   const { updateNode } = useNode();
   const { id: projectId } = useParams();
-  const [project, setProject] = useRecoilState(projectInfo);
+  const project = useRecoilValue(projectInfo);
+  const setProject = useSetRecoilState(projectInfo);
   const [id, setId] = useRecoilState(selectRowId);
   const { patchProject } = useProject();
-
   const [property, setProperty] = useState({
     bgColor: "#ffffff",
     bgImg: "",
@@ -70,11 +70,11 @@ const DetailContainer = () => {
     radius: "",
   });
 
-  useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const col = findNodeById(row, id.col);
-    const target = findNodeById(col, id.target);
+  const row = project.component?.find((row) => row.nodeId === id.row);
+  const col = findNodeById(row, id.col);
+  const target = findNodeById(col, id.target);
 
+  useEffect(() => {
     if (row) {
       setProperty({
         bgColor: target.style.backgroundColor || "#ffffff",

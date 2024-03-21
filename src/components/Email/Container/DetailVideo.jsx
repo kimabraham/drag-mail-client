@@ -1,54 +1,109 @@
 import { useCallback, useEffect, useState } from "react";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
 import useNode from "../../../hooks/useNode";
+import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { convertYoutubeUrlToThumbnail } from "../../../utils/detailBlocks";
 
-const DetailSpace = () => {
+const DetailVideo = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
   const [property, setProperty] = useState({
+    videoUrl: "",
     width: "",
     height: "",
     align: "",
     padding: "",
-    border: "",
-    borderColor: "",
   });
 
   useEffect(() => {
     const row = project.component.find((row) => row.nodeId === id.row);
-    const td = findNodeById(row, id.td);
-    const target = findNodeById(row, id.target);
+    const col = findNodeById(row, id.col);
+    const td = findNodeById(col, id.td);
+    const target = findNodeById(td, id.target);
 
     if (target) {
       setProperty({
-        width: parseInt(target.style.width) || "",
-        height: parseInt(target.style.borderTopWidth) || "",
-        align: td.style.textAlign || "",
-        padding: parseInt(td.style.paddingTop) || "",
-        border: target.style.borderTopStyle || "",
-        borderColor: target.style.borderTopColor || "",
+        videoUrl: td.children[0].props.href || "",
+        width: parseInt(td.children[0].style.width) || "",
+        height: parseInt(td.children[0].style.height) || "",
+        align: td.children[0].style.textAlign || "",
+        padding: parseInt(td.style.padding) || "",
       });
     }
   }, [id, project.component]);
+
+  const handleChangeVideo = useCallback(
+    (e) => {
+      let data, data2;
+
+      const newVideoUrl = e.target.value;
+      const row = project.component.find((row) => row.nodeId === id.row);
+      const td = findNodeById(row, id.td);
+      const link = td.children[0].nodeId;
+      setProperty({ ...property, imgUrl: newVideoUrl });
+
+      setProject((prev) => {
+        const updatedComponents = updateComponentStyle(
+          prev.component,
+          link,
+          (comp) => {
+            data = {
+              ...comp,
+              props: {
+                ...comp.props,
+                href: newVideoUrl,
+              },
+            };
+            return data;
+          }
+        );
+        return { ...prev, component: updatedComponents };
+      });
+      setProject((prev) => {
+        const updatedComponents = updateComponentStyle(
+          prev.component,
+          id.target,
+          (comp) => {
+            data2 = {
+              ...comp,
+              props: {
+                ...comp.props,
+                src: convertYoutubeUrlToThumbnail(newVideoUrl),
+              },
+            };
+            return data2;
+          }
+        );
+        return { ...prev, component: updatedComponents };
+      });
+      updateNode.mutate(data);
+
+      updateNode.mutate(data2);
+    },
+    [id, property, setProject, updateNode]
+  );
 
   const handleWidth = useCallback(
     (e) => {
       let data;
       const width = e.target.value || 0;
+      const row = project.component.find((row) => row.nodeId === id.row);
+      const td = findNodeById(row, id.td);
+      const link = td.children[0].nodeId;
       setProperty({ ...property, width });
       setProject((prev) => {
         const updatedComponents = updateComponentStyle(
           prev.component,
-          id.target,
+          link,
           (comp) => {
             data = {
               ...comp,
               style: {
                 ...comp.style,
                 width: `${width}%`,
+                height: "auto",
               },
             };
             return data;
@@ -64,20 +119,21 @@ const DetailSpace = () => {
   const handleHeight = useCallback(
     (e) => {
       let data;
-      const height = e.target.value || 0;
+      const height = e.target.value;
+      const row = project.component.find((row) => row.nodeId === id.row);
+      const td = findNodeById(row, id.td);
+      const link = td.children[0].nodeId;
       setProperty({ ...property, height });
       setProject((prev) => {
         const updatedComponents = updateComponentStyle(
           prev.component,
-          id.target,
+          link,
           (comp) => {
             data = {
               ...comp,
               style: {
                 ...comp.style,
-                borderTopWidth: `${height}px`,
-                borderTopStyle: property.border || "solid",
-                borderTopColor: property.borderColor,
+                height: height ? `${height}%` : "auto",
               },
             };
             return data;
@@ -94,6 +150,9 @@ const DetailSpace = () => {
     (e) => {
       let data;
       const newAlign = e.target.value;
+      const row = project.component.find((row) => row.nodeId === id.row);
+      const td = findNodeById(row, id.td);
+      const link = td.children[0].nodeId;
       const align =
         newAlign === "left"
           ? { marginLeft: 0, marginRight: "auto" }
@@ -104,7 +163,7 @@ const DetailSpace = () => {
       setProject((prev) => {
         const updatedComponents = updateComponentStyle(
           prev.component,
-          id.target,
+          link,
           (comp) => {
             data = {
               ...comp,
@@ -127,8 +186,8 @@ const DetailSpace = () => {
   const handlePadding = useCallback(
     (e) => {
       let data;
-      const newPadding = e.target.value;
-      setProperty({ ...property, padding: newPadding });
+      const padding = e.target.value;
+      setProperty({ ...property, padding });
       setProject((prev) => {
         const updatedComponents = updateComponentStyle(
           prev.component,
@@ -138,8 +197,7 @@ const DetailSpace = () => {
               ...comp,
               style: {
                 ...comp.style,
-                paddingTop: `${newPadding || 0}px`,
-                paddingBottom: `${newPadding || 0}px`,
+                padding: `${padding}px`,
               },
             };
             return data;
@@ -147,66 +205,6 @@ const DetailSpace = () => {
         );
         return { ...prev, component: updatedComponents };
       });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleBorder = useCallback(
-    (e) => {
-      let data;
-      const newBorder = e.target.value;
-      setProperty({ ...property, border: newBorder });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                border: 0,
-                backgroundColor: "#ffffff",
-                borderTop: `${property.height}px ${newBorder} ${property.borderColor}`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeBorderColor = useCallback(
-    (e) => {
-      let data;
-      const newColor = e.target.value;
-      setProperty({ ...property, borderColor: newColor });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                borderTopColor: newColor,
-                borderTopWidth: `${property.height}px`,
-                borderTopStyle: property.border || "solid",
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
       updateNode.mutate(data);
     },
     [id, property, setProject, updateNode]
@@ -215,28 +213,38 @@ const DetailSpace = () => {
   return (
     <>
       <div>
-        <label htmlFor="space-width">width</label>
+        <label htmlFor="video-url">youtube url</label>
         <input
           type="text"
-          id="space-width"
+          id="video-url"
+          value={property.videoUrl}
+          onChange={handleChangeVideo}
+        />
+      </div>
+      <div>
+        <label htmlFor="video-width">width</label>
+        <input
+          type="text"
+          id="video-width"
           value={property.width}
           onChange={handleWidth}
         />
       </div>
       <div>
-        <label htmlFor="space-height">height</label>
+        <label htmlFor="video-height">height</label>
         <input
           type="text"
-          id="space-height"
+          id="video-height"
           value={property.height}
           onChange={handleHeight}
         />
       </div>
       <div>
-        <label htmlFor="space-align">align</label>
+        <label htmlFor="video-align">align</label>
         <select
-          name="space-align"
-          id="space-align"
+          name="video-align"
+          id="video-align"
+          defaultValue={property.align}
           value={property.align}
           onChange={handleAlign}
         >
@@ -246,38 +254,16 @@ const DetailSpace = () => {
         </select>
       </div>
       <div>
-        <label htmlFor="space-padding">padding</label>
+        <label htmlFor="video-padding">padding y</label>
         <input
           type="text"
-          id="space-padding"
+          id="video-padding"
           value={property.padding}
           onChange={handlePadding}
-        />
-      </div>
-      <div>
-        <label htmlFor="space-border">border</label>
-        <select
-          name="space-border"
-          id="space-border"
-          value={property.border}
-          onChange={handleBorder}
-        >
-          <option value="solid">Solid</option>
-          <option value="dotted">Dotted</option>
-          <option value="dashed">Dashed</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="space-borderColor">border color</label>
-        <input
-          type="color"
-          id="space-borderColor"
-          value={property.borderColor}
-          onChange={handleChangeBorderColor}
         />
       </div>
     </>
   );
 };
 
-export default DetailSpace;
+export default DetailVideo;

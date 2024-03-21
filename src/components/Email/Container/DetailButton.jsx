@@ -3,13 +3,14 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
 import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { debounce } from "lodash";
 
 const DetailButton = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
   const [property, setProperty] = useState({
-    content: "",
+    content: "Button",
     bgColor: "",
     fontColor: "",
     link: "",
@@ -18,15 +19,15 @@ const DetailButton = () => {
     padding: "",
     border: "",
   });
-  console.log(property);
+
   useEffect(() => {
     const row = project.component.find((row) => row.nodeId === id.row);
     const td = findNodeById(row, id.td);
     const target = findNodeById(row, id.target);
-    console.log(target);
+    console.log("target", target);
     if (target) {
       setProperty({
-        content: target.inner || "Button",
+        content: target.inner,
         bgColor: target.style.backgroundColor || "#1D90FF",
         fontColor: target.style.color || "#ffffff",
         link: target.props.href?.replace("http://", "") || "",
@@ -264,7 +265,7 @@ const DetailButton = () => {
       <div>
         <label htmlFor="button-content">content</label>
         <input
-          type="button"
+          type="text"
           id="button-content"
           value={property.content}
           onChange={handleChangeContent}

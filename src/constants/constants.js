@@ -14,6 +14,6 @@ export const BLOCK_TYPES = {
   IMAGE: "image",
   BUTTON: "button",
   SPACE: "space",
-  VIDEO: "VIDEO",
+  VIDEO: "video",
   SOCIAL: "SOCIAL",
 };

@@ -12,7 +12,6 @@ const NodeRenderer = () => {
   const project = useRecoilValue(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
-
   const renderNode = (node) => {
     const { nodeId, tag, className, props, style, children, inner } = node;
 
@@ -23,6 +22,7 @@ const NodeRenderer = () => {
     const TagName = className === "container-table" ? Row : tag;
 
     const handleClick = (e) => {
+      e.preventDefault();
       e.stopPropagation();
       if (
         className.includes("container-inner-row") ||

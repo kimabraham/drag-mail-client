@@ -4,6 +4,8 @@ import { styled } from "styled-components";
 import Logo from "../components/shared/Logo";
 import Profile from "../components/Profile";
 import useAuthStatus from "../hooks/useAuthStatus";
+import { useRecoilValue } from "recoil";
+import { projectInfo } from "../utils/atoms";
 
 const Container = styled.div`
   width: 100%;
@@ -55,7 +57,6 @@ const StyleLink = styled(NavLink)`
 
 const Dashboard = () => {
   useAuthStatus();
-
   return (
     <Container>
       <SideBar>

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import { adjustChildren } from "../utils/nodeUtils";
 import { projectDrag, projectInfo } from "../utils/atoms";
@@ -11,7 +11,8 @@ import {
 } from "../constants/constants";
 
 const useDraggable = () => {
-  const [project, setProject] = useRecoilState(projectInfo);
+  const project = useRecoilValue(projectInfo);
+  const setProject = useSetRecoilState(projectInfo);
   const [isDrag, setProjectDrag] = useRecoilState(projectDrag);
   const { patchProject } = useProject();
 

@@ -21,14 +21,9 @@ const useProject = () => {
       });
       return res.data.project;
     },
-    enabled: !!id,
+    refetchOnMount: "always",
+    enabled: true,
   });
-
-  useEffect(() => {
-    if (project) {
-      setProject(project);
-    }
-  }, [project, setProject]);
 
   const updateProject = useMutation({
     mutationFn: ({ projectId, project }) =>
@@ -39,6 +34,7 @@ const useProject = () => {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries(["get-project", id]);
+      // queryClient.setQueryData(["get-project", id], data.project);
     },
   });
 
@@ -49,7 +45,7 @@ const useProject = () => {
         { projectId, nodeObject, rowIndex, colIndex, type },
         { withCredentials: true }
       ),
-    onSuccess: (variables) => {
+    onSuccess: (res, variables) => {
       const { type, rowIndex, colIndex, nodeObject } = variables;
       queryClient.invalidateQueries(["get-project", id]);
       queryClient.setQueryData(["get-project", id], (prev) => {

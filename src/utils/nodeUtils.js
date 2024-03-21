@@ -144,15 +144,18 @@ export const tagDataByType = (type) => {
         nodeId: uuidv4(),
         tag: "a",
         className: "content-button-btn",
+        props: {
+          href: "",
+        },
         style: {
           display: "inline-block",
           textAlign: "center",
           width: "100%",
           padding: "5px 10px",
           border: "none",
-          color: "white",
+          color: "#ffffff",
           cursor: "pointer",
-          background: "#1e90ff",
+          backgroundColor: "#1e90ff",
           borderRadius: "100px",
           textDecoration: "none",
         },
@@ -177,22 +180,42 @@ export const tagDataByType = (type) => {
         className: "content-video-video",
         style: {
           width: "100%",
+          position: "relative",
+          display: "block",
         },
         props: {
-          href: "https://www.youtube.com/watch?v=lbI5EJ5VXiE",
+          href: "",
           target: "_blank",
         },
         children: [
           {
             nodeId: uuidv4(),
             tag: "img",
-            className: "content-video-video",
+            className: "content-video-img",
             style: {
               width: "100%",
+              height: "100%",
             },
             props: {
-              src: "https://img.youtube.com/vi/lbI5EJ5VXiE/maxresdefault.jpg",
+              src: "https://img.youtube.com",
               alt: "video",
+            },
+            children: [],
+          },
+          {
+            nodeId: uuidv4(),
+            tag: "img",
+            className: "content-video-btn",
+            style: {
+              width: "40px",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+            },
+            props: {
+              src: "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png",
+              alt: "play_button",
             },
             children: [],
           },
@@ -269,8 +292,24 @@ export const adjustBlock = (type) => {
                       className: `content-${type}-col`,
                       style: {
                         height: "100%",
+                        verticalAlign: "middle",
+                        padding: "5px",
                       },
-                      children: [tagDataByType(type)],
+                      children: [
+                        {
+                          nodeId: uuidv4(),
+                          tag: "img",
+                          className: "content-social-icon",
+                          props: {
+                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/instagram-circle-colored.png",
+                            alt: "insta-icon",
+                          },
+                          style: {
+                            width: "100%",
+                          },
+                          children: [],
+                        },
+                      ],
                     },
                     {
                       nodeId: uuidv4(),
@@ -278,8 +317,24 @@ export const adjustBlock = (type) => {
                       className: `content-${type}-col`,
                       style: {
                         height: "100%",
+                        verticalAlign: "middle",
+                        padding: "5px",
                       },
-                      children: [tagDataByType(type)],
+                      children: [
+                        {
+                          nodeId: uuidv4(),
+                          tag: "img",
+                          className: "content-social-icon",
+                          props: {
+                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/facebook-circle-colored.png",
+                            alt: "insta-icon",
+                          },
+                          style: {
+                            width: "100%",
+                          },
+                          children: [],
+                        },
+                      ],
                     },
                     {
                       nodeId: uuidv4(),
@@ -287,8 +342,24 @@ export const adjustBlock = (type) => {
                       className: `content-${type}-col`,
                       style: {
                         height: "100%",
+                        verticalAlign: "middle",
+                        padding: "5px",
                       },
-                      children: [tagDataByType(type)],
+                      children: [
+                        {
+                          nodeId: uuidv4(),
+                          tag: "img",
+                          className: "content-social-icon",
+                          props: {
+                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/youtube-circle-colored.png",
+                            alt: "insta-icon",
+                          },
+                          style: {
+                            width: "100%",
+                          },
+                          children: [],
+                        },
+                      ],
                     },
                   ]
                 : [
@@ -298,6 +369,7 @@ export const adjustBlock = (type) => {
                       className: `content-${type}-col`,
                       style: {
                         height: "100%",
+                        verticalAlign: "middle",
                       },
                       children: [tagDataByType(type)],
                     },

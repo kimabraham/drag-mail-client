@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
@@ -19,10 +19,10 @@ const DetailText = () => {
   useEffect(() => {
     const row = project.component.find((row) => row.nodeId === id.row);
     const target = findNodeById(row, id.target);
-
+    console.log(target);
     if (target) {
       setProperty({
-        content: target.inner || "",
+        content: target.inner.replace(/<br \/>/g, "\n") || "",
         size: parseInt(target.style.fontSize) || "",
         color: target.style.color || "#000000",
         textAlign: target.style.textAlign || "",
@@ -35,6 +35,7 @@ const DetailText = () => {
     (e) => {
       let data;
       const newContent = e.target.value;
+
       setProperty({ ...property, content: newContent });
 
       setProject((prev) => {
@@ -44,7 +45,7 @@ const DetailText = () => {
           (comp) => {
             data = {
               ...comp,
-              inner: newContent,
+              inner: newContent.replace(/\n/g, "<br />"),
             };
             return data;
           }
@@ -174,8 +175,7 @@ const DetailText = () => {
       <>
         <div>
           <label htmlFor="text-content">content</label>
-          <input
-            type="text"
+          <textarea
             id="text-content"
             value={property.content}
             onChange={handleChangeContent}

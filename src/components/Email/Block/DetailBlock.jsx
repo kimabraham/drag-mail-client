@@ -68,6 +68,12 @@ const Property = styled.div`
       border: none;
       height: 40px;
     }
+    & textarea {
+      width: 60%;
+      height: 150px;
+      font-size:large;
+      resize: none;
+    }
 `;
 
 const DetailBlock = () => {
