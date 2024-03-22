@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
@@ -24,7 +24,8 @@ const DetailText = () => {
   });
 
   const row = project.component.find((row) => row.nodeId === id.row);
-  const target = findNodeById(row, id.target);
+  const td = findNodeById(row, id.td);
+  const target = findNodeById(td, id.target);
 
   useEffect(() => {
     if (target) {
@@ -40,75 +41,76 @@ const DetailText = () => {
         padding: parseInt(paddingTop) || "",
       });
     }
-  }, []);
+  }, [id]);
 
-  const handleChange = (propName, value) => {
-    let newProperty = {};
-    let inputProp = {};
+  const handleChange = useCallback(
+    (propertyKey, targetId, value) => {
+      let inputProps = {};
 
-    switch (propName) {
-      case "content":
-        inputProp = { inner: value.replace(/\n/g, "<br />") };
-        break;
-      case "size":
-        inputProp = { style: { ...target.style, fontSize: `${value}px` } };
-        break;
-      case "color":
-        inputProp = { style: { ...target.style, color: value } };
-        break;
-      case "textAlign":
-        inputProp = { style: { ...target.style, textAlign: value } };
-        break;
-      case "padding":
-        inputProp = {
-          style: {
-            ...target.style,
-            paddingTop: `${value}px`,
-            paddingBottom: `${value}px`,
-          },
-        };
-        break;
-      default:
-        break;
-    }
+      switch (propertyKey) {
+        case "content":
+          inputProps = { inner: value.replace(/\n/g, "<br />") };
+          break;
+        case "size":
+          inputProps = { style: { ...target.style, fontSize: `${value}px` } };
+          break;
+        case "color":
+          inputProps = { style: { ...target.style, color: value } };
+          break;
+        case "textAlign":
+          inputProps = { style: { ...target.style, textAlign: value } };
+          break;
+        case "padding":
+          inputProps = {
+            style: {
+              ...target.style,
+              paddingTop: `${value}px`,
+              paddingBottom: `${value}px`,
+            },
+          };
+          break;
+        default:
+          break;
+      }
 
-    newProperty[propName] = value;
-    setProperty((prev) => ({ ...prev, ...newProperty }));
-
-    const updatePayload =
-      propName === "content"
-        ? { nodeId: id.target, ...inputProp }
-        : { nodeId: id.target, ...inputProp };
-    setProject((prev) => updateProjectComponents(prev, id.target, inputProp));
-    debouncedUpdate(updateNode.mutate, updatePayload);
-  };
+      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+      debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+    },
+    [id]
+  );
 
   return (
     <>
-      <InputField
-        label="content"
-        id="text-content"
-        value={property.content}
-        onChange={(e) => handleChange("content", e.target.value)}
-      />
+      <div>
+        <label htmlFor="text-content">content</label>
+        <textarea
+          name="text-content"
+          id="text-content"
+          cols="30"
+          rows="10"
+          value={property.content}
+          onChange={(e) => handleChange("content", id.target, e.target.value)}
+        ></textarea>
+      </div>
       <InputField
         label="font size"
         id="text-size"
         value={property.size}
-        onChange={(e) => handleChange("size", e.target.value)}
+        onChange={(e) => handleChange("size", id.target, e.target.value)}
       />
       <InputField
         label="font color"
         id="text-color"
         type="color"
         value={property.color}
-        onChange={(e) => handleChange("color", e.target.value)}
+        onChange={(e) => handleChange("color", id.target, e.target.value)}
       />
       <SelectField
         label="Align"
         id="text-align"
         value={property.align}
-        onChange={(e) => handleChange("textAlign", e.target.value)}
+        onChange={(e) => handleChange("textAlign", id.target, e.target.value)}
         options={ALIGN_OPTIONS}
       />
       <InputField
@@ -116,7 +118,7 @@ const DetailText = () => {
         id="text-padding"
         type="padding"
         value={property.padding}
-        onChange={(e) => handleChange("padding", e.target.value)}
+        onChange={(e) => handleChange("padding", id.target, e.target.value)}
       />
     </>
   );

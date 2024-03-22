@@ -121,6 +121,7 @@ export const tagDataByType = (type) => {
           height: "100%",
           textAlign: "left",
           wordBreak: "break-word",
+          whiteSpace: "pre-wrap",
         },
         inner: "Text",
         children: [],

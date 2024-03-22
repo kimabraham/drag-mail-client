@@ -1,8 +1,17 @@
 import { useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { adjustChildren, findNodeById } from "../utils/nodeUtils";
-import { projectDrag, projectInfo } from "../utils/atoms";
+import {
+  adjustChildren,
+  findNodeByClassName,
+  findNodeById,
+} from "../utils/nodeUtils";
+import {
+  projectDrag,
+  projectInfo,
+  selectBlockId,
+  selectRowId,
+} from "../utils/atoms";
 import useProject from "./useProject";
 import {
   CONTAINER_CARD_HEIGHT,
@@ -13,12 +22,15 @@ import {
 const useDraggable = () => {
   const project = useRecoilValue(projectInfo);
   const setProject = useSetRecoilState(projectInfo);
+  const setSelectedRowId = useSetRecoilState(selectRowId);
+  const setSelectedBlockId = useSetRecoilState(selectBlockId);
   const [isDrag, setProjectDrag] = useRecoilState(projectDrag);
   const { patchProject } = useProject();
 
   const handleDragStart = useCallback(
     (e) => {
       setProjectDrag(true);
+      setSelectedBlockId(null);
       const id = e.target.childNodes.length;
       const nodeString = JSON.stringify(adjustChildren(id));
       e.dataTransfer.setData("text/plain", nodeString);
@@ -49,8 +61,10 @@ const useDraggable = () => {
   const handleDrop = (e) => {
     if (!isDrag) {
       e.preventDefault();
+      setSelectedBlockId(null);
 
       let colIndex;
+
       const nodeString = e.dataTransfer.getData("text/plain");
       const nodeObject = JSON.parse(nodeString);
       const containerRowId = e.target.closest(".container-row").id;
@@ -84,7 +98,22 @@ const useDraggable = () => {
         return newProject;
       });
 
-      console.log(project);
+      const type = nodeObject.className.split("-")[1];
+      const td = findNodeByClassName(nodeObject, `content-${type}-col`);
+
+      console.log(
+        containerRowId,
+        contentColId,
+        td.nodeId,
+        td.children[0].nodeId
+      );
+
+      setSelectedBlockId({
+        row: containerRowId,
+        col: contentColId,
+        td: td.nodeId,
+        target: td.children[0].nodeId,
+      });
 
       patchProject.mutate({
         projectId: project._id,
@@ -129,6 +158,16 @@ const useDraggable = () => {
         });
       }
 
+      const row = nodeObject.nodeId;
+      const col = findNodeByClassName(nodeObject, "container-col").nodeId;
+      const target = findNodeByClassName(nodeObject, "container-table").nodeId;
+
+      setSelectedRowId({
+        row,
+        col,
+        target,
+      });
+
       patchProject.mutate({
         projectId: project._id,
         nodeObject,
@@ -145,6 +184,7 @@ const useDraggable = () => {
 
   const handleDragOver = (e) => {
     e.preventDefault();
+
     const containerRow = e.target.closest(".container-row");
     if (containerRow) {
       document.querySelectorAll(".container-row").forEach((el) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
@@ -51,68 +51,71 @@ const DetailButton = () => {
         borderRadius: parseInt(borderRadius) || "",
       });
     }
-  }, []);
+  }, [id]);
 
-  const handleChange = (propertyKey, targetId, value) => {
-    let inputProps = {};
+  const handleChange = useCallback(
+    (propertyKey, targetId, value) => {
+      let inputProps = {};
 
-    switch (propertyKey) {
-      case "content":
-        inputProps = {
-          inner: value,
-        };
-        break;
-      case "backgroundColor":
-      case "color":
-        inputProps = {
-          style: {
-            ...target.style,
-            [propertyKey]: value,
-          },
-        };
-        break;
-      case "textAlign":
-        inputProps = {
-          style: {
-            ...td.style,
-            [propertyKey]: value,
-          },
-        };
-        break;
-      case "link":
-        inputProps = {
-          props: {
-            ...target.props,
-            href: `http://${value}`,
-            target: "_blank",
-          },
-        };
-        break;
-      case "width":
-        inputProps = {
-          style: {
-            ...target.style,
-            [propertyKey]: `${value}%`,
-          },
-        };
-        break;
-      case "padding":
-      case "borderRadius":
-        inputProps = {
-          style: {
-            ...target.style,
-            [propertyKey]: `${value}px`,
-          },
-        };
-        break;
-      default:
-        break;
-    }
+      switch (propertyKey) {
+        case "content":
+          inputProps = {
+            inner: value,
+          };
+          break;
+        case "backgroundColor":
+        case "color":
+          inputProps = {
+            style: {
+              ...target.style,
+              [propertyKey]: value,
+            },
+          };
+          break;
+        case "textAlign":
+          inputProps = {
+            style: {
+              ...td.style,
+              [propertyKey]: value,
+            },
+          };
+          break;
+        case "link":
+          inputProps = {
+            props: {
+              ...target.props,
+              href: `http://${value}`,
+              target: "_blank",
+            },
+          };
+          break;
+        case "width":
+          inputProps = {
+            style: {
+              ...target.style,
+              [propertyKey]: `${value}%`,
+            },
+          };
+          break;
+        case "padding":
+        case "borderRadius":
+          inputProps = {
+            style: {
+              ...target.style,
+              [propertyKey]: `${value}px`,
+            },
+          };
+          break;
+        default:
+          break;
+      }
 
-    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
-    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-  };
+      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+      debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+    },
+    [id]
+  );
 
   return (
     <>

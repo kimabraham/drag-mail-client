@@ -69,7 +69,7 @@ const DetailContainer = () => {
   const [id, setId] = useRecoilState(selectRowId);
   const { updateNode } = useNode();
   const { patchProject } = useProject();
-
+  console.log("id", id);
   const [property, setProperty] = useState({
     bgColor: "#ffffff",
     bgImg: "",
@@ -93,7 +93,7 @@ const DetailContainer = () => {
         radius: parseInt(borderRadius) || "",
       });
     }
-  }, []);
+  }, [id]);
 
   const handleChange = (property, value) => {
     const newStyle = { ...target.style };
@@ -141,6 +141,7 @@ const DetailContainer = () => {
       ...prev,
       component: prev.component.filter((row) => row.nodeId !== id.row),
     }));
+
     setId(null);
 
     patchProject.mutate({

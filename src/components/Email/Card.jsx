@@ -2,7 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { BLOCK_CARD_HEIGHT, BLOCK_CARD_WIDTH } from "../../constants/constants";
 import { useSetRecoilState } from "recoil";
-import { projectDrag } from "../../utils/atoms";
+import { projectDrag, selectRowId } from "../../utils/atoms";
 import { adjustBlock } from "../../utils/nodeUtils";
 
 const StyledCard = styled.div`
@@ -32,8 +32,10 @@ const StyledCard = styled.div`
 
 const Card = ({ icon, label }) => {
   const setProjectDrag = useSetRecoilState(projectDrag);
+  const setSelectedRowId = useSetRecoilState(selectRowId);
 
   const handleDragStart = (e) => {
+    setSelectedRowId(null);
     setProjectDrag(false);
     const cardClassList = e.target.classList;
     const cardType = cardClassList[cardClassList.length - 1]

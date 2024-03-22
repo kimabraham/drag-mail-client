@@ -80,7 +80,6 @@ const DetailBlock = () => {
   const { removeBlock } = useNode();
   const setProject = useSetRecoilState(projectInfo);
   const [id, setId] = useRecoilState(selectBlockId);
-
   const handleDelete = useCallback(() => {
     let data;
     setProject((prev) => {

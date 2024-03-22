@@ -18,7 +18,6 @@ export const debouncedUpdate = debounce((updateFunction, data) => {
 }, 300);
 
 export const updateProjectComponents = (prev, id, property) => {
-  console.log(prev, id, property);
   const updatedComponents = updateComponentStyle(
     prev.component,
     id,

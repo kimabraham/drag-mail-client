@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { findNodeById } from "../../../utils/nodeUtils";
 import useNode from "../../../hooks/useNode";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -24,27 +24,26 @@ const DetailSpace = () => {
     borderColor: "",
   });
 
-  const row = project.component.find((row) => row.nodeId === id.row);
-  const td = findNodeById(row, id.td);
-  const target = findNodeById(td, id.target);
-  console.log(target);
-
   useEffect(() => {
-    const {
-      style: {
-        width,
-        borderTopWidth,
-        borderTopStyle,
-        textAlign,
-        borderTopColor,
-      },
-    } = target;
-
-    const {
-      style: { paddingTop },
-    } = td;
+    const row = project.component.find((row) => row.nodeId === id.row);
+    const td = findNodeById(row, id.td);
+    const target = findNodeById(td, id.target);
 
     if (target) {
+      const {
+        style: {
+          width,
+          borderTopWidth,
+          borderTopStyle,
+          textAlign,
+          borderTopColor,
+        },
+      } = target;
+
+      const {
+        style: { paddingTop },
+      } = td;
+
       setProperty({
         width: parseInt(width) || "",
         height: parseInt(borderTopWidth) || "",
@@ -54,78 +53,85 @@ const DetailSpace = () => {
         borderColor: borderTopColor || "",
       });
     }
-  }, []);
+  }, [id, project.component]);
 
-  const handleChange = (propertyKey, targetId, value) => {
-    let inputProps = {};
+  const handleChange = useCallback(
+    (propertyKey, targetId, value) => {
+      let inputProps = {};
 
-    switch (propertyKey) {
-      case "width":
-        inputProps = {
-          style: {
-            ...target.style,
-            [propertyKey]: `${value}%`,
-          },
-        };
-        break;
-      case "height":
-        inputProps = {
-          style: {
-            ...target.style,
-            borderTopWidth: `${value}px`,
-          },
-        };
-        break;
-      case "padding":
-        inputProps = {
-          style: {
-            ...td.style,
-            paddingTop: `${value}px`,
-            paddingBottom: `${value}px`,
-          },
-        };
-        break;
-      case "textAlign":
-        {
-          const align =
-            value === "left"
-              ? { marginLeft: 0, marginRight: "auto" }
-              : value === "center"
-              ? { marginLeft: "auto", marginRight: "auto" }
-              : { marginLeft: "auto", marginRight: 0 };
+      const row = project.component.find((row) => row.nodeId === id.row);
+      const td = findNodeById(row, id.td);
+      const target = findNodeById(row, targetId);
+
+      switch (propertyKey) {
+        case "width":
           inputProps = {
             style: {
               ...target.style,
-              ...align,
-              [propertyKey]: value,
+              [propertyKey]: `${value}%`,
             },
           };
-        }
-        break;
-      case "border":
-        inputProps = {
-          style: {
-            ...target.style,
-            borderTopStyle: value,
-          },
-        };
-        break;
-      case "borderColor":
-        inputProps = {
-          style: {
-            ...target.style,
-            borderTopColor: value,
-          },
-        };
-        break;
-      default:
-        break;
-    }
+          break;
+        case "height":
+          inputProps = {
+            style: {
+              ...target.style,
+              borderTopWidth: `${value}px`,
+            },
+          };
+          break;
+        case "padding":
+          inputProps = {
+            style: {
+              ...td.style,
+              paddingTop: `${value}px`,
+              paddingBottom: `${value}px`,
+            },
+          };
+          break;
+        case "textAlign":
+          {
+            const align =
+              value === "left"
+                ? { marginLeft: 0, marginRight: "auto" }
+                : value === "center"
+                ? { marginLeft: "auto", marginRight: "auto" }
+                : { marginLeft: "auto", marginRight: 0 };
+            inputProps = {
+              style: {
+                ...target.style,
+                ...align,
+                [propertyKey]: value,
+              },
+            };
+          }
+          break;
+        case "border":
+          inputProps = {
+            style: {
+              ...target.style,
+              borderTopStyle: value,
+            },
+          };
+          break;
+        case "borderColor":
+          inputProps = {
+            style: {
+              ...target.style,
+              borderTopColor: value,
+            },
+          };
+          break;
+        default:
+          break;
+      }
 
-    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
-    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-  };
+      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+      debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+    },
+    [id]
+  );
 
   return (
     <>

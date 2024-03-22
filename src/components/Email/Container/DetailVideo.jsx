@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useNode from "../../../hooks/useNode";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -50,62 +50,65 @@ const DetailVideo = () => {
     }
   }, [link, td]);
 
-  const handleChange = (propertyKey, targetId, value) => {
-    let inputProps = {};
+  const handleChange = useCallback(
+    (propertyKey, targetId, value) => {
+      let inputProps = {};
 
-    switch (propertyKey) {
-      case "videoUrl":
-        inputProps = {
-          props: {
-            ...link.props,
-            href: value,
-          },
-        };
-        break;
-      case "width":
-      case "height":
-        inputProps = {
-          style: {
-            ...link.style,
-            [propertyKey]: `${value}%`,
-          },
-        };
-        break;
-      case "textAlign":
-        {
-          const align =
-            value === "left"
-              ? { marginLeft: 0, marginRight: "auto" }
-              : value === "center"
-              ? { marginLeft: "auto", marginRight: "auto" }
-              : { marginLeft: "auto", marginRight: 0 };
-
+      switch (propertyKey) {
+        case "videoUrl":
+          inputProps = {
+            props: {
+              ...link.props,
+              href: value,
+            },
+          };
+          break;
+        case "width":
+        case "height":
           inputProps = {
             style: {
               ...link.style,
-              ...align,
-              [propertyKey]: value,
+              [propertyKey]: `${value}%`,
             },
           };
-        }
-        break;
-      case "padding":
-        inputProps = {
-          style: {
-            ...td.styles,
-            paddingTop: `${value}px`,
-            paddingBottom: `${value}px`,
-          },
-        };
-        break;
-      default:
-        break;
-    }
+          break;
+        case "textAlign":
+          {
+            const align =
+              value === "left"
+                ? { marginLeft: 0, marginRight: "auto" }
+                : value === "center"
+                ? { marginLeft: "auto", marginRight: "auto" }
+                : { marginLeft: "auto", marginRight: 0 };
 
-    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
-    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-  };
+            inputProps = {
+              style: {
+                ...link.style,
+                ...align,
+                [propertyKey]: value,
+              },
+            };
+          }
+          break;
+        case "padding":
+          inputProps = {
+            style: {
+              ...td.styles,
+              paddingTop: `${value}px`,
+              paddingBottom: `${value}px`,
+            },
+          };
+          break;
+        default:
+          break;
+      }
+
+      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+      debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+    },
+    [id]
+  );
 
   const handleChangeLink = (value) => {
     const thumbnailUrl = convertYoutubeUrlToThumbnail(value);

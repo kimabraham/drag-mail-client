@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import useNode from "../../../hooks/useNode";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import { findNodeByClassName, findNodeById } from "../../../utils/nodeUtils";
 import InputField from "../../shared/InputField";
@@ -54,75 +54,78 @@ const DetailSocial = () => {
         padding: parseInt(col.style.paddingTop) || "",
       });
     }
-  }, []);
+  }, [id]);
 
-  const handleChange = (propertyKey, value) => {
-    let targetId;
-    let inputProps;
+  const handleChange = useCallback(
+    (propertyKey, value) => {
+      let targetId;
+      let inputProps;
 
-    switch (propertyKey) {
-      case "instagram":
-      case "facebook":
-      case "youtube":
-        {
-          const socialLink = findNodeByClassName(
-            col,
-            `content-social-${propertyKey}`
-          );
-          targetId = socialLink.nodeId;
-          inputProps = {
-            props: {
-              ...socialLink.props,
-              href: value,
-            },
-          };
-        }
-        break;
-      case "width":
-        inputProps = {
-          style: {
-            ...col.children[0].style,
-            width: `${value}%`,
-          },
-        };
-        targetId = col.children[0].nodeId;
-        break;
-      case "align":
-        {
-          const align =
-            value === "left"
-              ? { marginLeft: 0, marginRight: "auto" }
-              : value === "center"
-              ? { marginLeft: "auto", marginRight: "auto" }
-              : { marginLeft: "auto", marginRight: 0 };
+      switch (propertyKey) {
+        case "instagram":
+        case "facebook":
+        case "youtube":
+          {
+            const socialLink = findNodeByClassName(
+              col,
+              `content-social-${propertyKey}`
+            );
+            targetId = socialLink.nodeId;
+            inputProps = {
+              props: {
+                ...socialLink.props,
+                href: value,
+              },
+            };
+          }
+          break;
+        case "width":
           inputProps = {
             style: {
               ...col.children[0].style,
-              ...align,
-              textAlign: value,
+              width: `${value}%`,
             },
           };
           targetId = col.children[0].nodeId;
-        }
-        break;
-      case "padding":
-        inputProps = {
-          style: {
-            ...col.style,
-            paddingTop: `${value}px`,
-            paddingBottom: `${value}px`,
-          },
-        };
-        targetId = col.nodeId;
-        break;
-      default:
-        break;
-    }
+          break;
+        case "align":
+          {
+            const align =
+              value === "left"
+                ? { marginLeft: 0, marginRight: "auto" }
+                : value === "center"
+                ? { marginLeft: "auto", marginRight: "auto" }
+                : { marginLeft: "auto", marginRight: 0 };
+            inputProps = {
+              style: {
+                ...col.children[0].style,
+                ...align,
+                textAlign: value,
+              },
+            };
+            targetId = col.children[0].nodeId;
+          }
+          break;
+        case "padding":
+          inputProps = {
+            style: {
+              ...col.style,
+              paddingTop: `${value}px`,
+              paddingBottom: `${value}px`,
+            },
+          };
+          targetId = col.nodeId;
+          break;
+        default:
+          break;
+      }
 
-    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
-    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-  };
+      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+      debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+    },
+    [id]
+  );
 
   return (
     <>
