@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import useNode from "../../../hooks/useNode";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import InputField from "../../shared/InputField";
+import SelectField from "../../shared/SelectField";
+import {
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import { ALIGN_OPTIONS } from "../../../constants/constants";
 
 const DetailImg = () => {
   const { updateNode } = useNode();
@@ -16,209 +23,106 @@ const DetailImg = () => {
     border: "",
   });
 
+  const row = project.component.find((row) => row.nodeId === id.row);
+  const td = findNodeById(row, id.td);
+  const target = findNodeById(row, id.target);
+
   useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const td = findNodeById(row, id.td);
-    const target = findNodeById(row, id.target);
     if (target) {
+      const { src } = target.props;
+      const { width, borderRadius } = target.style;
+      const { textAlign, paddingTop } = td.style;
       setProperty({
-        imgUrl: target.props.src || "",
-        width: parseInt(target.style.width) || "",
-        align: td.style.textAlign || "",
-        padding: parseInt(td.style.padding) || "",
-        border: parseInt(target.style.borderRadius) || "",
+        imgUrl: src || "",
+        width: parseInt(width) || "",
+        align: textAlign || "",
+        padding: parseInt(paddingTop) || "",
+        border: parseInt(borderRadius) || "",
       });
     }
   }, [id, project.component]);
 
-  const handleChangeImg = useCallback(
-    (e) => {
-      let data;
-      const newImgUrl = e.target.value;
-      setProperty({ ...property, imgUrl: newImgUrl });
+  const handlePropertyChange = useCallback(
+    (propertyKey, newValue, nodeId, isStyle = false, additionalStyles = {}) => {
+      const row = project.component.find(
+        (component) => component.nodeId === id.row
+      );
+      const targetNode = findNodeById(row, id.target);
+      const tdNode = findNodeById(row, id.td);
 
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              props: {
-                ...comp.props,
-                src: newImgUrl,
-              },
-            };
-            return data;
+      const target = nodeId === id.target ? targetNode : tdNode;
+
+      const update = isStyle
+        ? {
+            style: {
+              ...target.style,
+              [propertyKey]: newValue,
+              ...additionalStyles,
+            },
           }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
+        : { props: { ...target.props, [propertyKey]: newValue } };
+
+      setProperty((prev) => ({ ...prev, [propertyKey]: newValue }));
+      setProject((prev) => updateProjectComponents(prev, nodeId, update));
+      debouncedUpdate(updateNode.mutate, { nodeId, ...update });
     },
-    [id, property, setProject, updateNode]
+    [id, project.component, setProject, updateNode]
   );
 
-  const handleWidth = useCallback(
+  const handlePaddingChange = useCallback(
     (e) => {
-      let data;
-      const width = e.target.value || 0;
-      setProperty({ ...property, width });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                width: `${width || "100"}%`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
+      const paddingValue = `${e.target.value}px`;
+      handlePropertyChange("paddingTop", paddingValue, id.td, true, {
+        paddingBottom: paddingValue,
       });
-      updateNode.mutate(data);
     },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleAlign = useCallback(
-    (e) => {
-      let data;
-      const align = e.target.value;
-      setProperty({ ...property, align });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.td,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                textAlign: align,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handlePadding = useCallback(
-    (e) => {
-      let data;
-      const padding = e.target.value;
-      setProperty({ ...property, padding });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.td,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                padding: `${padding || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleBorder = useCallback(
-    (e) => {
-      let data;
-      const border = e.target.value;
-      setProperty({ ...property, border });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                borderRadius: `${border || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
+    [handlePropertyChange, id.td]
   );
 
   return (
     <>
-      <div>
-        <label htmlFor="image-url">img url</label>
-        <input
-          type="text"
-          id="image-url"
-          value={property.imgUrl}
-          onChange={handleChangeImg}
-        />
-      </div>
-      <div>
-        <label htmlFor="image-width">width</label>
-        <input
-          type="text"
-          id="image-width"
-          value={property.width}
-          onChange={handleWidth}
-        />
-      </div>
-      <div>
-        <label htmlFor="image-align">align</label>
-        <select
-          name="image-align"
-          id="image-align"
-          defaultValue={property.align}
-          value={property.align}
-          onChange={handleAlign}
-        >
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="image-padding">padding</label>
-        <input
-          type="text"
-          id="image-padding"
-          value={property.padding}
-          onChange={handlePadding}
-        />
-      </div>
-      <div>
-        <label htmlFor="image-borderR">border radius</label>
-        <input
-          type="text"
-          id="image-borderR"
-          value={property.border}
-          onChange={handleBorder}
-        />
-      </div>
+      <InputField
+        label="img url"
+        id="image-url"
+        value={property.imgUrl}
+        onChange={(e) => handlePropertyChange("src", e.target.value, id.target)}
+      />
+      <InputField
+        label="width"
+        id="image-width"
+        value={property.width}
+        onChange={(e) =>
+          handlePropertyChange("width", `${e.target.value}%`, id.target, true)
+        }
+      />
+      <SelectField
+        label="Align"
+        id="image-align"
+        value={property.align}
+        onChange={(e) =>
+          handlePropertyChange("textAlign", e.target.value, id.td, true)
+        }
+        options={ALIGN_OPTIONS}
+      />
+      <InputField
+        label="padding"
+        id="image-padding"
+        value={property.padding}
+        onChange={handlePaddingChange}
+      />
+      <InputField
+        label="border radius"
+        id="image-border"
+        value={property.border}
+        onChange={(e) =>
+          handlePropertyChange(
+            "borderRadius",
+            `${e.target.value}px`,
+            id.target,
+            true
+          )
+        }
+      />
     </>
   );
 };

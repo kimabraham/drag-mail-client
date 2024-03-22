@@ -15,5 +15,10 @@ export const BLOCK_TYPES = {
   BUTTON: "button",
   SPACE: "space",
   VIDEO: "video",
-  SOCIAL: "SOCIAL",
+  SOCIAL: "social",
 };
+export const ALIGN_OPTIONS = [
+  { label: "Left", value: "left" },
+  { label: "Center", value: "center" },
+  { label: "Right", value: "right" },
+];

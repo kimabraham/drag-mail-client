@@ -119,6 +119,7 @@ export const tagDataByType = (type) => {
         style: {
           width: "100%",
           height: "100%",
+          textAlign: "left",
           wordBreak: "break-word",
         },
         inner: "Text",
@@ -169,6 +170,10 @@ export const tagDataByType = (type) => {
         className: "content-space-hr",
         style: {
           textAlign: "center",
+          borderWidth: "0px",
+          borderTopWidth: "1px",
+          borderTopColor: "#000000",
+          borderTopStyle: "solid",
           width: "100%",
         },
         children: [],
@@ -230,6 +235,7 @@ export const tagDataByType = (type) => {
           display: "block",
           width: "100%",
           padding: "5px",
+          cursor: "pointer",
         },
         props: {
           href: "http://www.naver.com",
@@ -264,6 +270,9 @@ export const adjustBlock = (type) => {
     style: {
       width: "100%",
       height: "100%",
+      textAlign: "center",
+      marginLeft: "auto",
+      marginRight: "auto",
     },
     children: [
       {
@@ -293,21 +302,37 @@ export const adjustBlock = (type) => {
                       style: {
                         height: "100%",
                         verticalAlign: "middle",
-                        padding: "5px",
+                        padding: "3%",
                       },
                       children: [
                         {
                           nodeId: uuidv4(),
-                          tag: "img",
-                          className: "content-social-icon",
-                          props: {
-                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/instagram-circle-colored.png",
-                            alt: "insta-icon",
-                          },
+                          tag: "a",
+                          className: "content-social-instagram",
                           style: {
+                            display: "block",
                             width: "100%",
                           },
-                          children: [],
+                          props: {
+                            href: "",
+                            target: "_blank",
+                          },
+                          children: [
+                            {
+                              nodeId: uuidv4(),
+                              tag: "img",
+                              className: "content-social-instagram-icon",
+                              props: {
+                                src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/instagram-circle-colored.png",
+                                alt: "insta-icon",
+                              },
+                              style: {
+                                width: "100%",
+                                cursor: "pointer",
+                              },
+                              children: [],
+                            },
+                          ],
                         },
                       ],
                     },
@@ -318,21 +343,37 @@ export const adjustBlock = (type) => {
                       style: {
                         height: "100%",
                         verticalAlign: "middle",
-                        padding: "5px",
+                        padding: "3%",
                       },
                       children: [
                         {
                           nodeId: uuidv4(),
-                          tag: "img",
-                          className: "content-social-icon",
-                          props: {
-                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/facebook-circle-colored.png",
-                            alt: "insta-icon",
-                          },
+                          tag: "a",
+                          className: "content-social-facebook",
                           style: {
+                            display: "block",
                             width: "100%",
                           },
-                          children: [],
+                          props: {
+                            href: "",
+                            target: "_blank",
+                          },
+                          children: [
+                            {
+                              nodeId: uuidv4(),
+                              tag: "img",
+                              className: "content-social-facebook-icon",
+                              props: {
+                                src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/facebook-circle-colored.png",
+                                alt: "facebook-icon",
+                              },
+                              style: {
+                                width: "100%",
+                                cursor: "pointer",
+                              },
+                              children: [],
+                            },
+                          ],
                         },
                       ],
                     },
@@ -343,21 +384,37 @@ export const adjustBlock = (type) => {
                       style: {
                         height: "100%",
                         verticalAlign: "middle",
-                        padding: "5px",
+                        padding: "3%",
                       },
                       children: [
                         {
                           nodeId: uuidv4(),
-                          tag: "img",
-                          className: "content-social-icon",
-                          props: {
-                            src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/youtube-circle-colored.png",
-                            alt: "insta-icon",
-                          },
+                          tag: "a",
+                          className: "content-social-youtube",
                           style: {
+                            display: "block",
                             width: "100%",
                           },
-                          children: [],
+                          props: {
+                            href: "",
+                            target: "_blank",
+                          },
+                          children: [
+                            {
+                              nodeId: uuidv4(),
+                              tag: "img",
+                              className: "content-social-youtube-icon",
+                              props: {
+                                src: "https://eejfihr.stripocdn.email/content/assets/img/social-icons/circle-colored/youtube-circle-colored.png",
+                                alt: "youtube-icon",
+                              },
+                              style: {
+                                width: "100%",
+                                cursor: "pointer",
+                              },
+                              children: [],
+                            },
+                          ],
                         },
                       ],
                     },
@@ -425,6 +482,23 @@ export const findNodeById = (node, targetNodeId) => {
   if (node.children) {
     for (let child of node.children) {
       const found = findNodeById(child, targetNodeId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
+export const findNodeByClassName = (node, targetClassName) => {
+  if (node.className === targetClassName) {
+    return node;
+  }
+
+  if (node.children) {
+    for (let child of node.children) {
+      const found = findNodeByClassName(child, targetClassName);
       if (found) {
         return found;
       }

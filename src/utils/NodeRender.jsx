@@ -33,6 +33,7 @@ const NodeRenderer = () => {
         const containerRow = e.target.closest(".container-row").id;
         const containerCol = e.target.closest(".container-col").id;
         const containerId = e.target.closest(".container-table").id;
+        setSelectedBlockId(null);
         setSelectedRowId({
           row: containerRow,
           col: containerCol,
@@ -42,6 +43,7 @@ const NodeRenderer = () => {
         const containerRowId = e.target.closest(".container-row").id;
         const contentColId = e.target.closest(".content-col").id;
         const blockId = e.target.closest("td").id;
+        setSelectedRowId(null);
         setSelectedBlockId({
           row: containerRowId,
           col: contentColId,

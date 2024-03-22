@@ -12,7 +12,7 @@ import useAuthStatus from "../hooks/useAuthStatus";
 import NodeRenderer from "../utils/NodeRender";
 import StructureTitle from "../components/Email/StructureTitle";
 import BlockTitle from "../components/Email/BlockTitle";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { projectInfo, selectBlockId, selectRowId } from "../utils/atoms";
 import useProject from "../hooks/useProject";
 import Loading from "../components/shared/Loading";
@@ -81,16 +81,19 @@ const Blocks = styled(Structures)`
 
 const CreateTemplate = () => {
   useAuthStatus();
+  const recoilProject = useRecoilValue(projectInfo);
   const setProject = useSetRecoilState(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
   const { project, isLoading } = useProject();
+  console.log("query", project);
+  console.log("recoil", recoilProject);
 
   useEffect(() => {
-    if (project) {
+    if (!isLoading) {
       setProject(project);
     }
-  }, [project, setProject]);
+  }, [isLoading]);
 
   useEffect(() => {
     return () => {
@@ -104,6 +107,11 @@ const CreateTemplate = () => {
     return <Loading />;
   }
 
+  const handleClick = () => {
+    setSelectedBlockId(null);
+    setSelectedRowId(null);
+  };
+
   return (
     <Container>
       <header>
@@ -111,7 +119,7 @@ const CreateTemplate = () => {
         <Profile position={{ top: 60, left: 10 }} />
       </header>
       <Body>
-        <Screen>
+        <Screen onClick={handleClick}>
           <TemplateTitle />
           <Content>
             <NodeRenderer />

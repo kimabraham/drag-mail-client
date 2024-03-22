@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { debounce } from "lodash";
 import { useParams } from "react-router-dom";
 
 const useNode = () => {
@@ -15,10 +14,6 @@ const useNode = () => {
     },
   });
 
-  const debouncedUpdateNode = debounce((data) => {
-    updateNode.mutate(data);
-  }, 500);
-
   const removeBlock = useMutation({
     mutationFn: (data) =>
       axios.delete(
@@ -32,7 +27,7 @@ const useNode = () => {
   });
 
   return {
-    updateNode: { ...updateNode, mutate: debouncedUpdateNode },
+    updateNode,
     removeBlock,
   };
 };

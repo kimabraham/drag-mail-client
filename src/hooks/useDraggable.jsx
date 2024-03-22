@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { adjustChildren } from "../utils/nodeUtils";
+import { adjustChildren, findNodeById } from "../utils/nodeUtils";
 import { projectDrag, projectInfo } from "../utils/atoms";
 import useProject from "./useProject";
 import {
@@ -54,6 +54,8 @@ const useDraggable = () => {
       const nodeString = e.dataTransfer.getData("text/plain");
       const nodeObject = JSON.parse(nodeString);
       const containerRowId = e.target.closest(".container-row").id;
+
+      const contentRowId = e.target.closest(".content-row").id;
       const contentColId = e.target.closest(".content-col").id;
       const containerTable = e.target.closest(".container-table");
 
@@ -65,38 +67,24 @@ const useDraggable = () => {
 
       setProject((prev) => {
         const newProject = JSON.parse(JSON.stringify(prev));
+        const targetRow = newProject.component.find(
+          (row) => row.nodeId === containerRowId
+        );
 
-        newProject.component.forEach((row) => {
-          if (row.nodeId === containerRowId) {
-            row.children.forEach((col) => {
-              col.children.forEach((table) => {
-                table.children.forEach((tbody) => {
-                  tbody.children.forEach((tr) => {
-                    tr.children.forEach((td) => {
-                      td.children.forEach((table) => {
-                        table.children.forEach((tbody) => {
-                          tbody.children.forEach((tr) => {
-                            colIndex = tr.children.findIndex(
-                              (col) => col.nodeId === contentColId
-                            );
-                            tr.children.forEach((td) => {
-                              if (td.nodeId === contentColId) {
-                                td.children = [nodeObject];
-                              }
-                            });
-                          });
-                        });
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          }
-        });
+        const contentRow = findNodeById(targetRow, contentRowId);
+
+        colIndex = contentRow.children.findIndex(
+          (col) => col.nodeId === contentColId
+        );
+
+        const targetCol = findNodeById(targetRow, contentColId);
+
+        targetCol.children = [nodeObject];
 
         return newProject;
       });
+
+      console.log(project);
 
       patchProject.mutate({
         projectId: project._id,

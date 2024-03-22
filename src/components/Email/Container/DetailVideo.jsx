@@ -1,9 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useNode from "../../../hooks/useNode";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
-import { convertYoutubeUrlToThumbnail } from "../../../utils/detailBlocks";
+import {
+  convertYoutubeUrlToThumbnail,
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import SelectField from "../../shared/SelectField";
+import InputField from "../../shared/InputField";
+import { ALIGN_OPTIONS } from "../../../constants/constants";
 
 const DetailVideo = () => {
   const { updateNode } = useNode();
@@ -13,255 +20,158 @@ const DetailVideo = () => {
     videoUrl: "",
     width: "",
     height: "",
-    align: "",
+    textAlign: "",
     padding: "",
   });
 
-  useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const col = findNodeById(row, id.col);
-    const td = findNodeById(col, id.td);
-    const target = findNodeById(td, id.target);
+  const row = project.component.find((row) => row.nodeId === id.row);
+  const col = findNodeById(row, id.col);
+  const td = findNodeById(col, id.td);
+  const link = td.children[0];
+  const target = link.children[0];
 
-    if (target) {
+  useEffect(() => {
+    if (td && link) {
+      const {
+        style: { paddingTop },
+      } = td;
+      const {
+        props: { href },
+        style: { width, height, textAlign },
+      } = link;
+
       setProperty({
-        videoUrl: td.children[0].props.href || "",
-        width: parseInt(td.children[0].style.width) || "",
-        height: parseInt(td.children[0].style.height) || "",
-        align: td.children[0].style.textAlign || "",
-        padding: parseInt(td.style.padding) || "",
+        videoUrl: href || "",
+        width: parseInt(width) || "",
+        height: parseInt(height) || "",
+        textAlign: textAlign || "",
+        padding: parseInt(paddingTop) || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
-  const handleChangeVideo = useCallback(
-    (e) => {
-      let data, data2;
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-      const newVideoUrl = e.target.value;
-      const row = project.component.find((row) => row.nodeId === id.row);
-      const td = findNodeById(row, id.td);
-      const link = td.children[0].nodeId;
-      setProperty({ ...property, imgUrl: newVideoUrl });
+    switch (propertyKey) {
+      case "videoUrl":
+        inputProps = {
+          props: {
+            ...link.props,
+            href: value,
+          },
+        };
+        break;
+      case "width":
+      case "height":
+        inputProps = {
+          style: {
+            ...link.style,
+            [propertyKey]: `${value}%`,
+          },
+        };
+        break;
+      case "textAlign":
+        {
+          const align =
+            value === "left"
+              ? { marginLeft: 0, marginRight: "auto" }
+              : value === "center"
+              ? { marginLeft: "auto", marginRight: "auto" }
+              : { marginLeft: "auto", marginRight: 0 };
 
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          link,
-          (comp) => {
-            data = {
-              ...comp,
-              props: {
-                ...comp.props,
-                href: newVideoUrl,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data2 = {
-              ...comp,
-              props: {
-                ...comp.props,
-                src: convertYoutubeUrlToThumbnail(newVideoUrl),
-              },
-            };
-            return data2;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
+          inputProps = {
+            style: {
+              ...link.style,
+              ...align,
+              [propertyKey]: value,
+            },
+          };
+        }
+        break;
+      case "padding":
+        inputProps = {
+          style: {
+            ...td.styles,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-      updateNode.mutate(data2);
-    },
-    [id, project.component, property, setProject, updateNode]
-  );
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+  };
 
-  const handleWidth = useCallback(
-    (e) => {
-      let data;
-      const width = e.target.value || 0;
-      const row = project.component.find((row) => row.nodeId === id.row);
-      const td = findNodeById(row, id.td);
-      const link = td.children[0].nodeId;
-      setProperty({ ...property, width });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          link,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                width: `${width}%`,
-                height: "auto",
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, project.component, property, setProject, updateNode]
-  );
+  const handleChangeLink = (value) => {
+    const thumbnailUrl = convertYoutubeUrlToThumbnail(value);
 
-  const handleHeight = useCallback(
-    (e) => {
-      let data;
-      const height = e.target.value;
-      const row = project.component.find((row) => row.nodeId === id.row);
-      const td = findNodeById(row, id.td);
-      const link = td.children[0].nodeId;
-      setProperty({ ...property, height });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          link,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                height: height ? `${height}%` : "auto",
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, project.component, property, setProject, updateNode]
-  );
+    const linkProps = {
+      props: {
+        ...link.props,
+        href: value,
+      },
+    };
+    const targetProps = {
+      props: {
+        ...target.props,
+        src: thumbnailUrl,
+      },
+    };
+    setProperty((prev) => ({ ...prev, videoUrl: value }));
+    setProject((prev) => updateProjectComponents(prev, link.nodeId, linkProps));
+    debouncedUpdate(updateNode.mutate, { nodeId: link.nodeId, ...linkProps });
 
-  const handleAlign = useCallback(
-    (e) => {
-      let data;
-      const newAlign = e.target.value;
-      const row = project.component.find((row) => row.nodeId === id.row);
-      const td = findNodeById(row, id.td);
-      const link = td.children[0].nodeId;
-      const align =
-        newAlign === "left"
-          ? { marginLeft: 0, marginRight: "auto" }
-          : newAlign === "center"
-          ? { marginLeft: "auto", marginRight: "auto" }
-          : { marginLeft: "auto", marginRight: 0 };
-      setProperty({ ...property, textAlign: newAlign });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          link,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                ...align,
-                textAlign: newAlign,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, project.component, property, setProject, updateNode]
-  );
-
-  const handlePadding = useCallback(
-    (e) => {
-      let data;
-      const padding = e.target.value;
-      setProperty({ ...property, padding });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.td,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                padding: `${padding}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    setProject((prev) =>
+      updateProjectComponents(prev, target.nodeId, targetProps)
+    );
+    debouncedUpdate(updateNode.mutate, {
+      nodeId: target.nodeId,
+      ...targetProps,
+    });
+  };
 
   return (
     <>
-      <div>
-        <label htmlFor="video-url">youtube url</label>
-        <input
-          type="text"
-          id="video-url"
-          value={property.videoUrl}
-          onChange={handleChangeVideo}
-        />
-      </div>
-      <div>
-        <label htmlFor="video-width">width</label>
-        <input
-          type="text"
-          id="video-width"
-          value={property.width}
-          onChange={handleWidth}
-        />
-      </div>
-      <div>
-        <label htmlFor="video-height">height</label>
-        <input
-          type="text"
-          id="video-height"
-          value={property.height}
-          onChange={handleHeight}
-        />
-      </div>
-      <div>
-        <label htmlFor="video-align">align</label>
-        <select
-          name="video-align"
-          id="video-align"
-          defaultValue={property.align}
-          value={property.align}
-          onChange={handleAlign}
-        >
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="video-padding">padding y</label>
-        <input
-          type="text"
-          id="video-padding"
-          value={property.padding}
-          onChange={handlePadding}
-        />
-      </div>
+      <InputField
+        label="youtube url"
+        type="text"
+        id="video-url"
+        value={property.videoUrl}
+        onChange={(e) => handleChangeLink(e.target.value)}
+      />
+      <InputField
+        label="width"
+        type="text"
+        id="video-width"
+        value={property.width}
+        onChange={(e) => handleChange("width", link.nodeId, e.target.value)}
+      />
+      <InputField
+        label="height"
+        type="text"
+        id="video-height"
+        value={property.height}
+        onChange={(e) => handleChange("height", link.nodeId, e.target.value)}
+      />
+      <SelectField
+        label="textAlign"
+        id="video-align"
+        value={property.textAlign}
+        onChange={(e) => handleChange("textAlign", link.nodeId, e.target.value)}
+        options={ALIGN_OPTIONS}
+      />
+      <InputField
+        label="padding y"
+        type="text"
+        id="video-padding"
+        value={property.padding}
+        onChange={(e) => handleChange("padding", td.nodeId, e.target.value)}
+      />
     </>
   );
 };

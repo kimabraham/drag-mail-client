@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { findNodeById } from "../../../utils/nodeUtils";
+import InputField from "../../shared/InputField";
+import SelectField from "../../shared/SelectField";
+import {
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import { ALIGN_OPTIONS } from "../../../constants/constants";
 
 const DetailButton = () => {
   const { updateNode } = useNode();
@@ -10,334 +17,165 @@ const DetailButton = () => {
   const id = useRecoilValue(selectBlockId);
   const [property, setProperty] = useState({
     content: "Button",
-    bgColor: "",
-    fontColor: "",
+    backgroundColor: "#1D90FF",
+    color: "#ffffff",
     link: "",
     width: "",
-    align: "",
+    textAlign: "",
     padding: "",
-    border: "",
+    borderRadius: "",
   });
 
+  const row = project.component.find((row) => row.nodeId === id.row);
+  const td = findNodeById(row, id.td);
+  const target = findNodeById(row, id.target);
+
   useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const td = findNodeById(row, id.td);
-    const target = findNodeById(row, id.target);
-    console.log("target", target);
+    const {
+      inner,
+      style: { backgroundColor, color, width, padding, borderRadius },
+      props: { href },
+    } = target;
+    const {
+      style: { textAlign },
+    } = td;
     if (target) {
       setProperty({
-        content: target.inner,
-        bgColor: target.style.backgroundColor || "#1D90FF",
-        fontColor: target.style.color || "#ffffff",
-        link: target.props.href?.replace("http://", "") || "",
-        width: parseInt(target.style.width) || "",
-        align: td.style.textAlign || "",
-        padding: parseInt(target.style.padding) || "",
-        border: parseInt(target.style.borderRadius) || "",
+        content: inner,
+        backgroundColor: backgroundColor || "#1D90FF",
+        color: color || "#ffffff",
+        link: href?.replace("http://", "") || "",
+        width: parseInt(width) || "",
+        textAlign: textAlign || "",
+        padding: parseInt(padding) || "",
+        borderRadius: parseInt(borderRadius) || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
-  const handleChangeLink = useCallback(
-    (e) => {
-      let data;
-      const newImgUrl = e.target.value;
-      setProperty({ ...property, imgUrl: newImgUrl });
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              props: {
-                ...comp.props,
-                href: `http://${newImgUrl}`,
-                target: "_blank",
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    switch (propertyKey) {
+      case "content":
+        inputProps = {
+          inner: value,
+        };
+        break;
+      case "backgroundColor":
+      case "color":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: value,
+          },
+        };
+        break;
+      case "textAlign":
+        inputProps = {
+          style: {
+            ...td.style,
+            [propertyKey]: value,
+          },
+        };
+        break;
+      case "link":
+        inputProps = {
+          props: {
+            ...target.props,
+            href: `http://${value}`,
+            target: "_blank",
+          },
+        };
+        break;
+      case "width":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}%`,
+          },
+        };
+        break;
+      case "padding":
+      case "borderRadius":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-  const handleChangeContent = useCallback(
-    (e) => {
-      let data;
-      const newContent = e.target.value;
-      setProperty({ ...property, content: newContent });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              inner: newContent,
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeBgColor = useCallback(
-    (e) => {
-      let data;
-      const newColor = e.target.value;
-      setProperty({ ...property, bgColor: newColor });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                backgroundColor: newColor,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeColor = useCallback(
-    (e) => {
-      let data;
-      const newColor = e.target.value;
-      setProperty({ ...property, fontColor: newColor });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                color: newColor,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleWidth = useCallback(
-    (e) => {
-      let data;
-      const width = e.target.value || 0;
-      setProperty({ ...property, width });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                width: `${width || "100"}%`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleAlign = useCallback(
-    (e) => {
-      let data;
-      const align = e.target.value;
-      setProperty({ ...property, align });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.td,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                textAlign: align,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handlePadding = useCallback(
-    (e) => {
-      let data;
-      const padding = e.target.value;
-      setProperty({ ...property, padding });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                padding: `${padding || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleBorder = useCallback(
-    (e) => {
-      let data;
-      const border = e.target.value;
-      setProperty({ ...property, border });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                borderRadius: `${border || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+  };
 
   return (
     <>
-      <div>
-        <label htmlFor="button-content">content</label>
-        <input
-          type="text"
-          id="button-content"
-          value={property.content}
-          onChange={handleChangeContent}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-bgColor">background color</label>
-        <input
-          type="color"
-          id="button-bgColor"
-          value={property.bgColor}
-          onChange={handleChangeBgColor}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-color">font color</label>
-        <input
-          type="color"
-          id="button-color"
-          value={property.fontColor}
-          onChange={handleChangeColor}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-url">link</label>
-        <input
-          type="text"
-          id="button-url"
-          value={property.link}
-          onChange={handleChangeLink}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-width">width</label>
-        <input
-          type="text"
-          id="button-width"
-          value={property.width}
-          onChange={handleWidth}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-align">align</label>
-        <select
-          name="button-align"
-          id="button-align"
-          defaultValue={property.align}
-          value={property.align}
-          onChange={handleAlign}
-        >
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="button-padding">padding</label>
-        <input
-          type="text"
-          id="button-padding"
-          value={property.padding}
-          onChange={handlePadding}
-        />
-      </div>
-      <div>
-        <label htmlFor="button-borderR">border radius</label>
-        <input
-          type="text"
-          id="button-borderR"
-          value={property.border}
-          onChange={handleBorder}
-        />
-      </div>
+      <InputField
+        label="content"
+        type="text"
+        id="button-content"
+        value={property.content}
+        onChange={(e) => handleChange("content", id.target, e.target.value)}
+      />
+      <InputField
+        label="background color"
+        type="color"
+        id="button-bgColor"
+        value={property.backgroundColor}
+        onChange={(e) =>
+          handleChange("backgroundColor", id.target, e.target.value)
+        }
+      />
+      <InputField
+        label="font color"
+        type="color"
+        id="button-color"
+        value={property.color}
+        onChange={(e) => handleChange("color", id.target, e.target.value)}
+      />
+      <InputField
+        label="link"
+        type="text"
+        id="button-url"
+        value={property.link}
+        onChange={(e) => handleChange("link", id.target, e.target.value)}
+      />
+      <InputField
+        label="width"
+        type="text"
+        id="button-width"
+        value={property.width}
+        onChange={(e) => handleChange("width", id.target, e.target.value)}
+      />
+      <SelectField
+        label="align"
+        id="button-align"
+        value={property.textAlign}
+        onChange={(e) => handleChange("textAlign", id.td, e.target.value)}
+        options={ALIGN_OPTIONS}
+      />
+      <InputField
+        label="padding"
+        type="text"
+        id="button-padding"
+        value={property.padding}
+        onChange={(e) => handleChange("padding", id.target, e.target.value)}
+      />
+      <InputField
+        label="border radius"
+        type="text"
+        id="button-borderR"
+        value={property.borderRadius}
+        onChange={(e) =>
+          handleChange("borderRadius", id.target, e.target.value)
+        }
+      />
     </>
   );
 };

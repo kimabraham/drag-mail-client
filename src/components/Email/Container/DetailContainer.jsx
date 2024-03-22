@@ -3,11 +3,17 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { projectInfo, selectRowId } from "../../../utils/atoms";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
+
 import useProject from "../../../hooks/useProject";
 import { useParams } from "react-router-dom";
 import { PATCH_PROJECT_TYPES } from "../../../constants/constants";
 import useNode from "../../../hooks/useNode";
 import { findNodeById } from "../../../utils/nodeUtils";
+import {
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import InputField from "../../shared/InputField";
 
 const Container = styled.div`
   height: 100%;
@@ -57,12 +63,13 @@ const Container = styled.div`
 `;
 
 const DetailContainer = () => {
-  const { updateNode } = useNode();
   const { id: projectId } = useParams();
   const project = useRecoilValue(projectInfo);
   const setProject = useSetRecoilState(projectInfo);
   const [id, setId] = useRecoilState(selectRowId);
+  const { updateNode } = useNode();
   const { patchProject } = useProject();
+
   const [property, setProperty] = useState({
     bgColor: "#ffffff",
     bgImg: "",
@@ -70,163 +77,75 @@ const DetailContainer = () => {
     radius: "",
   });
 
+  const row = project.component?.find((row) => row.nodeId === id.row);
+  const col = findNodeById(row, id.col);
+  const target = findNodeById(col, id.target);
+
   useEffect(() => {
-    const row = project.component?.find((row) => row.nodeId === id.row);
-    const col = findNodeById(row, id.col);
-    const target = findNodeById(col, id.target);
-    if (row) {
+    if (target) {
+      const {
+        style: { backgroundColor, backgroundImage, paddingTop, borderRadius },
+      } = target;
       setProperty({
-        bgColor: target.style.backgroundColor || "#ffffff",
-        bgImg: target.style.backgroundImage
-          ? target.style.backgroundImage.match(/url\("([^"]+)"\)/)[1]
-          : "",
-        padding: parseInt(target.style.padding) || "",
-        radius: parseInt(target.style.borderRadius) || "",
+        bgColor: backgroundColor || "#ffffff",
+        bgImg: backgroundImage?.match(/url\("([^"]+)"\)/)?.[1] || "",
+        padding: parseInt(paddingTop) || "",
+        radius: parseInt(borderRadius) || "",
       });
     }
   }, [id, project.component]);
 
-  const updateComponentStyle = (components, nodeId, updateFn) => {
-    return components.map((comp) => {
-      if (comp.nodeId === nodeId) {
-        return updateFn(comp);
-      } else if (comp.children) {
-        const updatedChildren = updateComponentStyle(
-          comp.children,
-          nodeId,
-          updateFn
-        );
-        return { ...comp, children: updatedChildren };
-      }
-      return comp;
-    });
-  };
+  const handleChange = (property, value) => {
+    const newStyle = { ...target.style };
+    let newProperty = {};
 
-  const handleBgColorChange = (e) => {
-    let data;
-    const newBgColor = e.target.value;
-    setProperty({ ...property, bgImg: "", bgColor: newBgColor });
-    setProject((prev) => {
-      const updatedComponents = updateComponentStyle(
-        prev.component,
-        id.target,
-        (comp) => {
-          data = {
-            ...comp,
-            style: {
-              ...comp.style,
-              backgroundColor: newBgColor,
-              backgroundImage: "",
-            },
-          };
-          return data;
-        }
-      );
+    switch (property) {
+      case "bgColor":
+        newStyle.backgroundColor = value;
+        newStyle.backgroundImage = "";
+        newProperty = { bgImg: "", bgColor: value };
+        break;
+      case "bgImg":
+        newStyle.backgroundColor = "#ffffff";
+        newStyle.backgroundImage = `url("${value}")`;
+        newStyle.backgroundSize = "cover";
+        newStyle.backgroundRepeat = "no-repeat";
+        newProperty = { bgColor: "#ffffff", bgImg: value };
+        break;
+      case "padding":
+        newStyle.paddingTop = `${value}px`;
+        newStyle.paddingBottom = `${value}px`;
+        newProperty = { padding: value };
+        break;
+      case "radius":
+        newStyle.borderRadius = `${value}px`;
+        newProperty = { radius: value };
+        break;
+      default:
+        break;
+    }
 
-      return { ...prev, component: updatedComponents };
-    });
-    updateNode.mutate(data);
-  };
-
-  const handleBgImgChange = (e) => {
-    let data;
-    const newBgImg = e.target.value;
-    setProperty({ ...property, bgColor: "#ffffff", bgImg: newBgImg });
-
-    setProject((prev) => {
-      const updatedComponents = updateComponentStyle(
-        prev.component,
-        id.target,
-        (comp) => {
-          data = {
-            ...comp,
-            style: {
-              ...comp.style,
-              backgroundColor: "#ffffff",
-              backgroundImage: `url("${newBgImg}")`,
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            },
-          };
-          return data;
-        }
-      );
-
-      return { ...prev, component: updatedComponents };
-    });
-    updateNode.mutate(data);
-  };
-
-  const handlePaddingChange = (e) => {
-    let data;
-    const newPadding = e.target.value;
-    setProperty({ ...property, padding: newPadding });
-
-    setProject((prev) => {
-      const updatedComponents = updateComponentStyle(
-        prev.component,
-        id.target,
-        (comp) => {
-          data = {
-            ...comp,
-            style: {
-              ...comp.style,
-              padding: `${newPadding || 0}px`,
-            },
-          };
-          return data;
-        }
-      );
-
-      return { ...prev, component: updatedComponents };
-    });
-
-    updateNode.mutate(data);
-  };
-
-  const handleRadiusChange = (e) => {
-    let data;
-    const newRadius = e.target.value;
-    setProperty({ ...property, radius: newRadius });
-
-    setProject((prev) => {
-      const updatedComponents = updateComponentStyle(
-        prev.component,
-        id.target,
-        (comp) => {
-          data = {
-            ...comp,
-            style: {
-              ...comp.style,
-              borderRadius: `${newRadius || 0}px`,
-            },
-          };
-          return data;
-        }
-      );
-
-      return { ...prev, component: updatedComponents };
-    });
-
-    updateNode.mutate(data);
+    setProperty((prev) => ({ ...prev, ...newProperty }));
+    setProject((prev) =>
+      updateProjectComponents(prev, id.target, { style: newStyle })
+    );
+    debouncedUpdate(updateNode.mutate, { nodeId: id.target, style: newStyle });
   };
 
   const handleDelete = () => {
     const rowIndex = project.component.findIndex(
       (row) => row.nodeId === id.row
     );
-    const nodeObject = project.component[rowIndex];
 
     setProject((prev) => ({
       ...prev,
       component: prev.component.filter((row) => row.nodeId !== id.row),
     }));
-
     setId(null);
 
     patchProject.mutate({
       projectId,
-      nodeObject,
+      nodeObject: row,
       rowIndex,
       colIndex: null,
       type: PATCH_PROJECT_TYPES.REMOVE_ROW,
@@ -239,42 +158,34 @@ const DetailContainer = () => {
         <h5>Frame Property</h5>
         <MdDelete size={25} onClick={handleDelete} />
       </div>
-      <div>
-        <label htmlFor="background-color">Background color</label>
-        <input
-          type="color"
-          id="background-color"
-          value={property.bgColor}
-          onChange={handleBgColorChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="background-image">Background image</label>
-        <input
-          type="text"
-          id="background-image"
-          value={property.bgImg}
-          onChange={handleBgImgChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="padding">padding</label>
-        <input
-          type="text"
-          id="padding"
-          value={property.padding}
-          onChange={handlePaddingChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="border-radius">rounding corners</label>
-        <input
-          type="text"
-          id="border-radius"
-          value={property.radius}
-          onChange={handleRadiusChange}
-        />
-      </div>
+      <InputField
+        label="Background color"
+        type="color"
+        id="background-color"
+        value={property.bgColor}
+        onChange={(e) => handleChange("bgColor", e.target.value)}
+      />
+      <InputField
+        label="Background image"
+        type="text"
+        id="background-image"
+        value={property.bgImg}
+        onChange={(e) => handleChange("bgImg", e.target.value)}
+      />
+      <InputField
+        label="padding"
+        type="text"
+        id="padding"
+        value={property.padding}
+        onChange={(e) => handleChange("padding", e.target.value)}
+      />
+      <InputField
+        label="rounding corners"
+        type="text"
+        id="border-radius"
+        value={property.radius}
+        onChange={(e) => handleChange("radius", e.target.value)}
+      />
     </Container>
   );
 };

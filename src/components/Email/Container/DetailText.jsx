@@ -1,13 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { useEffect, useState } from "react";
+import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
+import {
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import InputField from "../../shared/InputField";
+import SelectField from "../../shared/SelectField";
+import { ALIGN_OPTIONS } from "../../../constants/constants";
 
 const DetailText = () => {
-  const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
+  const { updateNode } = useNode();
   const [property, setProperty] = useState({
     content: "",
     size: "",
@@ -16,213 +23,101 @@ const DetailText = () => {
     padding: "",
   });
 
+  const row = project.component.find((row) => row.nodeId === id.row);
+  const target = findNodeById(row, id.target);
+
   useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const target = findNodeById(row, id.target);
-    console.log(target);
     if (target) {
+      const {
+        inner,
+        style: { color, textAlign, paddingTop, fontSize },
+      } = target;
       setProperty({
-        content: target.inner.replace(/<br \/>/g, "\n") || "",
-        size: parseInt(target.style.fontSize) || "",
-        color: target.style.color || "#000000",
-        textAlign: target.style.textAlign || "",
-        padding: parseInt(target.style.padding) || "",
+        content: inner?.replace(/<br \/>/g, "\n") || "",
+        size: parseInt(fontSize) || "",
+        color: color || "#000000",
+        textAlign: textAlign || "",
+        padding: parseInt(paddingTop) || "",
       });
     }
   }, [id, project.component]);
 
-  const handleChangeContent = useCallback(
-    (e) => {
-      let data;
-      const newContent = e.target.value;
+  const handleChange = (propName, value) => {
+    let newProperty = {};
+    let inputProp = {};
 
-      setProperty({ ...property, content: newContent });
+    switch (propName) {
+      case "content":
+        inputProp = { inner: value.replace(/\n/g, "<br />") };
+        break;
+      case "size":
+        inputProp = { style: { ...target.style, fontSize: `${value}px` } };
+        break;
+      case "color":
+        inputProp = { style: { ...target.style, color: value } };
+        break;
+      case "textAlign":
+        inputProp = { style: { ...target.style, textAlign: value } };
+        break;
+      case "padding":
+        inputProp = {
+          style: {
+            ...target.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              inner: newContent.replace(/\n/g, "<br />"),
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
+    newProperty[propName] = value;
+    setProperty((prev) => ({ ...prev, ...newProperty }));
 
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeSize = useCallback(
-    (e) => {
-      let data;
-      const newSize = e.target.value;
-      setProperty({ ...property, size: newSize });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                fontSize: `${newSize || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeColor = useCallback(
-    (e) => {
-      let data;
-      const newColor = e.target.value;
-      setProperty({ ...property, color: newColor });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                color: newColor,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleAlign = useCallback(
-    (e) => {
-      let data;
-      const newAlign = e.target.value;
-      setProperty({ ...property, textAlign: newAlign });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                textAlign: newAlign,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handlePadding = useCallback(
-    (e) => {
-      let data;
-      const newPadding = e.target.value;
-      setProperty({ ...property, padding: newPadding });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                padding: `${newPadding || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    const updatePayload =
+      propName === "content"
+        ? { nodeId: id.target, ...inputProp }
+        : { nodeId: id.target, ...inputProp };
+    setProject((prev) => updateProjectComponents(prev, id.target, inputProp));
+    debouncedUpdate(updateNode.mutate, updatePayload);
+  };
 
   return (
     <>
-      <>
-        <div>
-          <label htmlFor="text-content">content</label>
-          <textarea
-            id="text-content"
-            value={property.content}
-            onChange={handleChangeContent}
-          />
-        </div>
-        <div>
-          <label htmlFor="text-size">font size</label>
-          <input
-            type="text"
-            id="text-size"
-            value={property.size}
-            onChange={handleChangeSize}
-          />
-        </div>
-        <div>
-          <label htmlFor="text-color">font color</label>
-          <input
-            type="color"
-            id="text-color"
-            value={property.color}
-            onChange={handleChangeColor}
-          />
-        </div>
-        <div>
-          <label htmlFor="text-align">align</label>
-          <select
-            name="text-align"
-            id="text-align"
-            defaultValue={property.textAlign}
-            value={property.textAlign}
-            onChange={handleAlign}
-          >
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="text-padding">padding</label>
-          <input
-            type="text"
-            id="text-padding"
-            value={property.padding}
-            onChange={handlePadding}
-          />
-        </div>
-      </>
+      <InputField
+        label="content"
+        id="text-content"
+        value={property.content}
+        onChange={(e) => handleChange("content", e.target.value)}
+      />
+      <InputField
+        label="font size"
+        id="text-size"
+        value={property.size}
+        onChange={(e) => handleChange("size", e.target.value)}
+      />
+      <InputField
+        label="font color"
+        id="text-color"
+        type="color"
+        value={property.color}
+        onChange={(e) => handleChange("color", e.target.value)}
+      />
+      <SelectField
+        label="Align"
+        id="text-align"
+        value={property.align}
+        onChange={(e) => handleChange("textAlign", e.target.value)}
+        options={ALIGN_OPTIONS}
+      />
+      <InputField
+        label="padding"
+        id="text-padding"
+        type="padding"
+        value={property.padding}
+        onChange={(e) => handleChange("padding", e.target.value)}
+      />
     </>
   );
 };

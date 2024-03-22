@@ -9,6 +9,7 @@ import DetailVideo from "../Container/DetailVideo";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { BLOCK_TYPES } from "../../../constants/constants";
+import DetailSocial from "../Container/DetailSocial";
 
 const BlockProperty = () => {
   const [type, setType] = useState("");
@@ -28,7 +29,8 @@ const BlockProperty = () => {
       if (
         foundTarget.className === "content-image-col" ||
         foundTarget.className === "content-space-col" ||
-        foundTarget.className === "content-button-col"
+        foundTarget.className === "content-button-col" ||
+        foundTarget.className === "content-social-col"
       ) {
         setSelectBlockId({
           ...id,
@@ -60,6 +62,8 @@ const BlockProperty = () => {
       return <DetailSpace />;
     case BLOCK_TYPES.VIDEO:
       return <DetailVideo />;
+    case BLOCK_TYPES.SOCIAL:
+      return <DetailSocial />;
     default:
       return <div>Unsupported block type.</div>;
   }

@@ -8,7 +8,10 @@ export const defaultColNode = () => {
     style: {
       width: "100%",
       height: "100%",
-      padding: "10px",
+      paddingTop: "10px",
+      paddingLeft: "10px",
+      paddingRight: "10px",
+      paddingBottom: "10px",
       verticalAlign: "top",
     },
     children: [

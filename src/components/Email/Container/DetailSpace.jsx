@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-import { findNodeById, updateComponentStyle } from "../../../utils/nodeUtils";
+import { useEffect, useState } from "react";
+import { findNodeById } from "../../../utils/nodeUtils";
 import useNode from "../../../hooks/useNode";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import SelectField from "../../shared/SelectField";
+import InputField from "../../shared/InputField";
+import {
+  debouncedUpdate,
+  updateProjectComponents,
+} from "../../../utils/detailBlocks";
+import { ALIGN_OPTIONS } from "../../../constants/constants";
 
 const DetailSpace = () => {
   const { updateNode } = useNode();
@@ -11,271 +18,164 @@ const DetailSpace = () => {
   const [property, setProperty] = useState({
     width: "",
     height: "",
-    align: "",
+    textAlign: "",
     padding: "",
     border: "",
     borderColor: "",
   });
 
-  useEffect(() => {
-    const row = project.component.find((row) => row.nodeId === id.row);
-    const td = findNodeById(row, id.td);
-    const target = findNodeById(row, id.target);
+  const row = project.component.find((row) => row.nodeId === id.row);
+  const td = findNodeById(row, id.td);
+  const target = findNodeById(td, id.target);
+  console.log(target);
 
+  useEffect(() => {
+    const {
+      style: {
+        width,
+        borderWidth,
+        borderTopWidth,
+        borderTopStyle,
+        textAlign,
+        borderTopColor,
+      },
+    } = target;
+
+    const {
+      style: { paddingTop },
+    } = td;
+    console.log("w", width);
     if (target) {
       setProperty({
-        width: parseInt(target.style.width) || "",
-        height: parseInt(target.style.borderTopWidth) || "",
-        align: td.style.textAlign || "",
-        padding: parseInt(td.style.paddingTop) || "",
-        border: target.style.borderTopStyle || "",
-        borderColor: target.style.borderTopColor || "",
+        width: parseInt(width) || "",
+        height: parseInt(borderTopWidth) || "",
+        textAlign: textAlign || "",
+        padding: parseInt(paddingTop) || "",
+        border: borderTopStyle || "",
+        borderColor: borderTopColor || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
-  const handleWidth = useCallback(
-    (e) => {
-      let data;
-      const width = e.target.value || 0;
-      setProperty({ ...property, width });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                width: `${width}%`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-  const handleHeight = useCallback(
-    (e) => {
-      let data;
-      const height = e.target.value || 0;
-      setProperty({ ...property, height });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                borderTopWidth: `${height}px`,
-                borderTopStyle: property.border || "solid",
-                borderTopColor: property.borderColor,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    switch (propertyKey) {
+      case "width":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}%`,
+          },
+        };
+        break;
+      case "height":
+        inputProps = {
+          style: {
+            ...target.style,
+            borderTopWidth: `${value}px`,
+          },
+        };
+        break;
+      case "padding":
+        inputProps = {
+          style: {
+            ...td.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        break;
+      case "textAlign":
+        {
+          const align =
+            value === "left"
+              ? { marginLeft: 0, marginRight: "auto" }
+              : value === "center"
+              ? { marginLeft: "auto", marginRight: "auto" }
+              : { marginLeft: "auto", marginRight: 0 };
+          inputProps = {
+            style: {
+              ...target.style,
+              ...align,
+              [propertyKey]: value,
+            },
+          };
+        }
+        break;
+      case "border":
+        inputProps = {
+          style: {
+            ...target.style,
+            borderTopStyle: value,
+          },
+        };
+        break;
+      case "borderColor":
+        inputProps = {
+          style: {
+            ...target.style,
+            borderTopColor: value,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-  const handleAlign = useCallback(
-    (e) => {
-      let data;
-      const newAlign = e.target.value;
-      const align =
-        newAlign === "left"
-          ? { marginLeft: 0, marginRight: "auto" }
-          : newAlign === "center"
-          ? { marginLeft: "auto", marginRight: "auto" }
-          : { marginLeft: "auto", marginRight: 0 };
-      setProperty({ ...property, textAlign: newAlign });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                ...align,
-                textAlign: newAlign,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handlePadding = useCallback(
-    (e) => {
-      let data;
-      const newPadding = e.target.value;
-      setProperty({ ...property, padding: newPadding });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.td,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                paddingTop: `${newPadding || 0}px`,
-                paddingBottom: `${newPadding || 0}px`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleBorder = useCallback(
-    (e) => {
-      let data;
-      const newBorder = e.target.value;
-      setProperty({ ...property, border: newBorder });
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                border: 0,
-                backgroundColor: "#ffffff",
-                borderTop: `${property.height}px ${newBorder} ${property.borderColor}`,
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
-
-  const handleChangeBorderColor = useCallback(
-    (e) => {
-      let data;
-      const newColor = e.target.value;
-      setProperty({ ...property, borderColor: newColor });
-
-      setProject((prev) => {
-        const updatedComponents = updateComponentStyle(
-          prev.component,
-          id.target,
-          (comp) => {
-            data = {
-              ...comp,
-              style: {
-                ...comp.style,
-                borderTopColor: newColor,
-                borderTopWidth: `${property.height}px`,
-                borderTopStyle: property.border || "solid",
-              },
-            };
-            return data;
-          }
-        );
-        return { ...prev, component: updatedComponents };
-      });
-
-      updateNode.mutate(data);
-    },
-    [id, property, setProject, updateNode]
-  );
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
+  };
 
   return (
     <>
-      <div>
-        <label htmlFor="space-width">width</label>
-        <input
-          type="text"
-          id="space-width"
-          value={property.width}
-          onChange={handleWidth}
-        />
-      </div>
-      <div>
-        <label htmlFor="space-height">height</label>
-        <input
-          type="text"
-          id="space-height"
-          value={property.height}
-          onChange={handleHeight}
-        />
-      </div>
-      <div>
-        <label htmlFor="space-align">align</label>
-        <select
-          name="space-align"
-          id="space-align"
-          value={property.align}
-          onChange={handleAlign}
-        >
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="space-padding">padding</label>
-        <input
-          type="text"
-          id="space-padding"
-          value={property.padding}
-          onChange={handlePadding}
-        />
-      </div>
-      <div>
-        <label htmlFor="space-border">border</label>
-        <select
-          name="space-border"
-          id="space-border"
-          value={property.border}
-          onChange={handleBorder}
-        >
-          <option value="solid">Solid</option>
-          <option value="dotted">Dotted</option>
-          <option value="dashed">Dashed</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="space-borderColor">border color</label>
-        <input
-          type="color"
-          id="space-borderColor"
-          value={property.borderColor}
-          onChange={handleChangeBorderColor}
-        />
-      </div>
+      <InputField
+        label="width"
+        type="text"
+        id="space-width"
+        value={property.width}
+        onChange={(e) => handleChange("width", id.target, e.target.value)}
+      />
+      <InputField
+        label="height"
+        type="text"
+        id="space-height"
+        value={property.height}
+        onChange={(e) => handleChange("height", id.target, e.target.value)}
+      />
+      <SelectField
+        label="align"
+        id="space-align"
+        value={property.textAlign}
+        onChange={(e) => handleChange("textAlign", id.target, e.target.value)}
+        options={ALIGN_OPTIONS}
+      />
+      <InputField
+        label="padding"
+        type="text"
+        id="space-padding"
+        value={property.padding}
+        onChange={(e) => handleChange("padding", id.td, e.target.value)}
+      />
+      <SelectField
+        label="border"
+        id="space-border"
+        value={property.border}
+        onChange={(e) => handleChange("border", id.target, e.target.value)}
+        options={[
+          { label: "Solid", value: "solid" },
+          { label: "Dotted", value: "dotted" },
+          { label: "Dashed", value: "dashed" },
+        ]}
+      />
+      <InputField
+        label="border color"
+        type="color"
+        id="space-borderColor"
+        value={property.borderColor}
+        onChange={(e) => handleChange("borderColor", id.target, e.target.value)}
+      />
     </>
   );
 };
