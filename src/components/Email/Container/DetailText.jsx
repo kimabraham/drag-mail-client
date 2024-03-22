@@ -40,7 +40,7 @@ const DetailText = () => {
         padding: parseInt(paddingTop) || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
   const handleChange = (propName, value) => {
     let newProperty = {};

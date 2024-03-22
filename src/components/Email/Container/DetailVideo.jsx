@@ -48,7 +48,7 @@ const DetailVideo = () => {
         padding: parseInt(paddingTop) || "",
       });
     }
-  }, []);
+  }, [link, td]);
 
   const handleChange = (propertyKey, targetId, value) => {
     let inputProps = {};

@@ -33,7 +33,6 @@ const DetailSpace = () => {
     const {
       style: {
         width,
-        borderWidth,
         borderTopWidth,
         borderTopStyle,
         textAlign,
@@ -44,7 +43,7 @@ const DetailSpace = () => {
     const {
       style: { paddingTop },
     } = td;
-    console.log("w", width);
+
     if (target) {
       setProperty({
         width: parseInt(width) || "",

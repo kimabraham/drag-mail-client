@@ -93,7 +93,7 @@ const DetailContainer = () => {
         radius: parseInt(borderRadius) || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
   const handleChange = (property, value) => {
     const newStyle = { ...target.style };

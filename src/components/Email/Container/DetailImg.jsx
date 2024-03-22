@@ -30,8 +30,12 @@ const DetailImg = () => {
   useEffect(() => {
     if (target) {
       const { src } = target.props;
-      const { width, borderRadius } = target.style;
-      const { textAlign, paddingTop } = td.style;
+      const {
+        style: { width, borderRadius },
+      } = target;
+      const {
+        style: { textAlign, paddingTop },
+      } = td;
       setProperty({
         imgUrl: src || "",
         width: parseInt(width) || "",
@@ -40,7 +44,7 @@ const DetailImg = () => {
         border: parseInt(borderRadius) || "",
       });
     }
-  }, [id, project.component]);
+  }, []);
 
   const handlePropertyChange = useCallback(
     (propertyKey, newValue, nodeId, isStyle = false, additionalStyles = {}) => {
