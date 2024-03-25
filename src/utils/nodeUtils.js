@@ -150,6 +150,7 @@ export const tagDataByType = (type) => {
           href: "",
         },
         style: {
+          boxSizing: "border-box",
           display: "inline-block",
           textAlign: "center",
           width: "100%",
@@ -186,7 +187,6 @@ export const tagDataByType = (type) => {
         className: "content-video-video",
         style: {
           width: "100%",
-          position: "relative",
           display: "block",
         },
         props: {
@@ -205,23 +205,6 @@ export const tagDataByType = (type) => {
             props: {
               src: "https://img.youtube.com",
               alt: "video",
-            },
-            children: [],
-          },
-          {
-            nodeId: uuidv4(),
-            tag: "img",
-            className: "content-video-btn",
-            style: {
-              width: "40px",
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translateX(-50%) translateY(-50%)",
-            },
-            props: {
-              src: "https://cdn.pixabay.com/photo/2016/07/03/18/36/youtube-1495277_1280.png",
-              alt: "play_button",
             },
             children: [],
           },
@@ -418,6 +401,21 @@ export const adjustBlock = (type) => {
                           ],
                         },
                       ],
+                    },
+                  ]
+                : type === "img"
+                ? [
+                    {
+                      nodeId: uuidv4(),
+                      tag: "td",
+                      className: `content-${type}-col`,
+                      style: {
+                        height: "100%",
+                        verticalAlign: "middle",
+                        position: "relative",
+                        textAlign: "center",
+                      },
+                      children: [tagDataByType(type)],
                     },
                   ]
                 : [

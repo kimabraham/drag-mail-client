@@ -8,18 +8,18 @@ import { adjustBlock } from "../../utils/nodeUtils";
 const StyledCard = styled.div`
   width: 100%;
   border: 1px solid #747d8c;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #70a1ff;
+  color: #074f6d;
   gap:10px;
   & > span {
-    color: #747d8c;
-    font-size: 15px;
+    color: #787c82;
+    font-size: 12px;
     font-weight: lighter;
     letter-spacing: .5px;
   }

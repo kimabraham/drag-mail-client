@@ -10,37 +10,38 @@ import useAuthStatus from "../hooks/useAuthStatus.jsx";
 
 const Container = styled.div`
     display: flex;
-    max-width: 1080px;
+    max-width: 960px;
     margin:auto;
     & > :first-child{
-      width: 45%;
+      width: 50%;
     }
     & > :last-child{
-      width: 55%;
+      width: 50%;
     }
   `;
 
 const Box = styled.div`
-    padding-top: 90px;
+    padding-top: 120px;
     display: flex;
+    padding-left: 80px;
     flex-direction: column;
     gap: 40px;
   `;
 
-const Title = styled.h2`
+const Title = styled.h3`
     margin-bottom: 20px;
   `;
 
 const Desc = styled.p`
-    line-height: 40px;
+    line-height: 32px;
     word-spacing: 2px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     word-wrap: break-word;
   `;
 
 const HomeImage = styled.img`
-    margin-top: 60px;
-    width:100%;
+    margin-top: 180px;
+    width:90%;
   `;
 
 const Home = () => {

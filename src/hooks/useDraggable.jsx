@@ -7,6 +7,7 @@ import {
   findNodeById,
 } from "../utils/nodeUtils";
 import {
+  isDemo,
   projectDrag,
   projectInfo,
   selectBlockId,
@@ -24,6 +25,7 @@ const useDraggable = () => {
   const setProject = useSetRecoilState(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
+  const demo = useRecoilValue(isDemo);
   const [isDrag, setProjectDrag] = useRecoilState(projectDrag);
   const { patchProject } = useProject();
 
@@ -95,18 +97,15 @@ const useDraggable = () => {
 
         targetCol.children = [nodeObject];
 
+        if (demo) {
+          localStorage.setItem("project", JSON.stringify(newProject));
+        }
+
         return newProject;
       });
 
       const type = nodeObject.className.split("-")[1];
       const td = findNodeByClassName(nodeObject, `content-${type}-col`);
-
-      console.log(
-        containerRowId,
-        contentColId,
-        td.nodeId,
-        td.children[0].nodeId
-      );
 
       setSelectedBlockId({
         row: containerRowId,
@@ -115,13 +114,15 @@ const useDraggable = () => {
         target: td.children[0].nodeId,
       });
 
-      patchProject.mutate({
-        projectId: project._id,
-        nodeObject,
-        rowIndex,
-        colIndex,
-        type: PATCH_PROJECT_TYPES.ADD_BLOCK,
-      });
+      if (!demo) {
+        patchProject.mutate({
+          projectId: project._id,
+          nodeObject,
+          rowIndex,
+          colIndex,
+          type: PATCH_PROJECT_TYPES.ADD_BLOCK,
+        });
+      }
     } else {
       let rowIndex;
 
@@ -129,9 +130,18 @@ const useDraggable = () => {
       const nodeObject = JSON.parse(nodeString);
       const containerRow = e.target.closest(".container-row");
 
-      if (!project.component.length) {
+      if (!project?.component.length) {
         rowIndex = 0;
-        setProject((prev) => ({ ...prev, component: [nodeObject] }));
+        setProject((prev) => {
+          if (demo) {
+            localStorage.setItem(
+              "project",
+              JSON.stringify({ ...prev, component: [nodeObject] })
+            );
+          }
+
+          return { ...prev, component: [nodeObject] };
+        });
       } else {
         const rect = containerRow.getBoundingClientRect();
         const mid = rect.top + rect.height / 2;
@@ -151,6 +161,16 @@ const useDraggable = () => {
 
           newComponents.splice(rowIndex, 0, nodeObject);
 
+          if (demo) {
+            localStorage.setItem(
+              "project",
+              JSON.stringify({
+                ...prev,
+                component: newComponents,
+              })
+            );
+          }
+
           return {
             ...prev,
             component: newComponents,
@@ -168,13 +188,15 @@ const useDraggable = () => {
         target,
       });
 
-      patchProject.mutate({
-        projectId: project._id,
-        nodeObject,
-        rowIndex,
-        colIndex: null,
-        type: PATCH_PROJECT_TYPES.ADD_ROW,
-      });
+      if (!demo) {
+        patchProject.mutate({
+          projectId: project._id,
+          nodeObject,
+          rowIndex,
+          colIndex: null,
+          type: PATCH_PROJECT_TYPES.ADD_ROW,
+        });
+      }
 
       document.querySelectorAll(".container-row").forEach((el) => {
         el.style.boxShadow = "";

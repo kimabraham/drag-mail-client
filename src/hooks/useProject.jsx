@@ -4,18 +4,32 @@ import { useParams } from "react-router-dom";
 
 import { PATCH_PROJECT_TYPES } from "../constants/constants";
 import { insertIntoNodeObject } from "../utils/nodeUtils";
+import { useRecoilValue } from "recoil";
+import { isDemo } from "../utils/atoms";
 
 const useProject = () => {
   const { id } = useParams();
+  const demo = useRecoilValue(isDemo);
   const queryClient = useQueryClient();
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["get-project", id],
     queryFn: async () => {
-      const res = await axios.get(`/api/projects/${id}`, {
-        withCredentials: true,
-      });
-      return res.data.project;
+      if (!demo) {
+        if (localStorage.getItem("project")) {
+          const local = JSON.parse(localStorage.getItem("project"));
+          await axios.put(
+            `/api/projects/${id}`,
+            { project: local },
+            { withCredentials: true }
+          );
+          localStorage.clear();
+        }
+        const res = await axios.get(`/api/projects/${id}`, {
+          withCredentials: true,
+        });
+        return res.data.project;
+      }
     },
     refetchOnMount: "always",
     enabled: true,

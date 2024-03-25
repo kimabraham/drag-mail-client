@@ -30,7 +30,6 @@ const Menu = styled.ul`
 `;
 
 const MenuItem = styled.li`
-  text-transform: uppercase;
   font-size: larger;
   font-weight: 600;
   transition: color .2s;
@@ -46,7 +45,6 @@ const Link = styled(NavLink).attrs((props) => ({
 }))`
   color: black;
   text-decoration: none;
-  text-transform: uppercase;
   letter-spacing: .5px;
   transition: color .2s;
   &:hover{
@@ -67,21 +65,21 @@ const Header = () => {
           <Menu>
             {user ? (
               <>
-                <MenuItem onClick={handleLogout}>logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem>
-                  <Link to="/dashboard/templates">dashboard</Link>
+                  <Link to="/dashboard/templates">Dashboard</Link>
                 </MenuItem>
               </>
             ) : (
               <>
                 <MenuItem>
-                  <Link to="/signin">login</Link>
+                  <Link to="/signin">Login</Link>
                 </MenuItem>
                 <MenuItem>
-                  <Link to="/signup">sign up</Link>
+                  <Link to="/signup">Sign up</Link>
                 </MenuItem>
                 <MenuItem>
-                  <Link to="/demo">demo editor</Link>
+                  <Link to="/demo">Demo editor</Link>
                 </MenuItem>
               </>
             )}

@@ -8,12 +8,12 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
   box-sizing: border-box;
-  font-family: 'Telex';
-  font-weight: 400;
+  font-family: 'sans-serif';
+  font-weight: 600;
 }
 
   h1, h2, h3, h4, h5 {
-    font-family: 'Telex';
+    font-family: 'sans-serif';
     font-weight: 700;
   }
 

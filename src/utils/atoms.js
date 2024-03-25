@@ -24,3 +24,8 @@ export const selectBlockId = atom({
   key: "selectBlockId",
   default: null,
 });
+
+export const isDemo = atom({
+  key: "isDemo",
+  default: true,
+});

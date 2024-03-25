@@ -1,35 +1,27 @@
-import { useState } from "react";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
-import { PiSignIn } from "react-icons/pi";
-
-import signIn from "../assets/imgs/sign_in.png";
 import Logo from "../components/shared/Logo";
 
 const Container = styled.div`
   display: flex;
-`;
-
-const Box = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-image: url(${signIn});
-  background-size: cover;
-  background-position: center;
+  padding-top: 10%;
 `;
 
 const FormBox = styled.div`
   width: 100%;
   display: flex;
   flex-direction:column;
-  gap:20px;
+  gap: 80px;
   justify-content: space-around;
   align-items: center;
   & > div {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  & h3 {
+    margin-top: 20px;
   }
 `;
 
@@ -38,8 +30,7 @@ const Card = styled.div`
   padding: 50px 50px;
   border: 1px solid #e4e4e4;
   background-color: white;
-  box-shadow: 2px 2px #c1c1c1;
-  border-radius: 30px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 50px;
@@ -78,25 +69,6 @@ const Card = styled.div`
   }
 `;
 
-const SignInForm = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  & > input {
-    padding: 10px 20px;
-    font-size: large;
-    border-radius: 20px;
-    border: none;
-    background-color: #EFEFEF;
-    &:focus{
-      background-color: #EFEFEF;
-      border: none;
-      outline: none;
-    }
-  }
-`;
-
 const Button = styled.button`
   width: 100%;
   display: flex;
@@ -107,7 +79,6 @@ const Button = styled.button`
   border-radius: 20px;
   background-color: ${(props) => props.theme.primary};
   color: white;
-  text-transform: uppercase;
   letter-spacing: .4px;
   font-size: medium;
   cursor: pointer;
@@ -119,21 +90,16 @@ const Button = styled.button`
 `;
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const handleLogin = () => {
     window.open("/api/auth/google", "_self");
   };
 
-  const handleSubmit = () => {};
-
   return (
     <Container>
-      <Box />
       <FormBox>
         <div>
           <Logo />
-          <h3>SIGN IN</h3>
+          <h3>Sign In</h3>
         </div>
         <Card>
           <div>
@@ -147,7 +113,7 @@ const SignIn = () => {
             <FaGoogle />
             Sign in with Google
           </Button>
-          <span>or</span>
+          {/* <span>or</span>
           <SignInForm onSubmit={handleSubmit}>
             <input
               type="email"
@@ -165,7 +131,7 @@ const SignIn = () => {
               <PiSignIn />
               Sign In
             </Button>
-          </SignInForm>
+          </SignInForm> */}
         </Card>
         <div></div>
       </FormBox>

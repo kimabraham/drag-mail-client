@@ -17,7 +17,6 @@ const Container = styled.div`
     justify-content: space-between;
     align-items: center;
     & h3 {
-      text-transform: uppercase;
       letter-spacing: 1px;
     }
     & button {

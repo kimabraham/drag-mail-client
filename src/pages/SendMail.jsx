@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { MdCancel } from "react-icons/md";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 
 import Loading from "../components/shared/Loading";
 import { userInfo } from "../utils/atoms";
 import useContact from "../hooks/useContact";
 import useProjects from "../hooks/useProjects";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import SendButton from "../components/SendButton";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const Container = styled.div`
   width: 80%;
@@ -20,7 +24,6 @@ const Container = styled.div`
     display: flex;
     justify-content: space-between;
     & > h3 {
-      text-transform: uppercase;
       letter-spacing: .5px;
     }
     & > button {
@@ -110,24 +113,41 @@ const SendMail = () => {
   const user = useRecoilValue(userInfo);
   const { contacts } = useContact();
   const { projects } = useProjects();
-  const { state } = useLocation();
+  const { state, search } = useLocation();
   const [receivers, setReceivers] = useState(
-    state?.isToMe ? [user?.email] : []
+    state?.isToMe ? [{ name: user?.name, email: user?.email }] : []
   );
+  const [subject, setSubject] = useState("");
   const [template, setTemplate] = useState(state?.project);
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const { mutate: sendMail } = useMutation({
+    mutationKey: ["sendMail"],
+    mutationFn: async (data) => {
+      await axios.post("/api/mails", data, { withCredentials: true });
+    },
+  });
+
+  const handleSubmit = (code) => {
+    sendMail({ subject, template, receivers, code });
   };
 
   const handleSelect = (e) => {
     const newEmail = e.target.value;
-    if (newEmail && !receivers.includes(newEmail)) {
-      setReceivers([...receivers, newEmail]);
+    const isExist = receivers.find((receiver) => receiver.email === newEmail);
+    if (newEmail && !isExist) {
+      const contact = contacts.find((contact) => contact.email === newEmail);
+      setReceivers((prev) => [
+        ...prev,
+        { email: newEmail, name: contact.name },
+      ]);
     }
   };
 
   const handleDeleteReceiver = (email) => {
-    setReceivers(receivers.filter((receiver) => receiver !== email));
+    setReceivers(receivers.filter((receiver) => receiver.email !== email));
+  };
+
+  const handleSubject = (e) => {
+    setSubject(e.target.value);
   };
 
   if (!user) {
@@ -138,17 +158,19 @@ const SendMail = () => {
     <Container>
       <div>
         <h3>Send mail</h3>
-        <button onClick={handleSubmit}>Send</button>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <SendButton onClick={handleSubmit} />
+        </GoogleOAuthProvider>
       </div>
       <Receivers>
         <h4>To.</h4>
         <ul>
           {receivers.map((receiver) => (
-            <li key={receiver}>
-              <span>{receiver}</span>
+            <li key={receiver.email}>
+              <span>{receiver.email}</span>
               <MdCancel
                 size={20}
-                onClick={() => handleDeleteReceiver(receiver)}
+                onClick={() => handleDeleteReceiver(receiver.email)}
               />
             </li>
           ))}
@@ -160,7 +182,7 @@ const SendMail = () => {
           {user?.email} ( {user?.name} )
         </span>
       </Sender>
-      <Form onSubmit={handleSubmit}>
+      <Form>
         <div>
           <label htmlFor="friendsList">Friends</label>
           <select
@@ -183,7 +205,13 @@ const SendMail = () => {
         </div>
         <div>
           <label htmlFor="subject">Subject</label>
-          <input type="text" id="subject" placeholder="Input email subject" />
+          <input
+            type="text"
+            id="subject"
+            placeholder="Input email subject"
+            value={subject}
+            onChange={handleSubject}
+          />
         </div>
         <div>
           <label htmlFor="templateList">templates</label>

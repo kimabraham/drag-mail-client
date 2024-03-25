@@ -32,7 +32,6 @@ const Template = styled.div`
   & > button {
     font-size: large;
     letter-spacing: .4px;
-    text-transform:uppercase;
     padding: 8px 35px;
     margin-top: auto;
     margin-bottom: 10px;
@@ -62,7 +61,7 @@ const TemplateCard = ({ template, deleteProject }) => {
       <FcTemplate size={50} />
       <h5>{title}</h5>
       <span>{createdAt.slice(0, 10)}</span>
-      <button onClick={handleDelete}>delete</button>
+      <button onClick={handleDelete}>Delete</button>
     </Template>
   );
 };

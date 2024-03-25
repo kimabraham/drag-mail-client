@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { isDemo, projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
 import { findNodeById } from "../../../utils/nodeUtils";
 import InputField from "../../shared/InputField";
@@ -15,6 +15,7 @@ const DetailButton = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
+  const demo = useRecoilValue(isDemo);
   const [property, setProperty] = useState({
     content: "Button",
     backgroundColor: "#1D90FF",
@@ -51,83 +52,84 @@ const DetailButton = () => {
         borderRadius: parseInt(borderRadius) || "",
       });
     }
-  }, [id]);
+  }, []);
 
-  const handleChange = useCallback(
-    (propertyKey, targetId, value) => {
-      let inputProps = {};
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-      switch (propertyKey) {
-        case "content":
-          inputProps = {
-            inner: value,
-          };
-          break;
-        case "backgroundColor":
-        case "color":
-          inputProps = {
-            style: {
-              ...target.style,
-              [propertyKey]: value,
-            },
-          };
-          break;
-        case "textAlign":
-          inputProps = {
-            style: {
-              ...td.style,
-              [propertyKey]: value,
-            },
-          };
-          break;
-        case "link":
-          inputProps = {
-            props: {
-              ...target.props,
-              href: `http://${value}`,
-              target: "_blank",
-            },
-          };
-          break;
-        case "width":
-          inputProps = {
-            style: {
-              ...target.style,
-              [propertyKey]: `${value}%`,
-            },
-          };
-          break;
-        case "padding":
-        case "borderRadius":
-          inputProps = {
-            style: {
-              ...target.style,
-              [propertyKey]: `${value}px`,
-            },
-          };
-          break;
-        default:
-          break;
-      }
+    switch (propertyKey) {
+      case "content":
+        inputProps = {
+          inner: value,
+        };
+        break;
+      case "backgroundColor":
+      case "color":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: value,
+          },
+        };
+        break;
+      case "textAlign":
+        inputProps = {
+          style: {
+            ...td.style,
+            [propertyKey]: value,
+          },
+        };
+        break;
+      case "link":
+        inputProps = {
+          props: {
+            ...target.props,
+            href: `http://${value}`,
+            target: "_blank",
+          },
+        };
+        break;
+      case "width":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}%`,
+          },
+        };
+        break;
+      case "padding":
+      case "borderRadius":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) =>
+      updateProjectComponents(prev, targetId, inputProps, demo)
+    );
+    if (!demo) {
       debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-    },
-    [id]
-  );
+    }
+  };
 
   return (
     <>
       <InputField
-        label="content"
+        label="Content"
         type="text"
         id="button-content"
         value={property.content}
         onChange={(e) => handleChange("content", id.target, e.target.value)}
       />
       <InputField
-        label="background color"
+        label="Background color"
         type="color"
         id="button-bgColor"
         value={property.backgroundColor}
@@ -136,42 +138,42 @@ const DetailButton = () => {
         }
       />
       <InputField
-        label="font color"
+        label="Font color"
         type="color"
         id="button-color"
         value={property.color}
         onChange={(e) => handleChange("color", id.target, e.target.value)}
       />
       <InputField
-        label="link"
+        label="Link"
         type="text"
         id="button-url"
         value={property.link}
         onChange={(e) => handleChange("link", id.target, e.target.value)}
       />
       <InputField
-        label="width"
+        label="Width"
         type="text"
         id="button-width"
         value={property.width}
         onChange={(e) => handleChange("width", id.target, e.target.value)}
       />
       <SelectField
-        label="align"
+        label="Align"
         id="button-align"
         value={property.textAlign}
         onChange={(e) => handleChange("textAlign", id.td, e.target.value)}
         options={ALIGN_OPTIONS}
       />
       <InputField
-        label="padding"
+        label="Padding"
         type="text"
         id="button-padding"
         value={property.padding}
         onChange={(e) => handleChange("padding", id.target, e.target.value)}
       />
       <InputField
-        label="border radius"
+        label="Border radius"
         type="text"
         id="button-borderR"
         value={property.borderRadius}

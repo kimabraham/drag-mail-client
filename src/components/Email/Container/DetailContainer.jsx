@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { projectInfo, selectRowId } from "../../../utils/atoms";
+import { isDemo, projectInfo, selectRowId } from "../../../utils/atoms";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
 
@@ -21,7 +21,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
+  font-size: 16px;
   & svg {
     color: #3498db;
     cursor: pointer;
@@ -29,10 +29,9 @@ const Container = styled.div`
       color: #2980b9;
     }
   }
-  & > h5 {
-    text-transform: uppercase;
+  & h6 {
     letter-spacing: 1px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
   }
   & > div {
     height: 100%;
@@ -42,8 +41,6 @@ const Container = styled.div`
     padding: 5px;
     & label {
       width: 50%;
-      font-size: 16px;
-      text-transform: uppercase;
       letter-spacing: .5px;
       &::after {
         content: " :";
@@ -52,12 +49,11 @@ const Container = styled.div`
     & input {
       width: 50%;
       padding: 5px 10px;
-      font-size: large;
     }
     & input[type='color'] {
       padding: 0px;
       border: none;
-      height: 40px;
+      height: 35px;
     }
   }
 `;
@@ -67,9 +63,9 @@ const DetailContainer = () => {
   const project = useRecoilValue(projectInfo);
   const setProject = useSetRecoilState(projectInfo);
   const [id, setId] = useRecoilState(selectRowId);
+  const demo = useRecoilValue(isDemo);
   const { updateNode } = useNode();
   const { patchProject } = useProject();
-  console.log("id", id);
   const [property, setProperty] = useState({
     bgColor: "#ffffff",
     bgImg: "",
@@ -93,7 +89,7 @@ const DetailContainer = () => {
         radius: parseInt(borderRadius) || "",
       });
     }
-  }, [id]);
+  }, []);
 
   const handleChange = (property, value) => {
     const newStyle = { ...target.style };
@@ -127,9 +123,14 @@ const DetailContainer = () => {
 
     setProperty((prev) => ({ ...prev, ...newProperty }));
     setProject((prev) =>
-      updateProjectComponents(prev, id.target, { style: newStyle })
+      updateProjectComponents(prev, id.target, { style: newStyle }, demo)
     );
-    debouncedUpdate(updateNode.mutate, { nodeId: id.target, style: newStyle });
+    if (!demo) {
+      debouncedUpdate(updateNode.mutate, {
+        nodeId: id.target,
+        style: newStyle,
+      });
+    }
   };
 
   const handleDelete = () => {
@@ -137,26 +138,40 @@ const DetailContainer = () => {
       (row) => row.nodeId === id.row
     );
 
-    setProject((prev) => ({
-      ...prev,
-      component: prev.component.filter((row) => row.nodeId !== id.row),
-    }));
+    setProject((prev) => {
+      if (demo) {
+        localStorage.setItem(
+          "project",
+          JSON.stringify({
+            ...prev,
+            component: prev.component.filter((row) => row.nodeId !== id.row),
+          })
+        );
+      }
+
+      return {
+        ...prev,
+        component: prev.component.filter((row) => row.nodeId !== id.row),
+      };
+    });
 
     setId(null);
 
-    patchProject.mutate({
-      projectId,
-      nodeObject: row,
-      rowIndex,
-      colIndex: null,
-      type: PATCH_PROJECT_TYPES.REMOVE_ROW,
-    });
+    if (!demo) {
+      patchProject.mutate({
+        projectId,
+        nodeObject: row,
+        rowIndex,
+        colIndex: null,
+        type: PATCH_PROJECT_TYPES.REMOVE_ROW,
+      });
+    }
   };
 
   return (
     <Container>
       <div>
-        <h5>Frame Property</h5>
+        <h6>Frame Property</h6>
         <MdDelete size={25} onClick={handleDelete} />
       </div>
       <InputField
@@ -174,14 +189,14 @@ const DetailContainer = () => {
         onChange={(e) => handleChange("bgImg", e.target.value)}
       />
       <InputField
-        label="padding"
+        label="Padding"
         type="text"
         id="padding"
         value={property.padding}
         onChange={(e) => handleChange("padding", e.target.value)}
       />
       <InputField
-        label="rounding corners"
+        label="Rounding corners"
         type="text"
         id="border-radius"
         value={property.radius}

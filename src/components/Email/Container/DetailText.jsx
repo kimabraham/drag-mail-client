@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { isDemo, projectInfo, selectBlockId } from "../../../utils/atoms";
 import useNode from "../../../hooks/useNode";
 import {
   debouncedUpdate,
@@ -15,6 +15,7 @@ const DetailText = () => {
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
   const { updateNode } = useNode();
+  const demo = useRecoilValue(isDemo);
   const [property, setProperty] = useState({
     content: "",
     size: "",
@@ -41,49 +42,50 @@ const DetailText = () => {
         padding: parseInt(paddingTop) || "",
       });
     }
-  }, [id]);
+  }, []);
 
-  const handleChange = useCallback(
-    (propertyKey, targetId, value) => {
-      let inputProps = {};
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-      switch (propertyKey) {
-        case "content":
-          inputProps = { inner: value.replace(/\n/g, "<br />") };
-          break;
-        case "size":
-          inputProps = { style: { ...target.style, fontSize: `${value}px` } };
-          break;
-        case "color":
-          inputProps = { style: { ...target.style, color: value } };
-          break;
-        case "textAlign":
-          inputProps = { style: { ...target.style, textAlign: value } };
-          break;
-        case "padding":
-          inputProps = {
-            style: {
-              ...target.style,
-              paddingTop: `${value}px`,
-              paddingBottom: `${value}px`,
-            },
-          };
-          break;
-        default:
-          break;
-      }
+    switch (propertyKey) {
+      case "content":
+        inputProps = { inner: value.replace(/\n/g, "<br />") };
+        break;
+      case "size":
+        inputProps = { style: { ...target.style, fontSize: `${value}px` } };
+        break;
+      case "color":
+        inputProps = { style: { ...target.style, color: value } };
+        break;
+      case "textAlign":
+        inputProps = { style: { ...target.style, textAlign: value } };
+        break;
+      case "padding":
+        inputProps = {
+          style: {
+            ...target.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) =>
+      updateProjectComponents(prev, targetId, inputProps, demo)
+    );
+    if (!demo) {
       debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-    },
-    [id]
-  );
+    }
+  };
 
   return (
     <>
       <div>
-        <label htmlFor="text-content">content</label>
+        <label htmlFor="text-content">Content</label>
         <textarea
           name="text-content"
           id="text-content"
@@ -94,13 +96,13 @@ const DetailText = () => {
         ></textarea>
       </div>
       <InputField
-        label="font size"
+        label="Font size"
         id="text-size"
         value={property.size}
         onChange={(e) => handleChange("size", id.target, e.target.value)}
       />
       <InputField
-        label="font color"
+        label="Font color"
         id="text-color"
         type="color"
         value={property.color}
@@ -114,7 +116,7 @@ const DetailText = () => {
         options={ALIGN_OPTIONS}
       />
       <InputField
-        label="padding"
+        label="Padding"
         id="text-padding"
         type="padding"
         value={property.padding}

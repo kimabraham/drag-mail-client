@@ -1,15 +1,16 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { userInfo } from "../utils/atoms";
+import { isDemo, userInfo } from "../utils/atoms";
 
 const url = "/api/auth/success";
 
 const useAuthStatus = () => {
   const [, setUser] = useRecoilState(userInfo);
+  const setIsDemo = useSetRecoilState(isDemo);
 
-  const { isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["get-auth-status"],
     queryFn: async () => {
       try {
@@ -22,6 +23,7 @@ const useAuthStatus = () => {
           avatarUrl,
         };
         setUser(userInfo);
+        setIsDemo(false);
         return userInfo;
       } catch (error) {
         console.error(error);
@@ -30,7 +32,7 @@ const useAuthStatus = () => {
     },
   });
 
-  return { isLoading };
+  return { user: data, isLoading };
 };
 
 export default useAuthStatus;

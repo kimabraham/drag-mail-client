@@ -37,7 +37,7 @@ const Body = styled.div`
 `;
 
 const Side = styled.div`
-    width: 30%;
+    width: 25%;
     min-width: 340px;
     height: 100%;
     display: flex;
@@ -51,28 +51,19 @@ const Side = styled.div`
 `;
 
 const Screen = styled.div`
-    width: 70%;
+    width: 75%;
     min-width: 940px;
     background-color: #f1f2f6;
     overflow-y: auto;
 `;
 
 const Structures = styled.div`
-    display: flex;
-    height: 40%;
-    flex-direction: column;
-    & > :first-child {
-      color: #57606f;
-      background-color: #ced6e0;
-      display: flex;
-      align-items: center;
-      gap:10px;
-      padding: 5px 15px;
-      border-bottom: 1px solid;
-    }
-    & .back-icon {
-      cursor: pointer;
-    }
+  height: 40%;
+  display: flex;
+  flex-direction: column;
+  & .back-icon {
+    cursor: pointer;
+  }
 `;
 
 const Blocks = styled(Structures)`

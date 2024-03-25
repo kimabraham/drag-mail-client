@@ -1,22 +1,22 @@
 import { styled } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { IoIosSave } from "react-icons/io";
-import { IoCodeSlashSharp } from "react-icons/io5";
 import { MdOutlinePreview } from "react-icons/md";
 import { LuSendHorizonal } from "react-icons/lu";
 import { PiExportBold } from "react-icons/pi";
 
-import { projectInfo } from "../../utils/atoms";
+import { isDemo, projectInfo } from "../../utils/atoms";
 import useProject from "../../hooks/useProject";
 import { useState } from "react";
 
 const Container = styled.div`
     width: 100%;
+    height: 45px;
     display: flex;
     justify-content: space-between;
-    padding: 5px 20px;
-    background-color: #a4b0be;
+    padding: 0px 20px;
+    background-color: white;
     border-bottom: 1px solid;
     & > form {
         width: 100%;
@@ -24,9 +24,7 @@ const Container = styled.div`
         align-items: center;
         gap: 10px;
         & > label {
-            font-size: larger;
-            text-transform: uppercase;
-            letter-spacing: .5px;
+            font-size: 16px;
             &::after{
                 content:" :"
             }
@@ -37,35 +35,35 @@ const Container = styled.div`
             letter-spacing: .5px;
             font-size: 16px;
             border:1px solid;
-            background-color: #dfe4ea;
-            border-radius: 20px;
+            border-radius: 5px;
         }
     }
     & > div {
         display: flex;
+        justify-content: center;
+        align-items: center;
         gap: 10px;
     }
 `;
 
 const Button = styled.button`
-    text-transform: uppercase;
+    background-color: white;
     padding: 0 20px;
     position: relative;
-    font-size: 18px;
+    font-size: 15px;
+    letter-spacing: .2px;
     height: 30px;
     cursor: pointer;
     display: flex;
     gap: 5px;
     justify-content: center;
     align-items: center;
-    background-color: #dfe4ea;
     border: 1px solid;
-    border-radius: 20px;
-    color: #2f3542;
+    border-radius: 5px;
     &:hover{
-        border: 1px solid  #2f3542;
-        background-color:  #2f3542;
-        color: white;
+      border: 1px solid  #053448;
+      background-color:  #053448;
+      color: white;
     }
 `;
 
@@ -88,8 +86,9 @@ const Alert = styled.div`
 
 const TemplateTitle = () => {
   const [project, setProject] = useRecoilState(projectInfo);
-  const [isCopied, setIsCopied] = useState(false);
+  const demo = useRecoilValue(isDemo);
 
+  const [isCopied, setIsCopied] = useState(false);
   const { id: projectId } = useParams();
   const { updateProject } = useProject();
 
@@ -104,14 +103,22 @@ const TemplateTitle = () => {
     setProject({ ...project, title: e.target.value });
   };
 
-  const handleSend = () => {
-    navigate("/dashboard/send", {
-      state: { project: project._id, isToMe: true },
-    });
+  const handleSend = async () => {
+    if (demo) {
+      window.open("/api/auth/demo", "_self");
+    } else {
+      navigate("/dashboard/send", {
+        state: { project: project._id, isToMe: true },
+      });
+    }
   };
 
   const handlePreview = () => {
-    navigate(`/preview/${project._id}`);
+    if (demo) {
+      navigate(`/preview/demo`);
+    } else {
+      navigate(`/preview/${project._id}`);
+    }
   };
 
   const handleExport = () => {
@@ -133,33 +140,34 @@ const TemplateTitle = () => {
 
   return (
     <Container>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="templateName">Title</label>
-        <input
-          type="text"
-          id="templateName"
-          value={project?.title || ""}
-          onChange={handleTitleChange}
-        />
-        <Button type="submit">
-          <IoIosSave size={25} />
-        </Button>
-      </form>
+      {demo ? (
+        <div></div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="templateName">Title</label>
+          <input
+            type="text"
+            id="templateName"
+            value={project?.title || ""}
+            onChange={handleTitleChange}
+          />
+          <Button type="submit">
+            <IoIosSave size={20} />
+          </Button>
+        </form>
+      )}
       <div>
-        <Button>
-          <IoCodeSlashSharp size={25} />
-        </Button>
         <Button onClick={handlePreview}>
-          <MdOutlinePreview size={25} />
-          preview
+          <MdOutlinePreview size={20} />
+          Preview
         </Button>
         <Button onClick={handleSend}>
-          <LuSendHorizonal size={25} />
-          send
+          <LuSendHorizonal size={20} />
+          Send
         </Button>
         <Button onClick={handleExport}>
-          <PiExportBold size={25} />
-          export
+          <PiExportBold size={20} />
+          Export
           {isCopied && <Alert>Copied to clipboard!</Alert>}
         </Button>
       </div>

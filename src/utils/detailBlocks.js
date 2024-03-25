@@ -17,7 +17,7 @@ export const debouncedUpdate = debounce((updateFunction, data) => {
   updateFunction(data);
 }, 300);
 
-export const updateProjectComponents = (prev, id, property) => {
+export const updateProjectComponents = (prev, id, property, isDemo) => {
   const updatedComponents = updateComponentStyle(
     prev.component,
     id,
@@ -26,5 +26,13 @@ export const updateProjectComponents = (prev, id, property) => {
       ...property,
     })
   );
+
+  if (isDemo) {
+    console.log(`hi`);
+    localStorage.setItem(
+      "project",
+      JSON.stringify({ ...prev, component: updatedComponents })
+    );
+  }
   return { ...prev, component: updatedComponents };
 };

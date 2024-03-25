@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import useNode from "../../../hooks/useNode";
 import { findNodeById } from "../../../utils/nodeUtils";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { isDemo, projectInfo, selectBlockId } from "../../../utils/atoms";
 import InputField from "../../shared/InputField";
 import SelectField from "../../shared/SelectField";
 import {
@@ -15,6 +15,7 @@ const DetailImg = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
+  const demo = useRecoilValue(isDemo);
   const [property, setProperty] = useState({
     src: "",
     width: "",
@@ -45,84 +46,85 @@ const DetailImg = () => {
         border: parseInt(borderRadius) || "",
       });
     }
-  }, [id]);
+  }, []);
 
-  const handleChange = useCallback(
-    (propertyKey, targetId, value) => {
-      let inputProps;
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps;
 
-      switch (propertyKey) {
-        case "src":
-          inputProps = {
-            props: {
-              ...target.props,
-              [propertyKey]: value,
-            },
-          };
-          break;
-        case "width":
-          inputProps = {
-            style: {
-              ...target.style,
-              [propertyKey]: `${value}%`,
-            },
-          };
-          break;
-        case "textAlign":
-          {
-            const align =
-              value === "left"
-                ? { marginLeft: 0, marginRight: "auto" }
-                : value === "center"
-                ? { marginLeft: "auto", marginRight: "auto" }
-                : { marginLeft: "auto", marginRight: 0 };
-            inputProps = {
-              style: {
-                ...td.style,
-                ...align,
-                [propertyKey]: value,
-              },
-            };
-          }
-          break;
-        case "padding":
+    switch (propertyKey) {
+      case "src":
+        inputProps = {
+          props: {
+            ...target.props,
+            [propertyKey]: value,
+          },
+        };
+        break;
+      case "width":
+        inputProps = {
+          style: {
+            ...target.style,
+            [propertyKey]: `${value}%`,
+          },
+        };
+        break;
+      case "textAlign":
+        {
+          const align =
+            value === "left"
+              ? { marginLeft: 0, marginRight: "auto" }
+              : value === "center"
+              ? { marginLeft: "auto", marginRight: "auto" }
+              : { marginLeft: "auto", marginRight: 0 };
           inputProps = {
             style: {
               ...td.style,
-              paddingTop: `${value}px`,
-              paddingBottom: `${value}px`,
+              ...align,
+              [propertyKey]: value,
             },
           };
-          break;
-        case "border":
-          inputProps = {
-            style: {
-              ...target.style,
-              borderRadius: `${value}px`,
-            },
-          };
-          break;
-        default:
-          break;
-      }
+        }
+        break;
+      case "padding":
+        inputProps = {
+          style: {
+            ...td.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        break;
+      case "border":
+        inputProps = {
+          style: {
+            ...target.style,
+            borderRadius: `${value}px`,
+          },
+        };
+        break;
+      default:
+        break;
+    }
 
-      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) =>
+      updateProjectComponents(prev, targetId, inputProps, demo)
+    );
+    if (!demo) {
       debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-    },
-    [id]
-  );
+    }
+  };
 
   return (
     <>
       <InputField
-        label="img url"
+        label="Img url"
         id="image-url"
         value={property.src}
         onChange={(e) => handleChange("src", id.target, e.target.value)}
       />
       <InputField
-        label="width"
+        label="Width"
         id="image-width"
         value={property.width}
         onChange={(e) => handleChange("width", id.target, e.target.value)}
@@ -135,13 +137,13 @@ const DetailImg = () => {
         options={ALIGN_OPTIONS}
       />
       <InputField
-        label="padding"
+        label="Padding"
         id="image-padding"
         value={property.padding}
         onChange={(e) => handleChange("padding", id.td, e.target.value)}
       />
       <InputField
-        label="border radius"
+        label="Border radius"
         id="image-border"
         value={property.border}
         onChange={(e) => handleChange("border", id.target, e.target.value)}

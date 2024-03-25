@@ -8,7 +8,7 @@ const List = styled.ul`
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #ecf0f1;
+  background-color: #F1F2F6;
   padding: 20px 30px;
   gap:10px;
 `;
@@ -20,7 +20,7 @@ const Item = styled.li`
   height: 100%;
   padding: 10px;
   border: 1px solid #747d8c;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: white;
   cursor: pointer;
   transition: box-shadow 0.3s ease;
@@ -30,7 +30,7 @@ const Item = styled.li`
   }
   & > div {
     width: 100%;
-    border: 1px dashed #70a1ff;
+    border: 1px dashed #074f6d;
   }
 `;
 

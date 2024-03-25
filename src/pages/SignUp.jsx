@@ -8,10 +8,19 @@ import Logo from "../components/shared/Logo";
 const Container = styled.div`
   display:flex;
   flex-direction:column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 100px;
   padding: 100px;
+  & > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    & > h3 {
+      margin-top: 15px;
+    }
+  }
 `;
 
 const Card = styled.div`
@@ -19,13 +28,12 @@ const Card = styled.div`
   padding: 50px 50px;
   border: 1px solid #e4e4e4;
   background-color: white;
-  box-shadow: 2px 2px #c1c1c1;
-  border-radius: 30px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 50px;
   & > div > div  {
-    padding-top: 15px;
+    padding-top: 20px;
     & > span {
       font-size: large;
       margin-right: 10px;
@@ -43,7 +51,7 @@ const Card = styled.div`
     display: flex;
     align-items: center;
     text-align: center;
-    width: 100%; /* 전체 너비 사용 */
+    width: 100%;
     &:before,
     &:after {
       content: "";
@@ -51,11 +59,14 @@ const Card = styled.div`
       border-bottom: 1px solid #d8d8d8;
     }
     &:before {
-      margin-right: 10px; /* 오른쪽 여백 추가 */
+      margin-right: 10px;
     }
     &:after {
-      margin-left: 10px; /* 왼쪽 여백 추가 */
+      margin-left: 10px;
     }
+  }
+  & h3 {
+    line-height: 50px;
   }
 `;
 
@@ -69,7 +80,6 @@ const Button = styled.button`
   border-radius: 20px;
   background-color: ${(props) => props.theme.primary};
   color: white;
-  text-transform: uppercase;
   letter-spacing: .4px;
   font-size: medium;
   cursor: pointer;
@@ -80,25 +90,6 @@ const Button = styled.button`
   }
 `;
 
-const SignInForm = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  & > input {
-    padding: 10px 20px;
-    font-size: large;
-    border-radius: 20px;
-    border: none;
-    background-color: #EFEFEF;
-    &:focus{
-      background-color: #EFEFEF;
-      border: none;
-      outline: none;
-    }
-  }
-`;
-
 const SignUp = () => {
   const handleLogin = () => {
     window.open("/api/auth/google", "_self");
@@ -106,7 +97,10 @@ const SignUp = () => {
 
   return (
     <Container>
-      <Logo />
+      <div>
+        <Logo />
+        <h3>Sign Up</h3>
+      </div>
       <Card>
         <div>
           <h3>Get Started with a Free Account</h3>
@@ -119,16 +113,6 @@ const SignUp = () => {
           <FaGoogle />
           Sign in with Google
         </Button>
-        <span>or</span>
-        <SignInForm>
-          <input type="text" />
-          <input type="text" />
-          <input type="text" />
-          <Button>
-            <PiSignIn />
-            Sign Up
-          </Button>
-        </SignInForm>
       </Card>
     </Container>
   );

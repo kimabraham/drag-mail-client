@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import useProject from "../hooks/useProject";
 import Loading from "../components/shared/Loading";
 import NodeRenderer from "../utils/NodeRender";
-import { useRecoilState } from "recoil";
-import { projectInfo } from "../utils/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { isDemo, projectInfo } from "../utils/atoms";
 import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
@@ -110,6 +110,7 @@ const Preview = () => {
   const [isCopied, setIsCopied] = useState(false);
   const { project: data, isLoading } = useProject();
   const [project, setProject] = useRecoilState(projectInfo);
+  const demo = useRecoilValue(isDemo);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -167,21 +168,23 @@ const Preview = () => {
           <h5>{project.title}</h5>
         </div>
         <ProfileBox>
-          <Button onClick={handleSend}>
-            <LuSendHorizonal size={25} />
-            send
-          </Button>
+          {!demo && (
+            <Button onClick={handleSend}>
+              <LuSendHorizonal size={25} />
+              send
+            </Button>
+          )}
           <Button onClick={handleExport}>
             <PiExportBold size={25} />
             export
             {isCopied && <Alert>Copied to clipboard!</Alert>}
           </Button>
-          <Profile position={{ top: 60, left: 10 }} />
+          {!demo && <Profile position={{ top: 60, left: 10 }} />}
         </ProfileBox>
       </header>
       <PreviewTable className="email-template-table">
         <tbody>
-          <NodeRenderer nodes={nodes} />
+          <NodeRenderer isPreview={true} />
         </tbody>
       </PreviewTable>
     </Container>

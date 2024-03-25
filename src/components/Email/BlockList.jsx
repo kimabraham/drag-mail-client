@@ -14,7 +14,7 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
-	background-color: #ecf0f1;
+	background-color:#F1F2F6;
 	padding: 30px;
 `;
 
@@ -35,17 +35,17 @@ const BlockList = () => {
       ) : (
         <Container>
           <Row>
-            <Card icon={<PiTextT size={30} />} label="Text" />
-            <Card icon={<PiImage size={30} />} label="Image" />
-            <Card icon={<RxButton size={30} />} label="Button" />
+            <Card icon={<PiTextT size={25} />} label="Text" />
+            <Card icon={<PiImage size={25} />} label="Image" />
+            <Card icon={<RxButton size={25} />} label="Button" />
           </Row>
           <Row>
             <Card
-              icon={<LuAlignVerticalSpaceAround size={30} />}
+              icon={<LuAlignVerticalSpaceAround size={25} />}
               label="Space"
             />
-            <Card icon={<PiVideoCamera size={30} />} label="Video" />
-            <Card icon={<FiInstagram size={30} />} label="Social" />
+            <Card icon={<PiVideoCamera size={25} />} label="Video" />
+            <Card icon={<FiInstagram size={25} />} label="Social" />
           </Row>
         </Container>
       )}

@@ -1,5 +1,5 @@
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { isDemo, projectInfo, selectBlockId } from "../../../utils/atoms";
 import { updateComponentStyle } from "../../../utils/nodeUtils";
 import { styled } from "styled-components";
 import { MdDelete } from "react-icons/md";
@@ -30,6 +30,7 @@ const Container = styled.div`
   & > div {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 10px;
   }
 
@@ -44,8 +45,7 @@ const Property = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    font-size: 18px;
-    text-transform: uppercase;
+    font-size: 16px;
     & > div {
         width: 100%;
         display: flex;
@@ -61,17 +61,15 @@ const Property = styled.div`
     & input, & select {
         width: 60%;
         padding: 5px 10px;
-        font-size:large;
     }
     & input[type='color'] {
       padding: 0px;
       border: none;
-      height: 40px;
+      height: 35px;
     }
     & textarea {
       width: 60%;
       height: 150px;
-      font-size:large;
       resize: none;
     }
 `;
@@ -79,7 +77,9 @@ const Property = styled.div`
 const DetailBlock = () => {
   const { removeBlock } = useNode();
   const setProject = useSetRecoilState(projectInfo);
+  const demo = useRecoilValue(isDemo);
   const [id, setId] = useRecoilState(selectBlockId);
+
   const handleDelete = useCallback(() => {
     let data;
     setProject((prev) => {
@@ -110,13 +110,15 @@ const DetailBlock = () => {
       return { ...prev, component: updatedComponents };
     });
     setId(null);
-    removeBlock.mutate(data);
+    if (!demo) {
+      removeBlock.mutate(data);
+    }
   }, [id.col, removeBlock, setId, setProject]);
 
   return (
     <Container>
       <div>
-        <h5>Block Property</h5>
+        <h6>Block Property</h6>
         <MdDelete size={25} onClick={handleDelete} />
       </div>
       <Property>

@@ -8,7 +8,7 @@ const Row = styled.table`
   min-height: 0px;
 `;
 
-const NodeRenderer = () => {
+const NodeRenderer = ({ isPreview }) => {
   const project = useRecoilValue(projectInfo);
   const setSelectedRowId = useSetRecoilState(selectRowId);
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
@@ -22,7 +22,9 @@ const NodeRenderer = () => {
     const TagName = className === "container-table" ? Row : tag;
 
     const handleClick = (e) => {
-      e.preventDefault();
+      if (!isPreview) {
+        e.preventDefault();
+      }
       e.stopPropagation();
       if (
         className.includes("container-inner-row") ||

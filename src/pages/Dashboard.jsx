@@ -40,7 +40,6 @@ const Content = styled.div`
 const StyleLink = styled(NavLink)`
   color: black;
   text-decoration: none;
-  text-transform: uppercase;
   font-size: larger;
   letter-spacing: .4px;
   font-weight: 600;

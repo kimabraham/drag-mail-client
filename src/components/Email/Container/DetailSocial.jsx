@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import useNode from "../../../hooks/useNode";
 import { useCallback, useEffect, useState } from "react";
-import { projectInfo, selectBlockId } from "../../../utils/atoms";
+import { isDemo, projectInfo, selectBlockId } from "../../../utils/atoms";
 import { findNodeByClassName, findNodeById } from "../../../utils/nodeUtils";
 import InputField from "../../shared/InputField";
 import SelectField from "../../shared/SelectField";
@@ -15,6 +15,7 @@ const DetailSocial = () => {
   const { updateNode } = useNode();
   const [project, setProject] = useRecoilState(projectInfo);
   const id = useRecoilValue(selectBlockId);
+  const demo = useRecoilValue(isDemo);
   const [property, setProperty] = useState({
     instagram: "",
     facebook: "",
@@ -54,83 +55,84 @@ const DetailSocial = () => {
         padding: parseInt(col.style.paddingTop) || "",
       });
     }
-  }, [id]);
+  }, []);
 
-  const handleChange = useCallback(
-    (propertyKey, value) => {
-      let targetId;
-      let inputProps;
+  const handleChange = (propertyKey, value) => {
+    let targetId;
+    let inputProps;
 
-      switch (propertyKey) {
-        case "instagram":
-        case "facebook":
-        case "youtube":
-          {
-            const socialLink = findNodeByClassName(
-              col,
-              `content-social-${propertyKey}`
-            );
-            targetId = socialLink.nodeId;
-            inputProps = {
-              props: {
-                ...socialLink.props,
-                href: value,
-              },
-            };
-          }
-          break;
-        case "width":
+    switch (propertyKey) {
+      case "instagram":
+      case "facebook":
+      case "youtube":
+        {
+          const socialLink = findNodeByClassName(
+            col,
+            `content-social-${propertyKey}`
+          );
+          targetId = socialLink.nodeId;
+          inputProps = {
+            props: {
+              ...socialLink.props,
+              href: value,
+            },
+          };
+        }
+        break;
+      case "width":
+        inputProps = {
+          style: {
+            ...col.children[0].style,
+            width: `${value}%`,
+          },
+        };
+        targetId = col.children[0].nodeId;
+        break;
+      case "align":
+        {
+          const align =
+            value === "left"
+              ? { marginLeft: 0, marginRight: "auto" }
+              : value === "center"
+              ? { marginLeft: "auto", marginRight: "auto" }
+              : { marginLeft: "auto", marginRight: 0 };
           inputProps = {
             style: {
               ...col.children[0].style,
-              width: `${value}%`,
+              ...align,
+              textAlign: value,
             },
           };
           targetId = col.children[0].nodeId;
-          break;
-        case "align":
-          {
-            const align =
-              value === "left"
-                ? { marginLeft: 0, marginRight: "auto" }
-                : value === "center"
-                ? { marginLeft: "auto", marginRight: "auto" }
-                : { marginLeft: "auto", marginRight: 0 };
-            inputProps = {
-              style: {
-                ...col.children[0].style,
-                ...align,
-                textAlign: value,
-              },
-            };
-            targetId = col.children[0].nodeId;
-          }
-          break;
-        case "padding":
-          inputProps = {
-            style: {
-              ...col.style,
-              paddingTop: `${value}px`,
-              paddingBottom: `${value}px`,
-            },
-          };
-          targetId = col.nodeId;
-          break;
-        default:
-          break;
-      }
+        }
+        break;
+      case "padding":
+        inputProps = {
+          style: {
+            ...col.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
+        targetId = col.nodeId;
+        break;
+      default:
+        break;
+    }
 
-      setProperty((prev) => ({ ...prev, [propertyKey]: value }));
-      setProject((prev) => updateProjectComponents(prev, targetId, inputProps));
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
+    setProject((prev) =>
+      updateProjectComponents(prev, targetId, inputProps, demo)
+    );
+    if (!demo) {
       debouncedUpdate(updateNode.mutate, { nodeId: targetId, ...inputProps });
-    },
-    [id]
-  );
+    }
+  };
 
   return (
     <>
       <InputField
-        label="instagram url"
+        label="Instagram url"
         type="text"
         id="social-instagramUrl"
         name="instagramUrl"
@@ -138,7 +140,7 @@ const DetailSocial = () => {
         onChange={(e) => handleChange("instagram", e.target.value)}
       />
       <InputField
-        label="facebook url"
+        label="Facebook url"
         type="text"
         id="social-facebookUrl"
         name="facebookUrl"
@@ -146,7 +148,7 @@ const DetailSocial = () => {
         onChange={(e) => handleChange("facebook", e.target.value)}
       />
       <InputField
-        label="youtube url"
+        label="Youtube url"
         type="text"
         id="social-youtubeUrl"
         name="youtubeUrl"
@@ -154,21 +156,21 @@ const DetailSocial = () => {
         onChange={(e) => handleChange("youtube", e.target.value)}
       />
       <InputField
-        label="width"
+        label="Width"
         type="text"
         id="social-width"
         value={property.width}
         onChange={(e) => handleChange("width", e.target.value)}
       />
       <SelectField
-        label="align"
+        label="Align"
         id="social-align"
         value={property.align}
         onChange={(e) => handleChange("align", e.target.value)}
         options={ALIGN_OPTIONS}
       />
       <InputField
-        label="padding"
+        label="Padding"
         type="text"
         id="social-padding"
         value={property.padding}
