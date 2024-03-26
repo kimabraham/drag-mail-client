@@ -124,7 +124,14 @@ const TemplateTitle = () => {
   const handleExport = () => {
     const table = document.querySelector(".email-template-table");
     const containerRows = document.querySelectorAll(".container-row");
+    const defaultTable = document.querySelectorAll(".content-default-table");
+
     table.style.width = "600px";
+    table.style.borderCollapse = "collapse";
+
+    defaultTable.forEach((table) => {
+      table.style.display = "none";
+    });
 
     containerRows.forEach((row) => {
       row.style.boxShadow = "none";

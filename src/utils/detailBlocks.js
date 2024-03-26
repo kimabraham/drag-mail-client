@@ -28,7 +28,6 @@ export const updateProjectComponents = (prev, id, property, isDemo) => {
   );
 
   if (isDemo) {
-    console.log(`hi`);
     localStorage.setItem(
       "project",
       JSON.stringify({ ...prev, component: updatedComponents })

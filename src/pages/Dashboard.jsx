@@ -63,9 +63,6 @@ const Dashboard = () => {
             <StyleLink to="/dashboard/templates">My templates</StyleLink>
           </Item>
           <Item>
-            <StyleLink to="/dashboard/basic">Basic</StyleLink>
-          </Item>
-          <Item>
             <StyleLink to="/dashboard/contacts">Contacts</StyleLink>
           </Item>
           <Item>

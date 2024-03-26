@@ -97,6 +97,7 @@ const PreviewTable = styled.table`
   width: 600px;
   margin: 50px auto;
   border: 1px solid;
+  border-collapse: collapse;
   & .content-default-table {
     display: none;
   }

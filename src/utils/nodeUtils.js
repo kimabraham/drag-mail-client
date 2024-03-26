@@ -65,6 +65,7 @@ export const adjustChildren = (count) => {
                               width: "100%",
                               height: "100%",
                               tableLayout: "fixed",
+                              borderCollapse: "collapse",
                             },
                             children: [
                               {
@@ -133,7 +134,6 @@ export const tagDataByType = (type) => {
         className: "content-image-img",
         style: {
           width: "100%",
-          height: "100%",
         },
         props: {
           src: "https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-img-file-document-icon-png-image_892886.jpg",
@@ -257,6 +257,7 @@ export const adjustBlock = (type) => {
       textAlign: "center",
       marginLeft: "auto",
       marginRight: "auto",
+      borderCollapse: "collapse",
     },
     children: [
       {
@@ -481,6 +482,42 @@ export const findNodeById = (node, targetNodeId) => {
   if (node.children) {
     for (let child of node.children) {
       const found = findNodeById(child, targetNodeId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
+export const findNodeByMongoId = (node, targetNode) => {
+  if (node.id === targetNode.parent) {
+    node.children = [targetNode];
+    return true;
+  }
+
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findNodeByMongoId(child, targetNode);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
+export const insertDefaultTableInNode = (node, targetId) => {
+  if (node.id === targetId) {
+    node.children = defaultColNode().children;
+    return true;
+  }
+
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findNodeByMongoId(child, targetId);
       if (found) {
         return found;
       }

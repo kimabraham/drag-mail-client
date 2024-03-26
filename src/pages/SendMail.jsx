@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { MdCancel } from "react-icons/md";
 import styled from "styled-components";
@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import SendButton from "../components/SendButton";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { findUniqueElements } from "../utils/sendMail";
 
 const Container = styled.div`
   width: 80%;
@@ -24,13 +25,13 @@ const Container = styled.div`
     display: flex;
     justify-content: space-between;
     & > h3 {
-      letter-spacing: .5px;
+      letter-spacing: .2px;
     }
     & > button {
       width: 10%;
       font-size: large;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: .2px;
       font-weight: bold;
       background-color: #ff6b81;
       border: 2px solid #ff4757;
@@ -47,27 +48,64 @@ const Container = styled.div`
 
 const Receivers = styled.div`
   display: flex;
+  align-items:center;
   gap: 20px;
-  & > ul {
+  height: 30px;
+  & ul {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    & > li {
+    & li {
       background-color: #dfe4ea;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 30px;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #57606f;
-      & > span {
+      & span {
         padding: 0 15px 0 20px;
       }
-      & > svg{
+      & svg{
         color: #2f3542;
         cursor: pointer;
         float: right;
       }
+    }
+    & h5 {
+      font-size: 18px;
+    }
+  }
+`;
+
+const Bccs = styled.div`
+  display: flex;
+  align-items:center;
+  gap: 20px;
+  height: 30px;
+  & ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    & li {
+      background-color: #dfe4ea;
+      padding: 5px 10px;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #57606f;
+      & span {
+        padding: 0 15px 0 20px;
+      }
+      & svg{
+        color: #2f3542;
+        cursor: pointer;
+        float: right;
+      }
+    }
+    & h5 {
+      font-size: 18px;
     }
   }
 `;
@@ -76,9 +114,13 @@ const Sender = styled.div`
   display: flex;
   gap: 10px;
   align-items:center;
+  height: 30px;
   & > span {
-    font-size: large;
-    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: .2px;
+  }
+  & > h5 {
+    font-size: 18px;
   }
 `;
 
@@ -86,15 +128,16 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-block:30px;
   & > div {
     display: flex;
     align-items: center
     ;
     width: 100%;
     & > label {
-      font-size: larger;
+      font-size: 15px;
       font-weight: bold;
-      letter-spacing: 1px;
+      letter-spacing: .2px;
       padding: 0 10px;
       width: 15%;
       &::after {
@@ -103,21 +146,27 @@ const Form = styled.form`
     }
     & > input, & > select {
       width: 80%;
-      font-size: larger;
+      font-size: 16px;
       padding: 5px 15px;
     }
   }
 `;
 
+const Preview = styled.table`
+  width: 600px;
+  border: 1px solid;
+`;
+
 const SendMail = () => {
   const user = useRecoilValue(userInfo);
-  const { contacts } = useContact();
+  const { contacts, isLoading } = useContact();
   const { projects } = useProjects();
   const { state, search } = useLocation();
   const [receivers, setReceivers] = useState(
     state?.isToMe ? [{ name: user?.name, email: user?.email }] : []
   );
   const [subject, setSubject] = useState("");
+  const [bccs, setBccs] = useState([]);
   const [template, setTemplate] = useState(state?.project);
   const { mutate: sendMail } = useMutation({
     mutationKey: ["sendMail"],
@@ -127,7 +176,7 @@ const SendMail = () => {
   });
 
   const handleSubmit = (code) => {
-    sendMail({ subject, template, receivers, code });
+    sendMail({ subject, template, bccs, receivers, code });
   };
 
   const handleSelect = (e) => {
@@ -142,8 +191,24 @@ const SendMail = () => {
     }
   };
 
+  const handleBccSelect = (e) => {
+    const newBccEmail = e.target.value;
+    const isExist = bccs.find((bcc) => bcc.email === newBccEmail);
+    const isExistInReceivers = receivers.find(
+      (receiver) => receiver.email === newBccEmail
+    );
+    if (newBccEmail && !isExist && !isExistInReceivers) {
+      const contact = contacts.find((contact) => contact.email === newBccEmail);
+      setBccs((prev) => [...prev, { email: newBccEmail, name: contact.name }]);
+    }
+  };
+
   const handleDeleteReceiver = (email) => {
     setReceivers(receivers.filter((receiver) => receiver.email !== email));
+  };
+
+  const handleDeleteBcc = (email) => {
+    setBccs(bccs.filter((bcc) => bcc.email !== email));
   };
 
   const handleSubject = (e) => {
@@ -157,13 +222,13 @@ const SendMail = () => {
   return (
     <Container>
       <div>
-        <h3>Send mail</h3>
+        <h4>Send mail</h4>
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <SendButton onClick={handleSubmit} />
         </GoogleOAuthProvider>
       </div>
       <Receivers>
-        <h4>To.</h4>
+        <h5>To.</h5>
         <ul>
           {receivers.map((receiver) => (
             <li key={receiver.email}>
@@ -176,8 +241,26 @@ const SendMail = () => {
           ))}
         </ul>
       </Receivers>
+      {bccs.length ? (
+        <Bccs>
+          <h5>Bccs.</h5>
+          <ul>
+            {bccs.map((bcc) => (
+              <li key={bcc.email}>
+                <span>{bcc.email}</span>
+                <MdCancel
+                  size={20}
+                  onClick={() => handleDeleteBcc(bcc.email)}
+                />
+              </li>
+            ))}
+          </ul>
+        </Bccs>
+      ) : (
+        <></>
+      )}
       <Sender>
-        <h4>From. </h4>
+        <h5>From. </h5>
         <span>
           {user?.email} ( {user?.name} )
         </span>
@@ -201,6 +284,29 @@ const SendMail = () => {
                 {contact.email} ({contact.name})
               </option>
             ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="friendsList">BCC</label>
+          <select
+            name="friends"
+            id="friendsList"
+            onChange={handleBccSelect}
+            defaultValue=""
+          >
+            <option value="">Select a friend</option>
+            {contacts
+              ?.filter(
+                (contact) =>
+                  !receivers.find(
+                    (receiver) => receiver.email === contact.email
+                  )
+              )
+              .map((contact) => (
+                <option key={contact._id} value={contact.email}>
+                  {contact.email} ({contact.name})
+                </option>
+              ))}
           </select>
         </div>
         <div>
@@ -230,6 +336,8 @@ const SendMail = () => {
           </select>
         </div>
       </Form>
+      <h5>Preview</h5>
+      <Preview></Preview>
     </Container>
   );
 };

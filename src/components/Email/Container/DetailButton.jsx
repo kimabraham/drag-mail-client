@@ -45,7 +45,7 @@ const DetailButton = () => {
         content: inner,
         backgroundColor: backgroundColor || "#1D90FF",
         color: color || "#ffffff",
-        link: href?.replace("http://", "") || "",
+        link: href || "",
         width: parseInt(width) || "",
         textAlign: textAlign || "",
         padding: parseInt(padding) || "",

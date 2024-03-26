@@ -10,6 +10,7 @@ const Table = styled.table`
   background-color: white;
   min-height: ${(props) => props.height || "100px"};
   border: 1px solid;
+  border-collapse: collapse;
   & > tbody {
     height: 100%;
   }

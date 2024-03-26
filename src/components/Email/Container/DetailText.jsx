@@ -52,7 +52,13 @@ const DetailText = () => {
         inputProps = { inner: value.replace(/\n/g, "<br />") };
         break;
       case "size":
-        inputProps = { style: { ...target.style, fontSize: `${value}px` } };
+        inputProps = {
+          style: {
+            ...target.style,
+            fontSize: `${value}px`,
+            lineHeight: `${value * 1.4}px`,
+          },
+        };
         break;
       case "color":
         inputProps = { style: { ...target.style, color: value } };
@@ -111,7 +117,7 @@ const DetailText = () => {
       <SelectField
         label="Align"
         id="text-align"
-        value={property.align}
+        value={property.textAlign}
         onChange={(e) => handleChange("textAlign", id.target, e.target.value)}
         options={ALIGN_OPTIONS}
       />

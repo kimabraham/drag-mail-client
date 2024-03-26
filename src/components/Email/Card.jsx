@@ -17,6 +17,7 @@ const StyledCard = styled.div`
   align-items: center;
   color: #074f6d;
   gap:10px;
+  text-align: center;
   & > span {
     color: #787c82;
     font-size: 12px;

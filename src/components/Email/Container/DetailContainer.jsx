@@ -67,10 +67,10 @@ const DetailContainer = () => {
   const { updateNode } = useNode();
   const { patchProject } = useProject();
   const [property, setProperty] = useState({
-    bgColor: "#ffffff",
-    bgImg: "",
+    backgroundColor: "",
+    backgroundImage: "",
     padding: "",
-    radius: "",
+    borderRadius: "",
   });
 
   const row = project.component?.find((row) => row.nodeId === id.row);
@@ -81,54 +81,73 @@ const DetailContainer = () => {
     if (target) {
       const {
         style: { backgroundColor, backgroundImage, paddingTop, borderRadius },
-      } = target;
+      } = col;
+
+      const regex = /url\('([^']+)'\)/;
+      const matches = backgroundImage?.match(regex);
+
       setProperty({
-        bgColor: backgroundColor || "#ffffff",
-        bgImg: backgroundImage?.match(/url\("([^"]+)"\)/)?.[1] || "",
+        backgroundColor: backgroundColor || "#ffffff",
+        backgroundImage: matches?.[1] || "",
         padding: parseInt(paddingTop) || "",
-        radius: parseInt(borderRadius) || "",
+        borderRadius: parseInt(borderRadius) || "",
       });
     }
   }, []);
 
-  const handleChange = (property, value) => {
-    const newStyle = { ...target.style };
-    let newProperty = {};
+  const handleChange = (propertyKey, targetId, value) => {
+    let inputProps = {};
 
-    switch (property) {
-      case "bgColor":
-        newStyle.backgroundColor = value;
-        newStyle.backgroundImage = "";
-        newProperty = { bgImg: "", bgColor: value };
+    switch (propertyKey) {
+      case "backgroundColor":
+        inputProps = {
+          style: {
+            ...col.style,
+            backgroundColor: value,
+            backgroundImage: "",
+          },
+        };
         break;
-      case "bgImg":
-        newStyle.backgroundColor = "#ffffff";
-        newStyle.backgroundImage = `url("${value}")`;
-        newStyle.backgroundSize = "cover";
-        newStyle.backgroundRepeat = "no-repeat";
-        newProperty = { bgColor: "#ffffff", bgImg: value };
+      case "backgroundImage":
+        inputProps = {
+          style: {
+            ...col.style,
+            backgroundColor: "#ffffff",
+            backgroundImage: `url('${value}')`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
+        };
         break;
       case "padding":
-        newStyle.paddingTop = `${value}px`;
-        newStyle.paddingBottom = `${value}px`;
-        newProperty = { padding: value };
+        inputProps = {
+          style: {
+            ...col.style,
+            paddingTop: `${value}px`,
+            paddingBottom: `${value}px`,
+          },
+        };
         break;
-      case "radius":
-        newStyle.borderRadius = `${value}px`;
-        newProperty = { radius: value };
+      case "borderRadius":
+        inputProps = {
+          style: {
+            ...col.style,
+            borderRadius: `${value}px`,
+          },
+        };
         break;
       default:
         break;
     }
 
-    setProperty((prev) => ({ ...prev, ...newProperty }));
+    setProperty((prev) => ({ ...prev, [propertyKey]: value }));
     setProject((prev) =>
-      updateProjectComponents(prev, id.target, { style: newStyle }, demo)
+      updateProjectComponents(prev, targetId, inputProps, demo)
     );
     if (!demo) {
       debouncedUpdate(updateNode.mutate, {
-        nodeId: id.target,
-        style: newStyle,
+        nodeId: id.col,
+        ...inputProps,
       });
     }
   };
@@ -178,29 +197,33 @@ const DetailContainer = () => {
         label="Background color"
         type="color"
         id="background-color"
-        value={property.bgColor}
-        onChange={(e) => handleChange("bgColor", e.target.value)}
+        value={property.backgroundColor}
+        onChange={(e) =>
+          handleChange("backgroundColor", id.col, e.target.value)
+        }
       />
       <InputField
         label="Background image"
         type="text"
         id="background-image"
-        value={property.bgImg}
-        onChange={(e) => handleChange("bgImg", e.target.value)}
+        value={property.backgroundImage}
+        onChange={(e) =>
+          handleChange("backgroundImage", id.col, e.target.value)
+        }
       />
       <InputField
         label="Padding"
         type="text"
         id="padding"
         value={property.padding}
-        onChange={(e) => handleChange("padding", e.target.value)}
+        onChange={(e) => handleChange("padding", id.col, e.target.value)}
       />
       <InputField
         label="Rounding corners"
         type="text"
         id="border-radius"
-        value={property.radius}
-        onChange={(e) => handleChange("radius", e.target.value)}
+        value={property.borderRadius}
+        onChange={(e) => handleChange("borderRadius", id.col, e.target.value)}
       />
     </Container>
   );

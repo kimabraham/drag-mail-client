@@ -31,8 +31,8 @@ const useProject = () => {
         return res.data.project;
       }
     },
-    refetchOnMount: "always",
-    enabled: true,
+    refetchOnMount: false,
+    staleTime: 5 * 60 * 1000,
   });
 
   const updateProject = useMutation({
@@ -44,7 +44,7 @@ const useProject = () => {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries(["get-project", id]);
-      // queryClient.setQueryData(["get-project", id], data.project);
+      queryClient.setQueryData(["get-project", id], data.project);
     },
   });
 

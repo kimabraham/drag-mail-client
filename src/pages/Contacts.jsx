@@ -104,7 +104,7 @@ const Contacts = () => {
   return (
     <Container>
       <div>
-        <h3>Contacts</h3>
+        <h4>Contacts</h4>
         <button onClick={handleCreateModal}>
           <FaPlus />
           New Contact

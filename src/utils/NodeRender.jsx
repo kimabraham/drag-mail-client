@@ -14,7 +14,6 @@ const NodeRenderer = ({ isPreview }) => {
   const setSelectedBlockId = useSetRecoilState(selectBlockId);
   const renderNode = (node) => {
     const { nodeId, tag, className, props, style, children, inner } = node;
-
     if (className === "content-default-table") {
       return <ContentTable key={nodeId} {...props} />;
     }
@@ -100,7 +99,9 @@ const NodeRenderer = ({ isPreview }) => {
             onClick={handleClick}
             {...props}
           >
-            {children && children.map((child) => renderNode(child))}
+            {children.length
+              ? children.map((child) => renderNode(child))
+              : inner}
           </TagName>
         );
       }

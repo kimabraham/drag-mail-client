@@ -7,6 +7,7 @@ const Template = styled.div`
   width: 180px;
   height: 250px;
   color: white;
+  padding: 10px 20px;
   border: 2px solid #5352ed;
   background-color: #70a1ff;
   margin-bottom: 40px;
@@ -23,18 +24,20 @@ const Template = styled.div`
   & > svg {
     margin-top: auto;
   }
-  & > h5 {
-    margin-top: 20px;
+  & > h6 {
+    font-size:18px;
+    margin-top: 10px;
+    text-align: center;
+    line-height: 25px;
   }
   & > span {
     margin-top: 10px;
   }
   & > button {
     font-size: large;
-    letter-spacing: .4px;
-    padding: 8px 35px;
-    margin-top: auto;
-    margin-bottom: 10px;
+    letter-spacing: .2px;
+    padding: 5px 20px;
+    margin-top: 20px;
     border: 2px solid #3742fa;
     color :#3742fa;
     border-radius: 10px;
@@ -59,7 +62,7 @@ const TemplateCard = ({ template, deleteProject }) => {
   return (
     <Template onClick={() => navigate(`/template/${_id}`)}>
       <FcTemplate size={50} />
-      <h5>{title}</h5>
+      <h6>{title}</h6>
       <span>{createdAt.slice(0, 10)}</span>
       <button onClick={handleDelete}>Delete</button>
     </Template>
