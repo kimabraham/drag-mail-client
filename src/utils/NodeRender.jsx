@@ -1,5 +1,5 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 import ContentTable from "../components/Email/ContentTable";
 import { projectInfo, selectBlockId, selectRowId } from "./atoms";
@@ -99,9 +99,7 @@ const NodeRenderer = ({ isPreview }) => {
             onClick={handleClick}
             {...props}
           >
-            {children.length
-              ? children.map((child) => renderNode(child))
-              : inner}
+            {children && children.map((child) => renderNode(child))}
           </TagName>
         );
       }

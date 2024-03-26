@@ -130,11 +130,30 @@ const Preview = () => {
     });
   };
 
+  const Table = ({ children }) => {
+    return (
+      <table>
+        <tr>
+          <td>{children}</td>
+        </tr>
+      </table>
+    );
+  };
+
   const handleExport = () => {
     const table = document.querySelector(".email-template-table");
     const containerTables = document.querySelectorAll(".container-table");
     const containerRows = document.querySelectorAll(".container-row");
     table.style.width = "600px";
+    table.style.marginLeft = "auto";
+    table.style.marginRight = "auto";
+    table.style.background = "white";
+    table.style.borderCollapse = "collapse";
+    const defaultTable = document.querySelectorAll(".content-default-table");
+
+    defaultTable.forEach((table) => {
+      table.style.display = "none";
+    });
 
     containerTables.forEach((table) => {
       table.style.minHeight = "0px";
@@ -146,10 +165,14 @@ const Preview = () => {
 
     const tableHtmlWithTableTag = table.outerHTML;
 
-    navigator.clipboard.writeText(tableHtmlWithTableTag).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 3000);
-    });
+    navigator.clipboard
+      .writeText(
+        `<table style="width:100%;background:#f5f6fa;padding:100px;"><tr><td>${tableHtmlWithTableTag}</td><tr><table>`
+      )
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 3000);
+      });
   };
 
   const nodes = project?.component ?? [];

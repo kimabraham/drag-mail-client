@@ -336,8 +336,6 @@ const SendMail = () => {
           </select>
         </div>
       </Form>
-      <h5>Preview</h5>
-      <Preview></Preview>
     </Container>
   );
 };
