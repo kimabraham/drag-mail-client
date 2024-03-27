@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { isDemo, userInfo } from "../utils/atoms";
 
-const url = `${import.meta.env.API_END_POINT}/api/auth/success`;
+const url = `${import.meta.env.VITE_API_END_POINT}/api/auth/success`;
 
 const useAuthStatus = () => {
   const [, setUser] = useRecoilState(userInfo);
@@ -15,6 +15,7 @@ const useAuthStatus = () => {
     queryFn: async () => {
       try {
         const response = await axios.get(url, { withCredentials: true });
+        console.log(response);
         const { _id, name, email, avatarUrl } = response.data.user;
         const userInfo = {
           _id,

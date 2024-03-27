@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api":
-        "http://peak-mail-env.eba-rxdvyipv.ap-northeast-2.elasticbeanstalk.com",
+        "http://peak-mail-env.eba-rxdvyipv.ap-northeast-2.elasticbeanstalk.com/",
     },
   },
 });
