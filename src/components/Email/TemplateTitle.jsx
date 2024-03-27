@@ -105,7 +105,10 @@ const TemplateTitle = () => {
 
   const handleSend = async () => {
     if (demo) {
-      window.open("/api/auth/demo", "_self");
+      window.open(
+        "http://peak-mail-env.eba-rxdvyipv.ap-northeast-2.elasticbeanstalk.com/api/auth/demo",
+        "_self"
+      );
     } else {
       navigate("/dashboard/send", {
         state: { project: project._id, isToMe: true },

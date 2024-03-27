@@ -10,7 +10,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:3000",
+      "/api":
+        "http://peak-mail-env.eba-rxdvyipv.ap-northeast-2.elasticbeanstalk.com",
     },
   },
 });

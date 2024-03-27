@@ -91,7 +91,10 @@ const Button = styled.button`
 
 const SignIn = () => {
   const handleLogin = () => {
-    window.open("/api/auth/google", "_self");
+    window.open(
+      "http://peak-mail-env.eba-rxdvyipv.ap-northeast-2.elasticbeanstalk.com/api/auth/google",
+      "_self"
+    );
   };
 
   return (
