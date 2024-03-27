@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { isDemo, userInfo } from "../utils/atoms";
 
-const url = "/api/auth/success";
+const url = `${process.env.API_END_POINT}/api/auth/success`;
 
 const useAuthStatus = () => {
   const [, setUser] = useRecoilState(userInfo);
